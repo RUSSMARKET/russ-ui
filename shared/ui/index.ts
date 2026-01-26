@@ -27,3 +27,4 @@ export { FinalModal } from './FinalModal';
 export { Handler4FinalModal } from './Handler4FinalModal';
 export { ProductModal } from './ProductModal';
 export { CategoryModal } from './CategoryModal';
+export * from './profile';
