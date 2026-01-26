@@ -124,7 +124,6 @@ import { InputText } from '@/shared/ui'
 import { useToast } from 'primevue/usetoast'
 import { Fancybox } from '@fancyapps/ui'
 import '@fancyapps/ui/dist/fancybox/fancybox.css'
-import { http } from '@/shared/api/http'
 
 const props = defineProps({
     visible: {
@@ -138,6 +137,10 @@ const props = defineProps({
     isLoading: {
         type: Boolean,
         default: false
+    },
+    baseURL: {
+        type: String,
+        required: true
     }
 })
 
@@ -188,7 +191,7 @@ const hasSearched = ref(false)
 
 // Helper functions - defined before computed properties that use them
 function getFileUrl(file) {
-    return `${http.defaults.baseURL}/document/${file.code}`
+    return `${props.baseURL}/document/${file.code}`
 }
 
 function formatFileDate(dateString) {

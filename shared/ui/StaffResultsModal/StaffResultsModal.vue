@@ -90,14 +90,46 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue';
 import { FiltersBar, type FilterConfig, BaseModal } from '@/shared/ui';
-import { fetchStaffResultsTotal, exportStaffResultsTotal, fetchPlanReports } from '@/pages/reporting/api/index';
 import { useToast } from 'primevue/usetoast';
 import { useProjects, useAgents } from '@/shared/composables';
 import type { Agent } from '@/stores/agents';
 
+interface StaffResultTotal {
+    id?: number;
+    name: string;
+    shift_report_fields?: Array<{ id?: number; name: string; sum?: number; value?: number }>;
+}
+
+interface StaffResultTotalResponse {
+    data: StaffResultTotal[];
+}
+
+interface PlanReportResponse {
+    data: any[];
+}
+
 interface Props {
     visible: boolean;
     dateOnly?: boolean;
+    fetchStaffResultsTotal: (params: {
+        date_from?: string;
+        date_to?: string;
+        project?: number;
+        point?: number;
+        user?: number;
+    }) => Promise<StaffResultTotalResponse>;
+    exportStaffResultsTotal: (params: {
+        date_from?: string;
+        date_to?: string;
+        project?: number;
+        point?: number;
+        user?: number;
+        export?: number;
+    }) => Promise<Blob>;
+    fetchPlanReports: (params: {
+        date_from?: string;
+        date_to?: string;
+    }) => Promise<PlanReportResponse>;
 }
 
 interface Emits {
@@ -350,10 +382,10 @@ const loadResults = async () => {
         }
 
         if (props.dateOnly) {
-            const response = await fetchPlanReports(params);
+            const response = await props.fetchPlanReports(params);
             results.value = Array.isArray(response?.data) ? response.data : [];
         } else {
-            const response = await fetchStaffResultsTotal(params);
+            const response = await props.fetchStaffResultsTotal(params);
             results.value = response.data;
         }
 
@@ -418,7 +450,7 @@ const handleExport = async () => {
             throw new Error('Пользователь не авторизован');
         }
 
-        const blob = await exportStaffResultsTotal(params);
+        const blob = await props.exportStaffResultsTotal(params);
 
         const url = window.URL.createObjectURL(blob);
 

@@ -75,16 +75,19 @@ import { ref, computed, watch } from "vue";
 import BaseModal from "../BaseModal/BaseModal.vue";
 import { Button, BaseSelect } from "@/shared/ui";
 import { useToast } from "primevue/usetoast";
-import {
-    FetchRolePages,
-    RemovePageFromRole,
-    UpdateRolePagePositions,
-    type Page
-} from "@/pages/admin/api/index";
+
+export interface Page {
+    id: number;
+    name: string;
+    code: string;
+}
 
 interface Props {
     visible: boolean;
     roles: Array<{ id: number; name: string; label: string }>;
+    fetchRolePages: (roleId: number) => Promise<{ pages: Page[] }>;
+    removePageFromRole: (roleId: number, pageId: number) => Promise<void>;
+    updateRolePagePositions: (roleId: number, pageIds: number[]) => Promise<void>;
 }
 
 interface Emits {
@@ -146,7 +149,7 @@ const loadRolePages = async () => {
 
     isLoading.value = true;
     try {
-        const response = await FetchRolePages(selectedRoleId.value);
+        const response = await props.fetchRolePages(selectedRoleId.value);
         rolePages.value = response.pages;
         originalOrder.value = response.pages.map(page => page.id);
     } catch (error) {
@@ -167,7 +170,7 @@ const removePage = async (page: Page) => {
 
     isRemoving.value = true;
     try {
-        await RemovePageFromRole(selectedRoleId.value, page.id);
+        await props.removePageFromRole(selectedRoleId.value, page.id);
         rolePages.value = rolePages.value.filter(p => p.id !== page.id);
         emit('pages-updated');
         toast.add({
@@ -217,7 +220,7 @@ const savePageOrder = async () => {
     isSavingOrder.value = true;
     try {
         const pageIds = rolePages.value.map(page => page.id);
-        await UpdateRolePagePositions(selectedRoleId.value, pageIds);
+        await props.updateRolePagePositions(selectedRoleId.value, pageIds);
         originalOrder.value = [...pageIds];
         emit('pages-updated');
         toast.add({

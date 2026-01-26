@@ -65,16 +65,14 @@ import { ref, computed, watch } from "vue";
 import BaseModal from "../BaseModal/BaseModal.vue";
 import { Button, BaseSelect } from "@/shared/ui";
 import { useToast } from "primevue/usetoast";
-import {
-    FetchRolePages,
-    FetchAllPages,
-    AddPageToRole,
-    type Page
-} from "@/pages/admin/api/index";
+import type { Page } from "../RolePagesModal/RolePagesModal.vue";
 
 interface Props {
     visible: boolean;
     roles: Array<{ id: number; name: string; label: string }>;
+    fetchRolePages: (roleId: number) => Promise<{ pages: Page[] }>;
+    fetchAllPages: () => Promise<{ pages: Page[]; hidden?: Page[] }>;
+    addPageToRole: (roleId: number, pageId: number) => Promise<void>;
 }
 
 interface Emits {
@@ -124,8 +122,8 @@ const loadAllPages = async () => {
     try {
         if (!selectedRoleId.value) return;
         const [allResp, roleResp] = await Promise.all([
-            FetchAllPages(),
-            FetchRolePages(selectedRoleId.value)
+            props.fetchAllPages(),
+            props.fetchRolePages(selectedRoleId.value)
         ]);
         let all = allResp.pages || [];
         if (allResp.hidden) all = all.concat(allResp.hidden);
@@ -157,7 +155,7 @@ const addPage = async (page: Page) => {
     if (!selectedRoleId.value) return;
     isAdding.value = true;
     try {
-        await AddPageToRole(selectedRoleId.value, page.id);
+        await props.addPageToRole(selectedRoleId.value, page.id);
         emit('pages-updated');
         toast.add({
             severity: 'success',

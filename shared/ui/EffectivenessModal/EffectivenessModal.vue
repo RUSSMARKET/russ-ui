@@ -34,13 +34,37 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import { FiltersBar, type FilterConfig, BaseModal } from '@/shared/ui';
-import { exportEffectivenessReport, fetchShiftReportFieldsByProjects, type ShiftReportField } from '@/pages/reporting/api/index';
 import { useToast } from 'primevue/usetoast';
 import { useProjects, useAgents } from '@/shared/composables';
 import type { Agent } from '@/stores/agents';
 
+export interface ShiftReportField {
+    id?: number;
+    key: string;
+    label: string;
+    name?: string;
+}
+
+interface ShiftReportFieldsByProjectsResponse {
+    data: Array<{
+        project_id: number;
+        project_name: string;
+        shift_report_fields: ShiftReportField[];
+    }>;
+}
+
 interface Props {
     visible: boolean;
+    exportEffectivenessReport: (params: {
+        date_from?: string;
+        date_to?: string;
+        project: number;
+        point?: number;
+        user_id?: number;
+        options?: string;
+        sort_by?: string;
+    }) => Promise<Blob>;
+    fetchShiftReportFieldsByProjects: () => Promise<ShiftReportFieldsByProjectsResponse>;
 }
 
 interface Emits {
@@ -296,7 +320,7 @@ const handleExport = async () => {
             params.sort_by = filters.value.sort_by;
         }
 
-        const blob = await exportEffectivenessReport(params);
+        const blob = await props.exportEffectivenessReport(params);
 
         // Проверяем, что blob валидный
         if (!blob || !(blob instanceof Blob)) {
@@ -398,7 +422,7 @@ const loadAgentsData = async (projectId?: number) => {
 const loadMetricsForProject = async (projectId: number) => {
     isLoadingMetrics.value = true;
     try {
-        const response = await fetchShiftReportFieldsByProjects();
+        const response = await props.fetchShiftReportFieldsByProjects();
         shiftReportFields.value = response.data;
         await nextTick();
     } catch (error) {
@@ -447,7 +471,7 @@ watch(() => props.visible, (newVal) => {
 
         // Метрики загружаем всегда (они специфичны для модалки)
         promises.push(
-            fetchShiftReportFieldsByProjects().then(response => {
+            props.fetchShiftReportFieldsByProjects().then(response => {
                 shiftReportFields.value = response.data;
             }).catch(error => {
                 console.error('Ошибка загрузки метрик:', error);
