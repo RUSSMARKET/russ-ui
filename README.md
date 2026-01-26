@@ -2,6 +2,8 @@
 
 Библиотека общих UI компонентов, composables, API утилит и виджетов для Vue 3 проектов.
 
+**[Полная документация](./docs/README.md)** | [Компоненты](./docs/COMPONENTS.md) | [Composables](./docs/COMPOSABLES.md) | [API](./docs/API.md) | [Утилиты](./docs/UTILS.md) | [Виджеты](./docs/WIDGETS.md)
+
 ## Установка
 
 ### Шаг 1: Установка через npm
@@ -79,17 +81,22 @@ const isOpen = ref(false)
 </script>
 ```
 
-## Документация по компонентам
+> Подробные примеры и документация по каждому компоненту: [docs/COMPONENTS.md](./docs/COMPONENTS.md)
 
-Полная документация по всем компонентам находится в папке `docs/` после установки библиотеки:
+## Документация
 
-- [UI Компоненты](./docs/COMPONENTS.md)
-- [Composables](./docs/COMPOSABLES.md)
-- [API](./docs/API.md)
-- [Утилиты](./docs/UTILS.md)
-- [Виджеты](./docs/WIDGETS.md)
+Полная документация по всем компонентам, composables, API и утилитам доступна в папке [docs/](./docs/).
 
-Или в репозитории: https://github.com/RUSSMARKET/russ-ui/tree/main/docs
+### Быстрая навигация по документации
+
+- **[Документация - Главная](./docs/README.md)** - навигация и обзор всей документации
+- **[UI Компоненты](./docs/COMPONENTS.md)** - BaseModal, Button, SearchInput, DatePicker, InputText и другие
+- **[Composables](./docs/COMPOSABLES.md)** - useNavigation, useRoles, useProjects, useAgents и другие
+- **[API](./docs/API.md)** - HTTP клиент, функции для работы с API
+- **[Утилиты](./docs/UTILS.md)** - шифрование, localStorage, определение устройства
+- **[Виджеты](./docs/WIDGETS.md)** - ClientRegistration, NotificationsPanel, ClientList и другие
+
+После установки библиотеки документация также доступна в `node_modules/@russ-ui/bibli/docs/`
 
 ## Структура библиотеки
 
