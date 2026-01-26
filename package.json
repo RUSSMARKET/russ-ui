@@ -15,7 +15,9 @@
   "files": [
     "shared",
     "widgets",
-    "index.ts"
+    "docs",
+    "index.ts",
+    "README.md"
   ],
   "keywords": [
     "vue",
