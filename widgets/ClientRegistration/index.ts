@@ -1,1 +1,0 @@
-export { default as ClientRegistration } from './ui/ClientRegistration.vue'; 
