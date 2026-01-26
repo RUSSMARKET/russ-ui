@@ -1,0 +1,55 @@
+{
+  "name": "@russ-ui/bibli",
+  "version": "1.0.0",
+  "description": "Shared UI components, composables, API utilities and widgets library",
+  "main": "index.ts",
+  "types": "index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./shared/api": "./shared/api/index.ts",
+    "./shared/composables": "./shared/composables/index.ts",
+    "./shared/ui": "./shared/ui/index.ts",
+    "./shared/utils": "./shared/utils/index.ts",
+    "./widgets": "./widgets/index.ts"
+  },
+  "files": [
+    "shared",
+    "widgets",
+    "index.ts"
+  ],
+  "keywords": [
+    "vue",
+    "vue3",
+    "components",
+    "composables",
+    "ui-library"
+  ],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "vue": "^3.0.0",
+    "axios": "^1.0.0",
+    "primevue": "^3.0.0 || ^4.0.0",
+    "@fancyapps/ui": "^5.0.0",
+    "qrcode": "^1.5.0"
+  },
+  "peerDependenciesMeta": {
+    "primevue": {
+      "optional": true
+    },
+    "@fancyapps/ui": {
+      "optional": true
+    },
+    "qrcode": {
+      "optional": true
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/russ-ui/bibli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/russ-ui/bibli/issues"
+  },
+  "homepage": "https://github.com/russ-ui/bibli#readme"
+}

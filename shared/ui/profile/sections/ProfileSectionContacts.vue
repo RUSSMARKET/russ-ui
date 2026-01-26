@@ -1,0 +1,89 @@
+<template>
+  <div class="profile-section-card">
+    <div class="profile-row">
+      <span class="profile-label">Фамилия:</span>
+      <span class="profile-value">{{ filledUserData?.surname || '-' }}</span>
+    </div>
+    <div class="profile-row">
+      <span class="profile-label">Имя:</span>
+      <span class="profile-value">{{ filledUserData?.name || '-' }}</span>
+    </div>
+    <div v-if="filledUserData?.patronymic && !isYandexHost" class="profile-row">
+      <span class="profile-label">Отчество:</span>
+      <span class="profile-value">{{ filledUserData?.patronymic || '-' }}</span>
+    </div>
+    <div class="profile-row">
+      <span class="profile-label">Телефон:</span>
+      <span class="profile-value">{{ filledUserData?.phone || '-' }}</span>
+    </div>
+    <div v-if="!isYandexHost" class="profile-row">
+      <span class="profile-label">Email:</span>
+      <span class="profile-value">{{ filledUserData?.email || '-' }}</span>
+    </div>
+    <div v-if="!isYandexHost" class="profile-row">
+      <span class="profile-label">ТГ:</span>
+      <span class="profile-value">{{ formatTelegram(filledUserData?.telegram_username) }}</span>
+    </div>
+  </div>
+</template>
+<script setup>
+import { useYandexHost } from "@/shared/composables";
+
+const formatTelegram = (username) => {
+  const trimmed = username ? String(username).trim() : '';
+  if (!trimmed) return 'не заполнено';
+  return trimmed.startsWith('@') ? trimmed : `@${trimmed}`;
+};
+
+const { isYandexHost } = useYandexHost();
+
+defineProps(['filledUserData'])
+</script>
+<style scoped>
+.profile-section-card {
+  padding: 1.5rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+.profile-row {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  font-size: 1.08rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+.profile-row:last-child {
+  border-bottom: none;
+}
+.profile-label {
+  color: #6366f1;
+  min-width: 120px;
+  font-weight: 600;
+  font-size: 1.05em;
+}
+.profile-value {
+  color: #213e89;
+  font-weight: 500;
+  word-break: break-word;
+}
+@media (max-width: 600px) {
+  .profile-section-card {
+    padding: 0.5rem 0.2rem;
+    border-radius: 8px;
+    gap: 0.3rem;
+  }
+  .profile-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    font-size: 0.95rem;
+    padding-bottom: 0.1rem;
+  }
+  .profile-label {
+    min-width: 0;
+    font-size: 0.95em;
+  }
+}
+</style> 
