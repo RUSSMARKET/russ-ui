@@ -46,10 +46,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/russ-ui/bibli.git"
+    "url": "git+https://github.com/RUSSMARKET/russ-ui.git"
   },
   "bugs": {
-    "url": "https://github.com/russ-ui/bibli/issues"
+    "url": "https://github.com/RUSSMARKET/russ-ui/issues"
   },
-  "homepage": "https://github.com/russ-ui/bibli#readme"
+  "homepage": "https://github.com/RUSSMARKET/russ-ui#readme"
 }
