@@ -1,6 +1,4 @@
-export { ClientRegistration } from './ClientRegistration';
 export { default as NotificationsPanel } from './notifications';
-export * from './ClientList';
 export * from './AddItemBlock';
 export * from './RuchnikBlock';
 export * from './UploadModal';
