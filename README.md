@@ -46,6 +46,8 @@ npm install primevue@^4.0.0 @fancyapps/ui@^5.0.0 qrcode@^1.5.0
 
 ## Обновление библиотеки
 
+### Обновление до новой версии
+
 1. Обновите версию в `package.json`:
 ```json
 {
@@ -55,10 +57,26 @@ npm install primevue@^4.0.0 @fancyapps/ui@^5.0.0 qrcode@^1.5.0
 }
 ```
 
-2. Выполните:
+2. Удалите старую версию и установите новую:
 ```bash
+# Очистить кэш и переустановить
+npm cache clean --force
+rm -rf node_modules package-lock.json
 npm install
 ```
+
+### Использование последней версии из main
+
+Для получения последних изменений (не рекомендуется для production):
+```json
+{
+  "dependencies": {
+    "@russ-ui/bibli": "git+https://github.com/RUSSMARKET/russ-ui.git#main"
+  }
+}
+```
+
+Подробная инструкция по обновлению: [UPDATE.md](./UPDATE.md)
 
 ## Быстрый старт
 
