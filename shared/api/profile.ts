@@ -1,5 +1,4 @@
 import { http } from "@/shared/api";
-import { User } from "~/entities";
 
 export const getPassportData = async () => {
   const token = localStorage.getItem("access_token");

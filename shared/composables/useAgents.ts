@@ -1,30 +1,53 @@
-import { computed } from 'vue'
-import { useAgentsStore, type Agent } from '@/stores/agents'
+import { computed, ref } from 'vue'
+
+export interface Agent {
+  id: number
+  name: string
+  [key: string]: any
+}
+
+let agentsStore: any = null
+
+export const setAgentsStore = (store: any) => {
+  agentsStore = store
+}
 
 export function useAgents() {
-  const agentsStore = useAgentsStore()
-
-  const agents = computed(() => agentsStore.agents)
-  const isLoading = computed(() => agentsStore.isLoading)
+  const agents = computed(() => agentsStore?.agents || ref([]).value)
+  const isLoading = computed(() => agentsStore?.isLoading || ref(false).value)
 
   const loadAgents = async (projectId?: number, force = false) => {
-    return await agentsStore.fetchAgents(projectId, force)
+    if (agentsStore) {
+      return await agentsStore.fetchAgents(projectId, force)
+    }
+    throw new Error('Agents store не установлен. Используйте setAgentsStore()')
   }
 
   const getAgentsByProject = (projectId?: number): Agent[] => {
-    return agentsStore.getAgentsByProject(projectId)
+    if (agentsStore) {
+      return agentsStore.getAgentsByProject(projectId)
+    }
+    return []
   }
 
   const getAgentsByProjectAndPoint = (projectId?: number, pointId?: number): Agent[] => {
-    return agentsStore.getAgentsByProjectAndPoint(projectId, pointId)
+    if (agentsStore) {
+      return agentsStore.getAgentsByProjectAndPoint(projectId, pointId)
+    }
+    return []
   }
 
   const getAgentById = (agentId: number): Agent | undefined => {
-    return agentsStore.getAgentById(agentId)
+    if (agentsStore) {
+      return agentsStore.getAgentById(agentId)
+    }
+    return undefined
   }
 
   const clearCache = (projectId?: number) => {
-    agentsStore.clearCache(projectId)
+    if (agentsStore) {
+      agentsStore.clearCache(projectId)
+    }
   }
 
   return {

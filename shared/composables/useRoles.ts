@@ -1,80 +1,146 @@
 import { computed } from 'vue'
-import { User } from '@/entities'
-import { useRolesStore } from '~/stores/roles'
+
+let rolesStore: any = null
+let getRoleStringFn: (() => string | null) | null = null
+
+export const setRolesStore = (store: any) => {
+  rolesStore = store
+}
+
+export const setGetRoleString = (fn: () => string | null) => {
+  getRoleStringFn = fn
+}
+
+const getRoleString = (): string | null => {
+  if (getRoleStringFn) {
+    return getRoleStringFn()
+  }
+  // Fallback на localStorage
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('user_role_string')
+  }
+  return null
+}
 
 export function useRoles() {
-  const rolesStore = useRolesStore()
-
   const userRole = computed(() => {
-    return User.getRoleString()
+    return getRoleString()
   })
 
   const isAdmin = computed(() => {
-    return rolesStore.isAdmin(userRole.value)
+    if (rolesStore) {
+      return rolesStore.isAdmin(userRole.value)
+    }
+    return false
   })
 
   const isSupportOrAdmin = computed(() => {
-    return (
-      userRole.value === rolesStore.ROLES.ADMIN ||
-      userRole.value === rolesStore.ROLES.SUPPORT_HEAD ||
-      userRole.value === rolesStore.ROLES.SUPPORT_MANAGER
-    )
+    if (rolesStore) {
+      return (
+        userRole.value === rolesStore.ROLES.ADMIN ||
+        userRole.value === rolesStore.ROLES.SUPPORT_HEAD ||
+        userRole.value === rolesStore.ROLES.SUPPORT_MANAGER
+      )
+    }
+    return false
   })
 
   const isAgent = computed(() => {
-    return rolesStore.isAgent(userRole.value)
+    if (rolesStore) {
+      return rolesStore.isAgent(userRole.value)
+    }
+    return false
   })
 
   const isNewUser = computed(() => {
-    return rolesStore.isNewUser(userRole.value)
+    if (rolesStore) {
+      return rolesStore.isNewUser(userRole.value)
+    }
+    return false
   })
 
   const isDirector = computed(() => {
-    return rolesStore.isDirector(userRole.value)
+    if (rolesStore) {
+      return rolesStore.isDirector(userRole.value)
+    }
+    return false
   })
 
   const isAccountDirector = computed(() => {
-    return rolesStore.isAccountDirector(userRole.value)
+    if (rolesStore) {
+      return rolesStore.isAccountDirector(userRole.value)
+    }
+    return false
   })
 
   const isSupportHead = computed(() => {
-    return rolesStore.isSupportHead(userRole.value)
+    if (rolesStore) {
+      return rolesStore.isSupportHead(userRole.value)
+    }
+    return false
   })
 
   const isSupportManager = computed(() => {
-    return rolesStore.isSupportManager(userRole.value)
+    if (rolesStore) {
+      return rolesStore.isSupportManager(userRole.value)
+    }
+    return false
   })
 
   const isProjectHead = computed(() => {
-    return rolesStore.isProjectHead(userRole.value)
+    if (rolesStore) {
+      return rolesStore.isProjectHead(userRole.value)
+    }
+    return false
   })
 
   const isRegionalHead = computed(() => {
-    return rolesStore.isRegionalHead(userRole.value)
+    if (rolesStore) {
+      return rolesStore.isRegionalHead(userRole.value)
+    }
+    return false
   })
 
   const isGroupHead = computed(() => {
-    return rolesStore.isGroupHead(userRole.value)
+    if (rolesStore) {
+      return rolesStore.isGroupHead(userRole.value)
+    }
+    return false
   })
 
   const isEducationManager = computed(() => {
-    return rolesStore.isEducationManager(userRole.value)
+    if (rolesStore) {
+      return rolesStore.isEducationManager(userRole.value)
+    }
+    return false
   })
 
   const isClient = computed(() => {
-    return rolesStore.isClient(userRole.value)
+    if (rolesStore) {
+      return rolesStore.isClient(userRole.value)
+    }
+    return false
   })
 
   const isRoleAbove = (otherRole: string | null) => {
-    return rolesStore.isRoleAbove(userRole.value, otherRole)
+    if (rolesStore) {
+      return rolesStore.isRoleAbove(userRole.value, otherRole)
+    }
+    return false
   }
 
   const canBlockUser = (otherRole: string | null) => {
-    return rolesStore.canBlockUser(userRole.value, otherRole)
+    if (rolesStore) {
+      return rolesStore.canBlockUser(userRole.value, otherRole)
+    }
+    return false
   }
 
   const isAboveAgentRole = computed(() => {
-    return rolesStore.isAboveAgentRole(userRole.value)
+    if (rolesStore) {
+      return rolesStore.isAboveAgentRole(userRole.value)
+    }
+    return false
   })
 
   return {

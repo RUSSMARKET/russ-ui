@@ -1,27 +1,54 @@
-import { computed } from 'vue'
-import { useProjectsStore, type Project, type Point } from '@/stores/projects'
+import { computed, ref } from 'vue'
+
+export interface Project {
+  id: number
+  name: string
+  [key: string]: any
+}
+
+export interface Point {
+  id: number
+  name: string
+  project_id: number
+  [key: string]: any
+}
+
+let projectsStore: any = null
+
+export const setProjectsStore = (store: any) => {
+  projectsStore = store
+}
 
 export function useProjects() {
-  const projectsStore = useProjectsStore()
-
-  const projects = computed(() => projectsStore.projects)
-  const points = computed(() => projectsStore.points)
-  const isLoading = computed(() => projectsStore.isLoading)
+  const projects = computed(() => projectsStore?.projects || ref([]).value)
+  const points = computed(() => projectsStore?.points || ref([]).value)
+  const isLoading = computed(() => projectsStore?.isLoading || ref(false).value)
 
   const loadProjects = async (force = false) => {
-    return await projectsStore.fetchProjects(force)
+    if (projectsStore) {
+      return await projectsStore.fetchProjects(force)
+    }
+    throw new Error('Projects store не установлен. Используйте setProjectsStore()')
   }
 
   const getPointsByProjectId = (projectId: number): Point[] => {
-    return projectsStore.getPointsByProjectId(projectId)
+    if (projectsStore) {
+      return projectsStore.getPointsByProjectId(projectId)
+    }
+    return []
   }
 
   const getProjectById = (projectId: number): Project | undefined => {
-    return projectsStore.getProjectById(projectId)
+    if (projectsStore) {
+      return projectsStore.getProjectById(projectId)
+    }
+    return undefined
   }
 
   const clearCache = () => {
-    projectsStore.clearCache()
+    if (projectsStore) {
+      projectsStore.clearCache()
+    }
   }
 
   return {

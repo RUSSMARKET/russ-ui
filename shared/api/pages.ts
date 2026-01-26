@@ -1,5 +1,4 @@
 import { http } from './http'
-import { User } from '@/entities'
 
 export interface Page {
   id: number
@@ -18,7 +17,7 @@ export interface PagesResponse {
 }
 
 export const fetchUserPages = async (): Promise<PagesResponse> => {
-  const token = User.getToken()
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
   if (!token) {
     throw new Error("Пользователь не авторизован: отсутствует токен")
   }

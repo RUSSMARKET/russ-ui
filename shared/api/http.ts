@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { User } from '@/entities';
 
 let apiBaseURL = 'https://server.rusaifin.ru';
 if (typeof window !== 'undefined') {
@@ -19,9 +18,38 @@ export const http = axios.create({
   }
 });
 
+// Функция для получения токена (можно переопределить в проекте)
+let getTokenFn: (() => string | null) | null = null;
+let logoutFn: (() => void) | null = null;
+
+export const setAuthFunctions = (getToken: () => string | null, logout: () => void) => {
+  getTokenFn = getToken;
+  logoutFn = logout;
+};
+
+const getToken = (): string | null => {
+  if (getTokenFn) {
+    return getTokenFn();
+  }
+  // Fallback на localStorage
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('access_token');
+  }
+  return null;
+};
+
+const logout = () => {
+  if (logoutFn) {
+    logoutFn();
+  } else if (typeof window !== 'undefined') {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('user_role_string');
+  }
+};
+
 http.interceptors.request.use(
   config => {
-    const token = User.getToken();
+    const token = getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -49,7 +77,7 @@ http.interceptors.response.use(
       if (status === 401 || status === 403) {
         // Для запросов страниц не делаем редирект здесь - это обрабатывается в useNavigation
         if (!isPagesRequest && typeof window !== 'undefined' && window.location.pathname !== '/auth') {
-          User.logout();
+          logout();
           // Используем небольшую задержку, чтобы избежать конфликтов
           setTimeout(() => {
             window.location.href = '/auth';
@@ -71,7 +99,7 @@ http.interceptors.response.use(
         
         // Для запросов страниц не делаем редирект здесь - это обрабатывается в useNavigation
         if (!isPagesRequest && typeof window !== 'undefined' && window.location.pathname !== '/auth') {
-          User.logout();
+          logout();
           // Используем небольшую задержку, чтобы избежать конфликтов
           setTimeout(() => {
             window.location.href = '/auth';

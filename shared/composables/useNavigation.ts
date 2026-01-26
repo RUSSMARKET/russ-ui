@@ -1,8 +1,58 @@
 import { ref, computed, type Ref } from 'vue'
-import { User } from '@/entities'
-import { useRolesStore } from '~/stores/roles'
 import { fetchUserPages } from '@/shared/api'
 import { encryptData, decryptData, isEncrypted, createUserEncryptionKey } from '@/shared/utils'
+
+let rolesStore: any = null
+let getTokenFn: (() => string | null) | null = null
+let logoutFn: (() => void) | null = null
+let getUserRoleFn: (() => any) | null = null
+let initUserFn: (() => void) | null = null
+
+export const setNavigationDependencies = (deps: {
+  rolesStore?: any
+  getToken?: () => string | null
+  logout?: () => void
+  getUserRole?: () => any
+  initUser?: () => void
+}) => {
+  if (deps.rolesStore) rolesStore = deps.rolesStore
+  if (deps.getToken) getTokenFn = deps.getToken
+  if (deps.logout) logoutFn = deps.logout
+  if (deps.getUserRole) getUserRoleFn = deps.getUserRole
+  if (deps.initUser) initUserFn = deps.initUser
+}
+
+const getToken = (): string | null => {
+  if (getTokenFn) {
+    return getTokenFn()
+  }
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('access_token')
+  }
+  return null
+}
+
+const logout = () => {
+  if (logoutFn) {
+    logoutFn()
+  } else if (typeof window !== 'undefined') {
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('user_role_string')
+  }
+}
+
+const getUserRole = () => {
+  if (getUserRoleFn) {
+    return getUserRoleFn()
+  }
+  return null
+}
+
+const initUser = () => {
+  if (initUserFn) {
+    initUserFn()
+  }
+}
 
 interface Page {
   id: number
@@ -21,7 +71,6 @@ let isLoading: Ref<boolean> = ref(false)
 let isLoaded: Ref<boolean> = ref(false)
 let isMiddlewareLoading: Ref<boolean> = ref(false) 
 let hasError: Ref<boolean> = ref(false)
-let rolesStore: ReturnType<typeof useRolesStore> | null = null
 // Убрана переменная roleWatchDogTimer
 
 // Глобальная функция для быстрой загрузки страниц после авторизации
@@ -200,12 +249,13 @@ const loadDecryptedPages = async (token: string): Promise<{ pages: Page[], hidde
 
 export const useNavigation = () => {
   if (!rolesStore) {
-    rolesStore = useRolesStore()
+    // rolesStore должен быть установлен через setNavigationDependencies
   }
 
   const isKnownRole = (roleCode: string) => {
+    if (!rolesStore) return false
     // @ts-ignore - игнорируем строгую проверку типов для roleCode
-    return Object.values(rolesStore!.ROLES).includes(roleCode)
+    return Object.values(rolesStore.ROLES).includes(roleCode)
   }
 
   const isAllowedPath = (roleCode: string, path: string) => {
@@ -252,7 +302,7 @@ export const useNavigation = () => {
     hasError.value = false
     
     try {
-      const token = User.getToken()
+      const token = getToken()
       if (!token) {
         console.warn('Токен отсутствует, невозможно загрузить страницы')
         pages.value = []
@@ -290,14 +340,12 @@ export const useNavigation = () => {
         if (isAuthError) {
           // Если токен невалидный, очищаем данные и не пытаемся загружать из кэша
           console.warn('Токен невалидный или истек при загрузке страниц. Очищаем данные пользователя.')
-          const { User } = await import('@/entities')
-          
           // Проверяем, что токен действительно невалидный (не временная сетевая ошибка)
           // Если это повторная попытка после инициализации, значит токен точно невалидный
-          const currentToken = User.getToken()
+          const currentToken = getToken()
           if (!currentToken || currentToken === token) {
             // Токен действительно невалидный или отсутствует
-            User.logout()
+            logout()
             pages.value = []
             hiddenPages.value = []
             hasError.value = true
@@ -351,10 +399,10 @@ export const useNavigation = () => {
     try {
       // Убеждаемся, что User инициализирован
       if (process.client) {
-        User.init()
+        initUser()
       }
       
-      const userRole = User.getRole()
+      const userRole = getUserRole()
       role.value = userRole !== null ? String(userRole) : null
       
       // Если роль не найдена, но токен есть, быстро проверяем еще раз
@@ -362,8 +410,8 @@ export const useNavigation = () => {
         const token = localStorage.getItem('access_token')
         if (token) {
           // Без задержки - просто повторная инициализация
-          User.init()
-          const retryUserRole = User.getRole()
+          initUser()
+          const retryUserRole = getUserRole()
           role.value = retryUserRole !== null ? String(retryUserRole) : null
         }
       }
@@ -374,13 +422,13 @@ export const useNavigation = () => {
         return
       }
 
-      if (rolesStore!.isNewUser(role.value)) {
+      if (rolesStore && rolesStore.isNewUser(role.value)) {
         pages.value = []
         hiddenPages.value = []
         return
       }
 
-      const token = User.getToken()
+      const token = getToken()
       if (!token) {
         pages.value = []
         hiddenPages.value = []
@@ -529,7 +577,7 @@ export const useNavigation = () => {
     hasError.value = false
     
     try {
-      const token = User.getToken()
+      const token = getToken()
       if (!token) {
         console.warn('Токен отсутствует, невозможно обновить страницы')
         hasError.value = true
@@ -571,7 +619,7 @@ export const useNavigation = () => {
     hasError.value = false
     
     try {
-      const token = User.getToken()
+      const token = getToken()
       if (!token) {
         console.warn('Токен отсутствует, невозможно перешифровать страницы')
         hasError.value = true

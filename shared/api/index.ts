@@ -1,4 +1,4 @@
-export { http } from './http' 
+export { http, setAuthFunctions } from './http' 
 export * from './auth'
 export * from './pages'
 export * from './products'

@@ -1,5 +1,24 @@
 import { http } from '@/shared/api'
-import type { ProductBody, CategoryBody, ExtraditionBody, UploadAdditionalData } from '@/entities/product'
+
+export interface ProductBody {
+  name: string
+  description?: string
+  price?: number
+  [key: string]: any
+}
+
+export interface CategoryBody {
+  name: string
+  [key: string]: any
+}
+
+export interface ExtraditionBody {
+  [key: string]: any
+}
+
+export interface UploadAdditionalData {
+  [key: string]: any
+}
 
 export const fetchProductsAPI = async () => {
   const token = localStorage.getItem('access_token')
