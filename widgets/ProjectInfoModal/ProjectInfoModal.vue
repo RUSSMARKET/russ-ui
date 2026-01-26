@@ -47,7 +47,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { BaseSelect, BaseModal, StatusSelect } from '~/shared/ui';
+import { BaseSelect, BaseModal, StatusSelect } from '@/shared/ui';
 import { updateProjectAPI } from '~/pages/project/api/index';
 
 interface Props {

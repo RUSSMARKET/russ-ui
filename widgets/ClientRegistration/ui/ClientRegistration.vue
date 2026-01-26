@@ -105,7 +105,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from "vue";
-import { InputPhone, InputText, Button } from "~/shared/ui";
+import { InputPhone, InputText, Button } from "@/shared/ui";
 import { addClientApi, fetchClientByPhone } from "~/pages/clients/api";
 import { http } from "@/shared/api";
 

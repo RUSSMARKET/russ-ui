@@ -78,14 +78,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 
-import { BaseModal } from '~/shared/ui';
+import { BaseModal } from '@/shared/ui';
 import { AddItemBlock } from '~/widgets';
 import type { Category } from '~/entities/product';
 
-// Helper type guard
-function isCategory(obj: any): obj is Category {
-  return obj && typeof obj === 'object' && 'id' in obj && 'name' in obj;
-}
 
 interface Props {
   visible: boolean;

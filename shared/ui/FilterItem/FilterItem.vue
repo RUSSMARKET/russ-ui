@@ -78,8 +78,7 @@ import { computed } from 'vue';
 import type { FilterConfig } from '../FiltersBar/FiltersBar.vue';
 import { DatePicker } from '../DatePicker';
 import { DateRangePicker } from '../DateRangePicker';
-import BaseSelect from '@/shared/ui/inputs/select/BaseSelect.vue';
-import { InputText } from '@/shared/ui/inputs';
+import { BaseSelect, InputText } from '@/shared/ui';
 
 interface Props {
   filter: FilterConfig;

@@ -120,7 +120,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import BaseModal from '../BaseModal/BaseModal.vue'
-import { InputText } from '@/shared/ui/inputs'
+import { InputText } from '@/shared/ui'
 import { useToast } from 'primevue/usetoast'
 import { Fancybox } from '@fancyapps/ui'
 import '@fancyapps/ui/dist/fancybox/fancybox.css'

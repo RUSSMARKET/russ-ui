@@ -105,9 +105,8 @@
 </template>
 <script setup>
 import { ref, onMounted } from 'vue';
-import User from '@/entities/user';
 import { http } from '@/shared/api';
-import { BaseModal } from '~/shared/ui';
+import { BaseModal } from '@/shared/ui';
 import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 

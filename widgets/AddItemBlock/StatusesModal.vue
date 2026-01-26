@@ -47,7 +47,7 @@
 </template>
 
 <script setup>
-import { BaseModal } from '~/shared/ui';
+import { BaseModal } from '@/shared/ui';
 
 const props = defineProps({
     visible: { type: Boolean, default: false },

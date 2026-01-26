@@ -92,7 +92,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { BaseModal, InputText, Button } from '~/shared/ui';
+import { BaseModal, InputText, Button } from '@/shared/ui';
 import FileUpload from 'primevue/fileupload';
 import type { Category } from '~/entities/product';
 

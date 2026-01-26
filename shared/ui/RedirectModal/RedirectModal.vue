@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { BaseModal, Button } from '~/shared/ui';
+import { BaseModal, Button } from '@/shared/ui';
 
 interface Props {
   visible: boolean;

@@ -237,7 +237,7 @@ import { computed } from 'vue';
 import type { FilterConfig } from '../FiltersBar/FiltersBar.vue';
 import { FiltersBar } from '../FiltersBar';
 import { BaseModal } from '../BaseModal';
-import BaseSelect from '@/shared/ui/inputs/select/BaseSelect.vue';
+import { BaseSelect } from '@/shared/ui';
 import type { Staff, PlannedShiftInterval } from '@/pages/reporting/api';
 
 interface Props {

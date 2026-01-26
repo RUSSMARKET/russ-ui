@@ -84,8 +84,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import BaseModal from '@/shared/ui/BaseModal/BaseModal.vue';
-import { Button } from '@/shared/ui';
+import { Button, BaseModal } from '@/shared/ui';
 import Checkbox from 'primevue/checkbox';
 
 defineOptions({

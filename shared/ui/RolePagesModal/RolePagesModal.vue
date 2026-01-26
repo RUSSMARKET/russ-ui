@@ -73,8 +73,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import BaseModal from "../BaseModal/BaseModal.vue";
-import BaseSelect from "@/shared/ui/inputs/select/BaseSelect.vue";
-import { Button } from "@/shared/ui";
+import { Button, BaseSelect } from "@/shared/ui";
 import { useToast } from "primevue/usetoast";
 import {
     FetchRolePages,

@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { BaseModal } from '~/shared/ui/BaseModal';
+import { BaseModal } from '@/shared/ui';
 
 interface Props {
   visible: boolean;

@@ -178,8 +178,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { InputText } from '@/shared/ui/inputs'
+import { computed } from 'vue'
+import { InputText } from '@/shared/ui'
 
 const props = defineProps({
   selectedAgentType: String,
