@@ -18,6 +18,8 @@
 }
 ```
 
+**Важно:** Используйте правильный URL: `git+https://github.com/RUSSMARKET/russ-ui.git#v1.0.0`
+
 Затем выполните:
 
 ```bash
