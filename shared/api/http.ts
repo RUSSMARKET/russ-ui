@@ -3,7 +3,7 @@ import axios from 'axios'
 let apiBaseURL = 'https://server.rusaifin.ru';
 if (typeof window !== 'undefined') {
   const host = window.location.host;
-  if (host.startsWith('dev.') || host.startsWith('localhost') || host.includes('192.168') || host.includes('172.20')) {
+  if (host.startsWith('dev.') || host.startsWith('localhost') || host.includes('192.') || host.includes('172.')) {
     apiBaseURL = 'https://dev.server.rusaifin.ru';
   }
   if (host.includes('yandex.')) {
