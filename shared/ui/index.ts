@@ -12,7 +12,7 @@ export { AddPagesModal } from './AddPagesModal';
 export { BaseModal } from './BaseModal';
 export { FiltersBar } from './FiltersBar';
 export type { FilterConfig } from './FiltersBar';
-export { DatePicker } from './DatePicker';
+export { DatePicker, MonthPicker } from './DatePicker';
 export { DateRangePicker } from './DateRangePicker';
 export { FilterItem } from './FilterItem';
 export { EditShiftsModal } from './EditShiftsModal';
