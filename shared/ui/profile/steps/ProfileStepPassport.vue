@@ -108,14 +108,14 @@ const updateField = (field: keyof FormData, value: any) => {
 }
 
 .user-data-block {
-  background: #f5f7ff;
-  border: 1px solid #d4ddff;
+  background: var(--russ-bg-blue-light);
+  border: 1px solid var(--russ-bg-blue-lighter);
 }
 
 .form-block-title {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--russ-text-primary);
   margin-bottom: 0.25rem;
 }
 
@@ -126,11 +126,11 @@ const updateField = (field: keyof FormData, value: any) => {
 }
 
 .form-input.error {
-  border-color: #dc3545;
+  border-color: var(--russ-error);
 }
 
 .error-message {
-  color: #dc3545;
+  color: var(--russ-error);
   font-size: clamp(0.75rem, calc(0.75rem + (0.85 - 0.75) * ((100vw - 320px) / (960 - 320))), 0.85rem);
   margin-top: -0.5rem;
   margin-bottom: 0.5rem;

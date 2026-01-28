@@ -43,15 +43,15 @@ function handleClick() {
   max-width: 60px;
   max-height: 60px;
   border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(33, 62, 137, 0.10);
-  background: #f4f7fb;
+  box-shadow: 0 2px 8px var(--russ-shadow-primary-light);
+  background: var(--russ-bg-gray-light);
   margin: 0.2rem 0.5rem 0.2rem 0;
   cursor: pointer;
   transition: transform 0.18s;
 }
 
 .file-preview.clickable:hover {
-  box-shadow: 0 4px 16px rgba(33, 62, 137, 0.13);
+  box-shadow: 0 4px 16px var(--russ-shadow-primary);
 }
 
 .file-thumb {
@@ -63,7 +63,7 @@ function handleClick() {
 
 .file-icon {
   font-size: 1.2rem;
-  color: #2563eb;
+  color: var(--russ-accent);
   font-weight: 600;
   padding: 0 0.3rem;
 }

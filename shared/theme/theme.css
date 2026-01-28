@@ -1,0 +1,137 @@
+/**
+ * CSS переменные для темы russ-ui
+ * Эти переменные будут переопределяться через JavaScript при применении темы
+ */
+
+:root {
+  /* Основные цвета */
+  --russ-primary: #213e89;
+  --russ-primary-dark: #162954;
+  --russ-primary-light: #1b3170;
+  --russ-primary-hover: #1b3170;
+  --russ-primary-active: #162954;
+  
+  /* Вторичные цвета */
+  --russ-secondary: #6366f1;
+  --russ-secondary-dark: #4f46e5;
+  --russ-secondary-light: #818cf8;
+  
+  /* Акцентные цвета */
+  --russ-accent: #2563eb;
+  --russ-accent-dark: #1d4ed8;
+  --russ-accent-light: #3b82f6;
+  
+  /* Цвета текста */
+  --russ-text-primary: #1f2937;
+  --russ-text-secondary: #374151;
+  --russ-text-tertiary: #6b7280;
+  --russ-text-inverse: #ffffff;
+  
+  /* Цвета фона */
+  --russ-bg: #ffffff;
+  --russ-bg-secondary: #f8fafc;
+  --russ-bg-tertiary: #f1f5f9;
+  
+  /* Цвета границ */
+  --russ-border: #e5e7eb;
+  --russ-border-light: #e2e8f0;
+  --russ-border-dark: #d1d5db;
+  
+  /* Статусные цвета */
+  --russ-success: #22c55e;
+  --russ-success-light: #d1fae5;
+  --russ-success-dark: #16a34a;
+  
+  --russ-error: #dc3545;
+  --russ-error-light: #fee2e2;
+  --russ-error-dark: #c82333;
+  
+  --russ-warning: #f59e0b;
+  --russ-warning-light: #fef3c7;
+  --russ-warning-dark: #d97706;
+  
+  --russ-info: #3b82f6;
+  --russ-info-light: #dbeafe;
+  --russ-info-dark: #2563eb;
+  
+  /* Нейтральные цвета */
+  --russ-neutral: #6b7280;
+  --russ-neutral-light: #9ca3af;
+  --russ-neutral-dark: #374151;
+  
+  /* Дополнительные цвета */
+  --russ-label: #6366f1;
+  --russ-value: #213e89;
+  --russ-checkbox-accent: #2563eb;
+  --russ-focus-ring: rgba(33, 62, 137, 0.2);
+  
+  /* Дополнительные оттенки текста */
+  --russ-text-quaternary: #9ca3af;
+  --russ-text-muted: #64748b;
+  
+  /* Дополнительные оттенки фона */
+  --russ-bg-quaternary: #f9fafb;
+  --russ-bg-hover: #f3f4f6;
+  --russ-bg-active: #e5e7eb;
+  --russ-bg-disabled: #f3f4f6;
+  
+  /* Дополнительные оттенки границ */
+  --russ-border-quaternary: #ced4da;
+  --russ-input-border: #ced4da;
+  --russ-input-border-focus: #3b82f6;
+  --russ-input-border-error: #D60000;
+  
+  /* Цвета для инпутов */
+  --russ-input-bg: #ffffff;
+  --russ-input-bg-disabled: #f3f4f6;
+  --russ-input-bg-hover: #ffffff;
+  --russ-input-text: #374151;
+  --russ-input-placeholder: #6b7280;
+  --russ-input-error: #ef4444;
+  --russ-input-error-bg: #ffd6d6;
+  
+  /* Цвета для теней и оверлеев */
+  --russ-overlay: rgba(0, 0, 0, 0.5);
+  --russ-overlay-light: rgba(0, 0, 0, 0.3);
+  --russ-shadow-color: rgba(0, 0, 0, 0.1);
+  
+  /* Специальные цвета */
+  --russ-yellow: #fed521;
+  --russ-yellow-light: #fff3cd;
+  --russ-orange: #f39c12;
+  --russ-orange-light: #ffeaa7;
+  --russ-purple: #8b5cf6;
+  --russ-purple-light: #e0e7ff;
+  
+  /* Дополнительные оттенки primary для градиентов */
+  --russ-primary-gradient-start: #213e89;
+  --russ-primary-gradient-end: #1a3069;
+  
+  /* Дополнительные фоновые цвета */
+  --russ-bg-blue-tint: #e8edff;
+  --russ-bg-blue-light: #f5f7ff;
+  --russ-bg-blue-lighter: #e0e7ff;
+  --russ-bg-gray-light: #f4f7fb;
+  
+  /* Дополнительные цвета для статусов */
+  --russ-success-text: #065f46;
+  --russ-success-border: #34d399;
+  --russ-warning-text: #92400e;
+  --russ-error-text: #991b1b;
+  --russ-info-text: #1e40af;
+  --russ-info-border: #bfdbfe;
+  
+  /* Цвета для акцентов в инпутах */
+  --russ-accent-tint-12: rgba(29, 76, 210, 0.12);
+  --russ-accent-tint-18: rgba(29, 76, 210, 0.18);
+  --russ-accent-tint-40: rgba(29, 76, 210, 0.4);
+  
+  /* Цвета для теней с акцентом */
+  --russ-shadow-primary: rgba(33, 62, 137, 0.1);
+  --russ-shadow-primary-light: rgba(33, 62, 137, 0.06);
+  --russ-shadow-accent: rgba(37, 99, 235, 0.2);
+  --russ-shadow-accent-light: rgba(37, 99, 235, 0.1);
+  --russ-shadow-secondary: rgba(99, 102, 241, 0.1);
+  --russ-shadow-success: rgba(16, 185, 129, 0.2);
+  --russ-shadow-warning: rgba(243, 156, 18, 0.15);
+}

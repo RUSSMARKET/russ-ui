@@ -193,14 +193,14 @@ watch(() => props.visible, async (newVisible) => {
 .pages-container {
     max-height: 400px;
     overflow-y: auto;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--russ-border);
     border-radius: 8px;
-    background: #f9fafb;
+    background: var(--russ-bg-quaternary);
 }
 
 .page-item {
-    background: white;
-    border-bottom: 1px solid #e5e7eb;
+    background: var(--russ-bg);
+    border-bottom: 1px solid var(--russ-border);
     transition: all 0.2s ease;
 }
 
@@ -209,7 +209,7 @@ watch(() => props.visible, async (newVisible) => {
 }
 
 .page-item:hover {
-    background: #f3f4f6;
+    background: var(--russ-bg-disabled);
 }
 
 .modal-page-content {
@@ -228,18 +228,18 @@ watch(() => props.visible, async (newVisible) => {
 
 .page-name {
     font-weight: 500;
-    color: #374151;
+    color: var(--russ-text-secondary);
 }
 
 .page-code {
     font-size: 12px;
-    color: #6b7280;
+    color: var(--russ-text-tertiary);
 }
 
 .add-btn {
     background: none;
     border: none;
-    color: #10b981;
+    color: var(--russ-success);
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
@@ -248,7 +248,7 @@ watch(() => props.visible, async (newVisible) => {
 }
 
 .add-btn:hover:not(:disabled) {
-    background: #f0fdf4;
+    background: var(--russ-success-light);
 }
 
 .add-btn:disabled {
@@ -260,7 +260,7 @@ watch(() => props.visible, async (newVisible) => {
 .select-role-message {
     text-align: center;
     padding: 40px 20px;
-    color: #6b7280;
+    color: var(--russ-text-tertiary);
 }
 
 .mb-4 {
@@ -304,11 +304,11 @@ watch(() => props.visible, async (newVisible) => {
 }
 
 .text-gray-500 {
-    color: #6b7280;
+    color: var(--russ-text-tertiary);
 }
 
 .text-gray-600 {
-    color: #4b5563;
+    color: var(--russ-text-secondary);
 }
 
 .w-full {
@@ -323,8 +323,8 @@ watch(() => props.visible, async (newVisible) => {
 .loader {
     width: 40px;
     height: 40px;
-    border: 3px solid #e5e7eb;
-    border-top: 3px solid #213e89;
+    border: 3px solid var(--russ-border);
+    border-top: 3px solid var(--russ-primary);
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 0 auto;

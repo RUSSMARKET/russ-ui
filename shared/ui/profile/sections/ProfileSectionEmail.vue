@@ -28,19 +28,19 @@ defineProps(['filledUserData'])
   align-items: center;
   font-size: 1.08rem;
   padding-bottom: 0.3rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--russ-border);
 }
 .profile-row:last-child {
   border-bottom: none;
 }
 .profile-label {
-  color: #6366f1;
+  color: var(--russ-label);
   min-width: 120px;
   font-weight: 600;
   font-size: 1.05em;
 }
 .profile-value {
-  color: #213e89;
+  color: var(--russ-value);
   font-weight: 500;
   word-break: break-word;
 }
@@ -52,14 +52,14 @@ defineProps(['filledUserData'])
   display: inline-block;
 }
 .profile-status.confirmed {
-  background: #e0fbe0;
-  color: #22c55e;
-  border: 1.5px solid #22c55e;
+  background: var(--russ-success-light);
+  color: var(--russ-success);
+  border: 1.5px solid var(--russ-success);
 }
 .profile-status.unconfirmed {
-  background: #fee2e2;
-  color: #ef4444;
-  border: 1.5px solid #ef4444;
+  background: var(--russ-error-light);
+  color: var(--russ-error);
+  border: 1.5px solid var(--russ-error);
 }
 @media (max-width: 600px) {
   .profile-section-card {

@@ -208,18 +208,18 @@ function submitEditComment(commentId) {
 .task-info {
   margin-bottom: 18px;
   padding-bottom: 10px;
-  border-bottom: 1.5px solid #f0f0f0;
+  border-bottom: 1.5px solid var(--russ-border-light);
 }
 
 .task-info p {
   margin: 0 0 8px 0;
   font-size: 15.5px;
-  color: #333;
+  color: var(--russ-text-primary);
   line-height: 1.6;
 }
 
 .task-info strong {
-  color: #607d8b;
+  color: var(--russ-text-tertiary);
 }
 
 .task-comments-block {
@@ -229,14 +229,14 @@ function submitEditComment(commentId) {
 .task-comments-block h3 {
   font-size: 18px;
   margin-bottom: 12px;
-  color: #1976d2;
+  color: var(--russ-accent);
   font-weight: 600;
 }
 
 .comment-item {
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--russ-border-light);
   padding: 12px 0 14px 0;
-  background: #f9fbfd;
+  background: var(--russ-bg-secondary);
   border-radius: 8px;
   margin-bottom: 10px;
   position: relative;
@@ -244,9 +244,9 @@ function submitEditComment(commentId) {
 }
 
 .comment-item.editing {
-  background: #e3f2fd;
-  border: 2px solid #1976d2;
-  box-shadow: 0 2px 12px rgba(33, 150, 243, 0.10);
+  background: var(--russ-info-light);
+  border: 2px solid var(--russ-accent);
+  box-shadow: 0 2px 12px var(--russ-shadow-accent-light);
   z-index: 2;
 }
 
@@ -261,11 +261,11 @@ function submitEditComment(commentId) {
 
 .comment-user {
   font-weight: 500;
-  color: #1976d2;
+  color: var(--russ-accent);
 }
 
 .comment-date {
-  color: #b0b0b0;
+  color: var(--russ-text-quaternary);
 }
 
 .comment-actions {
@@ -283,28 +283,28 @@ function submitEditComment(commentId) {
   padding: 4px 7px;
   border-radius: 6px;
   transition: background 0.15s, color 0.15s;
-  color: #1976d2;
+  color: var(--russ-accent);
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
 .icon-btn.edit:hover {
-  background: #e3f2fd;
-  color: #0d47a1;
+  background: var(--russ-info-light);
+  color: var(--russ-info-dark);
 }
 
 .icon-btn.delete:hover {
-  background: #ffebee;
-  color: #d32f2f;
+  background: var(--russ-error-light);
+  color: var(--russ-error);
 }
 
 .icon-btn.add:hover {
-  background: #e8f5e9;
+  background: var(--russ-success-light);
 }
 
 .icon-btn.save:hover {
-  background: #e8f5e9;
+  background: var(--russ-success-light);
 }
 
 .icon-btn.cancel:hover {
@@ -314,12 +314,12 @@ function submitEditComment(commentId) {
 .btn-label {
   font-size: 13px;
   margin-left: 4px;
-  color: #1976d2;
+  color: var(--russ-accent);
 }
 
 .comment-body {
   font-size: 15.5px;
-  color: #222;
+  color: var(--russ-text-primary);
   word-break: break-word;
   margin-top: 4px;
 }
@@ -335,11 +335,11 @@ function submitEditComment(commentId) {
   max-width: 110px;
   max-height: 110px;
   border-radius: 8px;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.10);
+  box-shadow: 0 1px 6px var(--russ-shadow-color);
   object-fit: cover;
   margin-right: 4px;
-  background: #f5f5f5;
-  border: 1.5px solid #e0e0e0;
+  background: var(--russ-bg-disabled);
+  border: 1.5px solid var(--russ-border);
   margin-bottom: 4px;
   display: block;
   cursor: pointer;
@@ -347,22 +347,22 @@ function submitEditComment(commentId) {
 }
 
 .comment-img-preview:hover {
-  box-shadow: 0 2px 12px rgba(33, 150, 243, 0.18);
-  border-color: #90caf9;
+  box-shadow: 0 2px 12px var(--russ-shadow-accent);
+  border-color: var(--russ-info-border);
 }
 
 .edit-comment-block {
   margin-top: 8px;
-  background: #f4f8fd;
+  background: var(--russ-bg-blue-light);
   border-radius: 8px;
   padding: 12px 10px 10px 10px;
-  box-shadow: 0 1px 6px rgba(33, 150, 243, 0.04);
+  box-shadow: 0 1px 6px var(--russ-shadow-accent-light);
 }
 
 .edit-title {
   font-size: 16px;
   font-weight: 600;
-  color: #1976d2;
+  color: var(--russ-accent);
   margin-bottom: 8px;
 }
 
@@ -377,7 +377,7 @@ function submitEditComment(commentId) {
   min-height: 60px;
   font-size: 15px;
   border-radius: 7px;
-  border: 1.5px solid #b3c6e0;
+  border: 1.5px solid var(--russ-info-border);
   padding: 8px 12px;
   resize: vertical;
   background: #fff;
@@ -412,13 +412,13 @@ function submitEditComment(commentId) {
   height: 38px;
   object-fit: cover;
   border-radius: 5px;
-  border: 1px solid #e0e0e0;
-  background: #fafafa;
+  border: 1px solid var(--russ-border);
+  background: var(--russ-bg-secondary);
 }
 
 .edit-file-label {
   font-size: 13px;
-  color: #d32f2f;
+  color: var(--russ-error);
   margin-left: 2px;
 }
 
@@ -450,8 +450,8 @@ function submitEditComment(commentId) {
 }
 
 .edit-save-btn {
-  background: #1976d2;
-  color: #fff;
+  background: var(--russ-accent);
+  color: var(--russ-text-inverse);
   border: none;
   border-radius: 7px;
   padding: 7px 18px;
@@ -465,13 +465,13 @@ function submitEditComment(commentId) {
 }
 
 .edit-save-btn:hover {
-  background: #1565c0;
+  background: var(--russ-accent-dark);
 }
 
 .edit-cancel-btn {
-  background: #f5f5f5;
-  color: #888;
-  border: 1.5px solid #e0e0e0;
+  background: var(--russ-bg-disabled);
+  color: var(--russ-text-tertiary);
+  border: 1.5px solid var(--russ-border);
   border-radius: 7px;
   padding: 7px 18px;
   font-size: 15px;
@@ -485,7 +485,7 @@ function submitEditComment(commentId) {
 
 .edit-cancel-btn:hover {
   background: #fbe9e7;
-  color: #d32f2f;
+  color: var(--russ-error);
 }
 
 .add-comment-form {
@@ -493,10 +493,10 @@ function submitEditComment(commentId) {
   align-items: flex-end;
   gap: 12px;
   margin-top: 22px;
-  background: #f7fafd;
+  background: var(--russ-bg-blue-light);
   border-radius: 10px;
   padding: 16px 14px 14px 14px;
-  box-shadow: 0 1px 6px rgba(33, 150, 243, 0.04);
+  box-shadow: 0 1px 6px var(--russ-shadow-accent-light);
   flex-wrap: wrap;
 }
 
@@ -506,7 +506,7 @@ function submitEditComment(commentId) {
 .add-comment-form input[placeholder] {
   font-size: 16px;
   border-radius: 7px;
-  border: 1.5px solid #b3c6e0;
+  border: 1.5px solid var(--russ-info-border);
   padding: 9px 14px;
   min-width: 220px;
   background: #fff;
@@ -516,8 +516,8 @@ function submitEditComment(commentId) {
 .add-comment-form input[type="file"] {
   font-size: 14px;
   border-radius: 7px;
-  border: 1.5px solid #e0e0e0;
-  background: #f5f7fa;
+  border: 1.5px solid var(--russ-border);
+  background: var(--russ-bg-secondary);
   padding: 7px 8px;
   flex: 1 1 120px;
   margin-left: 0;
@@ -528,26 +528,26 @@ function submitEditComment(commentId) {
   min-height: 48px;
   font-size: 20px;
   border-radius: 7px;
-  background: #1976d2;
-  color: #fff;
+  background: var(--russ-accent);
+  color: var(--russ-text-inverse);
   border: none;
   transition: background 0.15s;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 4px rgba(33, 150, 243, 0.06);
+  box-shadow: 0 1px 4px var(--russ-shadow-accent-light);
 }
 
 .add-comment-form button:hover {
-  background: #1565c0;
+  background: var(--russ-accent-dark);
 }
 
 .add-comment-form input[type="file"]::-webkit-file-upload-button {
   border-radius: 6px;
-  background: #e3f2fd;
-  border: 1px solid #b3c6e0;
-  color: #1976d2;
+  background: var(--russ-info-light);
+  border: 1px solid var(--russ-info-border);
+  color: var(--russ-accent);
   padding: 5px 10px;
   font-size: 14px;
   cursor: pointer;
@@ -569,8 +569,8 @@ function submitEditComment(commentId) {
 .spinner {
   width: 28px;
   height: 28px;
-  border: 3px solid #e3eaf5;
-  border-top: 3px solid #1976d2;
+  border: 3px solid var(--russ-border-light);
+  border-top: 3px solid var(--russ-accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -587,7 +587,7 @@ function submitEditComment(commentId) {
 
 .spinner-text {
   font-size: 16px;
-  color: #1976d2;
+  color: var(--russ-accent);
   font-weight: 500;
   letter-spacing: 0.2px;
 }
@@ -633,14 +633,14 @@ function submitEditComment(commentId) {
 .task-files-block {
   margin: 24px 0;
   padding: 20px;
-  background: #f8f9fa;
+  background: var(--russ-bg-secondary);
   border-radius: 12px;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--russ-border);
 }
 
 .task-files-block h3 {
   margin: 0 0 16px 0;
-  color: #495057;
+  color: var(--russ-text-secondary);
   font-size: 18px;
   font-weight: 600;
 }
@@ -657,14 +657,14 @@ function submitEditComment(commentId) {
   justify-content: space-between;
   padding: 12px 16px;
   background: #fff;
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--russ-border);
   border-radius: 8px;
   transition: all 0.2s ease;
 }
 
 .task-file-item:hover {
-  border-color: #adb5bd;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--russ-border-dark);
+  box-shadow: 0 2px 8px var(--russ-shadow-color);
 }
 
 .task-file-info {
@@ -675,26 +675,26 @@ function submitEditComment(commentId) {
 }
 
 .task-file-info i {
-  color: #6c757d;
+  color: var(--russ-text-tertiary);
   font-size: 16px;
 }
 
 .task-file-name {
-  color: #495057;
+  color: var(--russ-text-secondary);
   font-weight: 500;
   word-break: break-all;
 }
 
 .task-file-size {
-  color: #6c757d;
+  color: var(--russ-text-tertiary);
   font-size: 13px;
   white-space: nowrap;
 }
 
 .task-file-download {
-  color: #1976d2;
-  background: #e3f2fd;
-  border: 1px solid #bbdefb;
+  color: var(--russ-accent);
+  background: var(--russ-info-light);
+  border: 1px solid var(--russ-info-border);
   border-radius: 6px;
   padding: 8px;
   text-decoration: none;
@@ -708,8 +708,8 @@ function submitEditComment(commentId) {
 
 .task-file-download:hover {
   background: #bbdefb;
-  border-color: #90caf9;
-  color: #1565c0;
+  border-color: var(--russ-info-border);
+  color: var(--russ-accent-dark);
 }
 
 .task-file-download i {

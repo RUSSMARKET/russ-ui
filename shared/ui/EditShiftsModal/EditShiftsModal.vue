@@ -399,7 +399,7 @@ const handleIntervalSelect = (value: number | string | undefined) => {
 <style scoped>
 .modal-section-modern.filters-section {
   padding: 20px;
-  background: #f8fafc;
+  background: var(--russ-bg-secondary);
   border-radius: 12px;
   margin-bottom: 20px;
 }
@@ -422,7 +422,7 @@ const handleIntervalSelect = (value: number | string | undefined) => {
   flex-wrap: nowrap;
   width: 100%;
   padding: 10px 0;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--russ-border);
 }
 
 @media (max-width: 768px) {
@@ -442,7 +442,7 @@ const handleIntervalSelect = (value: number | string | undefined) => {
     order: 2;
     padding-left: 0;
     border-left: none;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--russ-border);
     padding-top: 12px;
     justify-content: center;
   }
@@ -471,7 +471,7 @@ const handleIntervalSelect = (value: number | string | undefined) => {
   gap: 6px;
   font-size: 12px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--russ-text-muted);
   white-space: nowrap;
   flex-shrink: 0;
   text-transform: uppercase;
@@ -479,7 +479,7 @@ const handleIntervalSelect = (value: number | string | undefined) => {
 }
 
 .shift-settings-label i {
-  color: #213e89;
+  color: var(--russ-primary);
   font-size: 13px;
 }
 
@@ -502,13 +502,13 @@ const handleIntervalSelect = (value: number | string | undefined) => {
   padding: 8px 14px;
   font-size: 13px;
   border: none;
-  background: #f8fafc;
+  background: var(--russ-bg-secondary);
   border-radius: 6px;
   transition: all 0.2s;
 }
 
 .interval-select-group :deep(.base-select-combo:hover) {
-  background: #f1f5f9;
+  background: var(--russ-bg-tertiary);
 }
 
 .interval-select-group :deep(.base-select-combo:focus) {
@@ -530,15 +530,15 @@ const handleIntervalSelect = (value: number | string | undefined) => {
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: #64748b;
+  color: var(--russ-text-muted);
   cursor: pointer;
   transition: all 0.2s;
   flex-shrink: 0;
 }
 
 .interval-settings-btn:hover {
-  background: #f1f5f9;
-  color: #213e89;
+  background: var(--russ-bg-tertiary);
+  color: var(--russ-primary);
 }
 
 .interval-settings-btn i {
@@ -551,7 +551,7 @@ const handleIntervalSelect = (value: number | string | undefined) => {
   gap: 6px;
   flex-shrink: 0;
   padding-left: 16px;
-  border-left: 1px solid #e5e7eb;
+  border-left: 1px solid var(--russ-border);
 }
 
 .pagination-compact .pagination-btn {
@@ -560,13 +560,13 @@ const handleIntervalSelect = (value: number | string | undefined) => {
   padding: 0;
   border: none;
   background: transparent;
-  color: #64748b;
+  color: var(--russ-text-muted);
   border-radius: 6px;
 }
 
 .pagination-compact .pagination-btn:hover:not(:disabled) {
-  background: #f1f5f9;
-  color: #213e89;
+  background: var(--russ-bg-tertiary);
+  color: var(--russ-primary);
 }
 
 .pagination-compact .pagination-info {
@@ -574,17 +574,17 @@ const handleIntervalSelect = (value: number | string | undefined) => {
   padding: 0 8px;
   min-width: 45px;
   text-align: center;
-  color: #64748b;
+  color: var(--russ-text-muted);
   font-weight: 500;
 }
 
 .pagination-compact .pagination-select {
   padding: 6px 10px;
   border: none;
-  background: #f8fafc;
+  background: var(--russ-bg-secondary);
   border-radius: 6px;
   font-size: 12px;
-  color: #1e293b;
+  color: var(--russ-text-primary);
   cursor: pointer;
   height: 32px;
   min-height: 32px;
@@ -592,7 +592,7 @@ const handleIntervalSelect = (value: number | string | undefined) => {
 }
 
 .pagination-compact .pagination-select:hover {
-  background: #f1f5f9;
+  background: var(--russ-bg-tertiary);
 }
 
 .pagination-compact .pagination-select:focus {
@@ -616,17 +616,17 @@ const handleIntervalSelect = (value: number | string | undefined) => {
 
 .pagination-info {
   font-size: 12px;
-  color: #64748b;
+  color: var(--russ-text-muted);
   font-weight: 500;
 }
 
 .pagination-select {
   padding: 6px 10px;
   border: none;
-  background: #f8fafc;
+  background: var(--russ-bg-secondary);
   border-radius: 6px;
   font-size: 12px;
-  color: #1e293b;
+  color: var(--russ-text-primary);
   cursor: pointer;
   height: 32px;
   min-height: 32px;
@@ -639,7 +639,7 @@ const handleIntervalSelect = (value: number | string | undefined) => {
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(37, 99, 235, 0.05),
     0 1.5px 4px rgba(0, 0, 0, 0.03);
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--russ-border);
   margin-top: 16px;
   position: relative;
   padding-bottom: 12px;
@@ -667,8 +667,8 @@ const handleIntervalSelect = (value: number | string | undefined) => {
 .staff-table-edit th,
 .staff-table-edit td {
   text-align: center;
-  border-bottom: 1px solid #f1f5f9;
-  border-right: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--russ-bg-tertiary);
+  border-right: 1px solid var(--russ-bg-tertiary);
   height: 45px;
   padding: 4px;
 }
@@ -679,9 +679,9 @@ const handleIntervalSelect = (value: number | string | undefined) => {
 }
 
 .staff-table-edit th {
-  background: #f3f6fa;
+  background: var(--russ-bg-blue-light);
   font-weight: 700;
-  color: #213e89;
+  color: var(--russ-primary);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -689,31 +689,31 @@ const handleIntervalSelect = (value: number | string | undefined) => {
 }
 
 .weekend-header-edit {
-  background: #ebebeb !important;
-  color: #919191 !important;
+  background: var(--russ-bg-disabled) !important;
+  color: var(--russ-text-quaternary) !important;
 }
 
 .weekend-header-edit .date-number-edit {
-  color: #919191 !important;
+  color: var(--russ-text-quaternary) !important;
   font-weight: 700;
 }
 
 .weekend-header-edit .weekday-name-edit {
-  color: #bdbdbd !important;
+  color: var(--russ-text-quaternary) !important;
   font-weight: 600;
 }
 
 .date-number-edit {
   font-size: 12px;
   font-weight: 700;
-  color: #213e89;
+  color: var(--russ-primary);
   margin-bottom: 1px;
 }
 
 .weekday-name-edit {
   font-size: 9px;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
@@ -723,17 +723,17 @@ const handleIntervalSelect = (value: number | string | undefined) => {
 }
 
 .staff-table-edit tr:nth-child(even) td {
-  background: #f9fafb;
+  background: var(--russ-bg-quaternary);
 }
 
 .staff-table-edit tr:hover td {
-  background: #e3f2fd;
+  background: var(--russ-info-light);
 }
 
 .sticky-col-edit.left-col-edit {
   position: sticky;
   left: 0;
-  background: #f3f6fa;
+  background: var(--russ-bg-blue-light);
   z-index: 100;
 }
 
@@ -749,7 +749,7 @@ const handleIntervalSelect = (value: number | string | undefined) => {
   top: 0;
   left: 0;
   z-index: 120;
-  background: #f3f6fa;
+  background: var(--russ-bg-blue-light);
 }
 
 .wide-col-edit {
@@ -757,7 +757,7 @@ const handleIntervalSelect = (value: number | string | undefined) => {
   max-width: 140px;
   width: 200px;
   font-size: 12px;
-  background: #f3f6fa;
+  background: var(--russ-bg-blue-light);
   font-weight: 600;
   z-index: 5;
 }
@@ -765,12 +765,12 @@ const handleIntervalSelect = (value: number | string | undefined) => {
 .staff-name-edit {
   font-weight: 600;
   padding: 5px;
-  color: #1e293b;
+  color: var(--russ-text-primary);
 }
 
 .staff-code-edit {
   font-size: 10px;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   font-weight: 500;
 }
 
@@ -802,7 +802,7 @@ const handleIntervalSelect = (value: number | string | undefined) => {
 .checkbox-custom {
   width: 20px;
   height: 20px;
-  border: 2px solid #d1d5db;
+  border: 2px solid var(--russ-border-dark);
   border-radius: 4px;
   background: white;
   transition: all 0.2s ease;
@@ -811,8 +811,8 @@ const handleIntervalSelect = (value: number | string | undefined) => {
 }
 
 .shift-checkbox:checked ~ .checkbox-custom {
-  background: #213e89;
-  border-color: #213e89;
+  background: var(--russ-primary);
+  border-color: var(--russ-primary);
 }
 
 .shift-checkbox:checked ~ .checkbox-custom::after {
@@ -828,25 +828,25 @@ const handleIntervalSelect = (value: number | string | undefined) => {
 }
 
 .shift-checkbox-wrapper:hover .checkbox-custom {
-  border-color: #213e89;
+  border-color: var(--russ-primary);
   box-shadow: 0 0 0 2px rgba(33, 62, 137, 0.1);
 }
 
 .shift-time-display {
   font-size: 9px;
-  color: #213e89;
+  color: var(--russ-primary);
   font-weight: 600;
   white-space: nowrap;
   margin-top: 2px;
 }
 
 .shift-time-display.pending {
-  color: #1d4ed8;
+  color: var(--russ-accent-dark);
   font-weight: 700;
-  background: #dbeafe;
+  background: var(--russ-info-light);
   padding: 2px 4px;
   border-radius: 4px;
-  border: 1px solid #93c5fd;
+  border: 1px solid var(--russ-info-border);
 }
 
 .shift-timezone-badge {
@@ -854,19 +854,19 @@ const handleIntervalSelect = (value: number | string | undefined) => {
   top: 2px;
   left: 2px;
   font-size: 7px;
-  color: #64748b;
+  color: var(--russ-text-muted);
   font-weight: 600;
-  background: #f1f5f9;
+  background: var(--russ-bg-tertiary);
   padding: 1px 3px;
   border-radius: 3px;
   line-height: 1;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--russ-border-light);
   z-index: 5;
 }
 
 .shift-checkbox-cell.has-pending {
-  background: #eff6ff !important;
-  border: 1px solid #bfdbfe !important;
+  background: var(--russ-info-light) !important;
+  border: 1px solid var(--russ-info-border) !important;
   position: relative;
 }
 
@@ -877,7 +877,7 @@ const handleIntervalSelect = (value: number | string | undefined) => {
   right: 2px;
   width: 6px;
   height: 6px;
-  background: #3b82f6;
+  background: var(--russ-accent-light);
   border-radius: 50%;
   animation: pulse-pending 2s ease-in-out infinite;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
@@ -900,8 +900,8 @@ const handleIntervalSelect = (value: number | string | undefined) => {
 }
 
 .checkbox-custom.pending-custom {
-  border-color: #3b82f6 !important;
-  background: #dbeafe !important;
+  border-color: var(--russ-accent-light) !important;
+  background: var(--russ-info-light) !important;
   border-width: 2.5px;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2), 0 0 8px rgba(59, 130, 246, 0.3);
   animation: checkbox-pulse 2s ease-in-out infinite;
@@ -920,14 +920,14 @@ const handleIntervalSelect = (value: number | string | undefined) => {
 }
 
 .shift-checkbox.pending-checkbox:checked ~ .checkbox-custom.pending-custom {
-  background: #3b82f6 !important;
-  border-color: #2563eb !important;
+  background: var(--russ-accent-light) !important;
+  border-color: var(--russ-accent) !important;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3),
     0 0 10px rgba(59, 130, 246, 0.4);
 }
 
 .shift-checkbox-wrapper.pending-shift:hover .checkbox-custom.pending-custom {
-  border-color: #2563eb !important;
+  border-color: var(--russ-accent) !important;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3),
     0 0 12px rgba(59, 130, 246, 0.5);
 }
@@ -939,14 +939,14 @@ const handleIntervalSelect = (value: number | string | undefined) => {
 }
 
 .shift-checkbox-wrapper.disabled-past-date .checkbox-custom {
-  background: #f3f4f6;
-  border-color: #d1d5db;
+  background: var(--russ-bg-disabled);
+  border-color: var(--russ-border-dark);
   cursor: not-allowed;
 }
 
 .shift-checkbox:disabled ~ .checkbox-custom {
-  background: #f3f4f6;
-  border-color: #d1d5db;
+  background: var(--russ-bg-disabled);
+  border-color: var(--russ-border-dark);
   cursor: not-allowed;
 }
 
@@ -975,19 +975,19 @@ const handleIntervalSelect = (value: number | string | undefined) => {
   gap: 10px;
   padding: 10px 14px;
   border-radius: 10px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--russ-border-dark);
   background: #fff;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   font-size: 13px;
   font-weight: 600;
-  color: #213e89;
+  color: var(--russ-primary);
 }
 
 .spinner {
   width: 20px;
   height: 20px;
-  border: 2px solid #e2e8f0;
-  border-top-color: #213e89;
+  border: 2px solid var(--russ-border-light);
+  border-top-color: var(--russ-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -1005,13 +1005,13 @@ const handleIntervalSelect = (value: number | string | undefined) => {
 .empty-shifts-message {
   padding: 40px;
   text-align: center;
-  color: #64748b;
+  color: var(--russ-text-muted);
   font-size: 14px;
 }
 
 .btn-primary {
   padding: 10px 24px;
-  background: #213e89;
+  background: var(--russ-primary);
   color: white;
   border: none;
   border-radius: 8px;
@@ -1022,7 +1022,7 @@ const handleIntervalSelect = (value: number | string | undefined) => {
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #1e3a72;
+  background: var(--russ-primary-dark);
 }
 
 .btn-primary:disabled {
@@ -1033,8 +1033,8 @@ const handleIntervalSelect = (value: number | string | undefined) => {
 .btn-cancel-modern {
   padding: 10px 24px;
   background: white;
-  color: #64748b;
-  border: 1px solid #cbd5e1;
+  color: var(--russ-text-muted);
+  border: 1px solid var(--russ-border-light);
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
@@ -1043,7 +1043,7 @@ const handleIntervalSelect = (value: number | string | undefined) => {
 }
 
 .btn-cancel-modern:hover {
-  background: #f8fafc;
-  border-color: #94a3b8;
+  background: var(--russ-bg-secondary);
+  border-color: var(--russ-border-dark);
 }
 </style>

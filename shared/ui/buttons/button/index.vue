@@ -93,24 +93,24 @@ const handleClick = (event) => {
   border: 1px solid transparent;
   border-radius: 0.5rem;
   transition: all 0.2s ease;
-  background-color: #213e89;
-  color: #ffffff;
+  background-color: var(--russ-primary);
+  color: var(--russ-text-inverse);
   min-height: 2.5rem;
 }
 
 .custom-button:hover:not(:disabled):not(.custom-button-disabled) {
-  background-color: #1b3170;
-  border-color: #1b3170;
+  background-color: var(--russ-primary-hover);
+  border-color: var(--russ-primary-hover);
 }
 
 .custom-button:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(33, 62, 137, 0.2);
+  box-shadow: 0 0 0 2px var(--russ-focus-ring);
 }
 
 .custom-button:active:not(:disabled):not(.custom-button-disabled) {
-  background-color: #162954;
-  border-color: #162954;
+  background-color: var(--russ-primary-active);
+  border-color: var(--russ-primary-active);
 }
 
 .custom-button:disabled,
@@ -148,46 +148,46 @@ const handleClick = (event) => {
 
 /* Варианты кнопок */
 .custom-button.custom-button-secondary {
-  background-color: #ffffff;
-  color: #213e89;
-  border-color: #213e89;
+  background-color: var(--russ-bg);
+  color: var(--russ-primary);
+  border-color: var(--russ-primary);
 }
 
 .custom-button.custom-button-secondary:hover:not(:disabled):not(.custom-button-disabled) {
-  background-color: #213e89;
-  color: #ffffff;
+  background-color: var(--russ-primary);
+  color: var(--russ-text-inverse);
 }
 
 .custom-button.custom-button-success {
-  background-color: #28a745;
-  color: #ffffff;
-  border-color: #28a745;
+  background-color: var(--russ-success);
+  color: var(--russ-text-inverse);
+  border-color: var(--russ-success);
 }
 
 .custom-button.custom-button-success:hover:not(:disabled):not(.custom-button-disabled) {
-  background-color: #218838;
-  border-color: #218838;
+  background-color: var(--russ-success-dark);
+  border-color: var(--russ-success-dark);
 }
 
 .custom-button.custom-button-danger {
-  background-color: #dc3545;
-  color: #ffffff;
-  border-color: #dc3545;
+  background-color: var(--russ-error);
+  color: var(--russ-text-inverse);
+  border-color: var(--russ-error);
 }
 
 .custom-button.custom-button-danger:hover:not(:disabled):not(.custom-button-disabled) {
-  background-color: #c82333;
-  border-color: #c82333;
+  background-color: var(--russ-error-dark);
+  border-color: var(--russ-error-dark);
 }
 
 .custom-button.custom-button-text {
   background-color: transparent;
-  color: #213e89;
+  color: var(--russ-primary);
   border-color: transparent;
   padding: 0.5rem;
 }
 
 .custom-button.custom-button-text:hover:not(:disabled):not(.custom-button-disabled) {
-  background-color: rgba(33, 62, 137, 0.1);
+  background-color: var(--russ-bg-secondary);
 }
 </style>

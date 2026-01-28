@@ -521,8 +521,8 @@ onMounted(() => {
 
 .modal-title i {
     font-size: 24px;
-    color: #213e89;
-    background: #e0e7ff;
+    color: var(--russ-primary);
+    background: var(--russ-bg-blue-lighter);
     padding: 8px;
     border-radius: 8px;
 }
@@ -562,15 +562,15 @@ onMounted(() => {
     font-size: 13px;
     height: 36px;
     min-height: 36px;
-    border: 1.5px solid #e5e7eb;
+    border: 1.5px solid var(--russ-border);
     border-radius: 10px;
-    background: #f9fafb;
-    box-shadow: 0 1px 4px rgba(37, 99, 235, 0.04);
-    color: #1e293b;
+    background: var(--russ-bg-quaternary);
+    box-shadow: 0 1px 4px var(--russ-shadow-accent-light);
+    color: var(--russ-text-primary);
 }
 
 .filters-section :deep(.base-select-combo:focus) {
-    border-color: #6366f1;
+    border-color: var(--russ-secondary);
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
     background: #fff;
 }
@@ -610,7 +610,7 @@ onMounted(() => {
 }
 
 .btn-export {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    background: linear-gradient(135deg, var(--russ-success) 0%, var(--russ-success-dark) 100%);
     color: white;
     border: none;
     border-radius: 8px;
@@ -626,13 +626,13 @@ onMounted(() => {
 }
 
 .btn-export:hover:not(:disabled) {
-    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    background: linear-gradient(135deg, var(--russ-success-dark) 0%, var(--russ-success-dark) 100%);
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .btn-export:disabled {
-    background: #9ca3af;
-    color: #6b7280;
+    background: var(--russ-text-quaternary);
+    color: var(--russ-text-tertiary);
     cursor: not-allowed;
     opacity: 0.7;
     transform: none;
@@ -646,9 +646,9 @@ onMounted(() => {
 }
 
 .btn-close {
-    background: #f3f4f6;
-    color: #374151;
-    border: 1px solid #d1d5db;
+    background: var(--russ-bg-disabled);
+    color: var(--russ-text-secondary);
+    border: 1px solid var(--russ-border-dark);
     border-radius: 8px;
     padding: 12px 24px;
     font-size: 14px;
@@ -658,8 +658,8 @@ onMounted(() => {
 }
 
 .btn-close:hover {
-    background: #e5e7eb;
-    color: #213e89;
-    border-color: #213e89;
+    background: var(--russ-border);
+    color: var(--russ-primary);
+    border-color: var(--russ-primary);
 }
 </style>

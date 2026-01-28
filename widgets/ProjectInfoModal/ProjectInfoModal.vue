@@ -191,7 +191,7 @@ const handleSubmit = async () => {
 .project-info-block-form .form-row label {
   display: block;
   font-size: clamp(14px, calc(14px + (16 - 14) * ((100vw - 320px) / (1920 - 320))), 16px);
-  color: #374151;
+  color: var(--russ-text-secondary);
   font-weight: 500;
   margin-bottom: 2px;
 }
@@ -202,24 +202,24 @@ const handleSubmit = async () => {
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   font-size: clamp(14px, calc(14px + (16 - 14) * ((100vw - 320px) / (1920 - 320))), 16px);
-  color: #111827;
+  color: var(--russ-text-primary);
   transition: all 0.2s ease;
-  background: #ffffff;
+  background: var(--russ-bg);
   box-sizing: border-box;
 }
 
 .project-info-block-form .form-row input:focus {
   outline: none;
-  border-color: #4f46e5;
+  border-color: var(--russ-secondary-dark);
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
 .project-info-block-form .form-row input:hover {
-  border-color: #9ca3af;
+  border-color: var(--russ-text-quaternary);
 }
 
 .project-info-block-form .form-row input::placeholder {
-  color: #9ca3af;
+  color: var(--russ-text-quaternary);
 }
 
 .btn-cancel,
@@ -239,31 +239,31 @@ const handleSubmit = async () => {
 }
 
 .btn-cancel {
-  background: #f3f4f6;
-  color: #4b5563;
-  border: 1px solid #e5e7eb;
+  background: var(--russ-bg-disabled);
+  color: var(--russ-text-secondary);
+  border: 1px solid var(--russ-border);
 }
 
 .btn-cancel:hover:not([disabled]) {
-  background: #e5e7eb;
-  border-color: #d1d5db;
+  background: var(--russ-border);
+  border-color: var(--russ-border-dark);
 }
 
 .btn-submit {
-  background: #4f46e5;
+  background: var(--russ-secondary-dark);
   color: white;
 }
 
 .btn-submit:hover:not([disabled]) {
-  background: #1D4CD2;
+  background: var(--russ-accent-dark);
 }
 
 .btn-cancel:disabled,
 .btn-submit:disabled {
-  background: #d1d5db;
-  color: #9ca3af;
+  background: var(--russ-border-dark);
+  color: var(--russ-text-quaternary);
   cursor: not-allowed;
-  border-color: #d1d5db;
+  border-color: var(--russ-border-dark);
 }
 
 .form-actions button .loader {
@@ -287,10 +287,10 @@ const handleSubmit = async () => {
 .backend-error {
   margin-top: 16px;
   padding: 12px 16px;
-  background: #fee2e2;
-  border: 1px solid #fecaca;
+  background: var(--russ-error-light);
+  border: 1px solid var(--russ-error-light);
   border-radius: 8px;
-  color: #991b1b;
+  color: var(--russ-error-dark);
   font-size: 14px;
   line-height: 1.5;
 }

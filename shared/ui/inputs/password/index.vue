@@ -154,7 +154,7 @@ const togglePassword = () => {
   width: 100%;
   padding: 0.75rem;
   padding-right: 2.5rem;
-  border: 1px solid #ced4da;
+  border: 1px solid var(--russ-input-border);
   border-radius: 0.5rem;
   font-size: clamp(
     14px,
@@ -163,8 +163,8 @@ const togglePassword = () => {
   );
   font-family: 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  background: #ffffff;
-  color: #374151;
+  background: var(--russ-input-bg);
+  color: var(--russ-input-text);
 }
 
 .password-input {
@@ -173,20 +173,20 @@ const togglePassword = () => {
 
 .custom-input:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  border-color: var(--russ-input-border-focus);
+  box-shadow: 0 0 0 2px var(--russ-focus-ring);
 }
 
 .custom-input:disabled,
 .custom-input[readonly] {
-  background-color: #f3f4f6;
+  background-color: var(--russ-input-bg-disabled);
   cursor: not-allowed;
   opacity: 0.6;
 }
 
 .input-error {
-  border: 1px solid #D60000 !important;
-  box-shadow: 0 0 0 2px #ffd6d6;
+  border: 1px solid var(--russ-input-border-error) !important;
+  box-shadow: 0 0 0 2px var(--russ-input-error-bg);
 }
 
 .password-toggle-btn {
@@ -201,18 +201,18 @@ const togglePassword = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
+  color: var(--russ-input-placeholder);
   transition: color 0.2s ease;
   z-index: 1;
 }
 
 .password-toggle-btn:hover {
-  color: #374151;
+  color: var(--russ-input-text);
 }
 
 .password-toggle-btn:focus {
   outline: none;
-  color: #3b82f6;
+  color: var(--russ-input-border-focus);
 }
 
 .password-toggle-btn:active {
@@ -234,10 +234,10 @@ const togglePassword = () => {
     calc(12px + (14 - 12) * ((100vw - 320px) / (1920 - 320))),
     14px
   );
-  color: #6b7280;
+  color: var(--russ-input-placeholder);
   pointer-events: none;
   transition: all 0.2s ease;
-  background: #ffffff;
+  background: var(--russ-input-bg);
   padding: 0 0.25rem;
 }
 
@@ -250,18 +250,18 @@ const togglePassword = () => {
     calc(10px + (12 - 10) * ((100vw - 320px) / (1920 - 320))),
     12px
   );
-  color: #3b82f6;
+  color: var(--russ-input-border-focus);
   border-radius: 5px 5px 0 0;
 }
 
 .custom-input:disabled ~ .input-label,
 .custom-input[readonly] ~ .input-label {
-  background: #f3f4f6;
+  background: var(--russ-input-bg-disabled);
   opacity: 0.6;
 }
 
 .text-red-500 {
-  color: #ef4444;
+  color: var(--russ-input-error);
   font-size: clamp(
     10px,
     calc(10px + (12 - 10) * ((100vw - 320px) / (1920 - 320))),

@@ -117,12 +117,12 @@ const clearFilter = () => {
 
 .filter-input:focus {
     outline: none;
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+    border-color: var(--russ-secondary-dark);
+    box-shadow: 0 0 0 2px var(--russ-shadow-secondary);
 }
 
 .filter-input::placeholder {
-    color: #9ca3af;
+    color: var(--russ-text-quaternary);
     font-size: 11px;
 }
 

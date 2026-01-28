@@ -51,13 +51,13 @@ const onHide = () => {
 .success-title {
   font-size: 24px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--russ-text-primary);
   margin-bottom: 16px;
 }
 
 .success-description {
   font-size: 16px;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   margin-bottom: 0;
   line-height: 1.5;
 }

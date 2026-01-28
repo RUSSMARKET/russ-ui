@@ -483,7 +483,7 @@ watch(() => props.loading, (isLoading) => {
   font-size: clamp(12px,
       calc(12px + (14 - 12) * ((100vw - 320px) / (1920 - 320))),
       14px);
-  color: #374151;
+  color: var(--russ-input-text);
   font-weight: 500;
   margin-bottom: 2px;
 }
@@ -499,15 +499,15 @@ watch(() => props.loading, (isLoading) => {
 .base-select-combo {
   width: 100%;
   padding: 14px 50px 14px 16px;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--russ-border);
   border-radius: 10px;
   font-size: clamp(13px,
       calc(13px + (15 - 13) * ((100vw - 320px) / (1920 - 320))),
       15px);
-  background: #f9fafb;
+  background: var(--russ-bg-quaternary);
   transition: border-color 0.2s, box-shadow 0.2s;
-  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.04);
-  color: #1e293b;
+  box-shadow: 0 1px 4px var(--russ-shadow-accent-light);
+  color: var(--russ-text-primary);
   box-sizing: border-box;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -516,14 +516,14 @@ watch(() => props.loading, (isLoading) => {
 
 .base-select-combo:focus {
   outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
-  background: #fff;
+  border-color: var(--russ-secondary);
+  box-shadow: 0 0 0 3px var(--russ-shadow-secondary);
+  background: var(--russ-input-bg);
 }
 
 .base-select-combo:disabled {
-  background: #f3f4f6;
-  color: #a1a1aa;
+  background: var(--russ-input-bg-disabled);
+  color: var(--russ-text-quaternary);
   cursor: not-allowed;
 }
 
@@ -555,13 +555,13 @@ watch(() => props.loading, (isLoading) => {
   left: 0;
   right: 0;
   z-index: 999;
-  background: #fff;
-  border: 1.5px solid #e5e7eb;
+  background: var(--russ-input-bg);
+  border: 1.5px solid var(--russ-border);
   border-radius: 10px;
   margin-top: 2px;
   max-height: 265px;
   overflow-y: auto;
-  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.09);
+  box-shadow: 0 4px 16px var(--russ-shadow-accent-light);
   list-style: none;
   padding: 0;
   will-change: transform;
@@ -572,7 +572,7 @@ watch(() => props.loading, (isLoading) => {
   /* Позиционирование управляется через inline стили */
   margin-top: 0;
   margin-bottom: 0;
-  box-shadow: 0 -4px 16px rgba(37, 99, 235, 0.09);
+  box-shadow: 0 -4px 16px var(--russ-shadow-accent-light);
 }
 
 .base-select-dropdown li {
@@ -581,22 +581,22 @@ watch(() => props.loading, (isLoading) => {
   font-size: clamp(12px,
       calc(12px + (14 - 12) * ((100vw - 320px) / (1920 - 320))),
       14px);
-  color: #1e293b;
+  color: var(--russ-text-primary);
   transition: background 0.18s;
 }
 
 .base-select-dropdown li.highlighted,
 .base-select-dropdown li:hover {
-  background: #e7eeff;
+  background: var(--russ-info-light);
 }
 
 .has-error .base-select-combo {
-  border-color: #ef4444;
-  background: #fef2f2;
+  border-color: var(--russ-input-error);
+  background: var(--russ-error-light);
 }
 
 .base-select-error {
-  color: #ef4444;
+  color: var(--russ-input-error);
   font-size: clamp(10px,
       calc(10px + (12 - 10) * ((100vw - 320px) / (1920 - 320))),
       12px);
@@ -605,7 +605,7 @@ watch(() => props.loading, (isLoading) => {
 
 .base-select-dropdown .no-options {
   padding: 12px 16px;
-  color: #a1a1aa;
+  color: var(--russ-text-quaternary);
   font-size: clamp(13px,
       calc(13px + (15 - 13) * ((100vw - 320px) / (1920 - 320))),
       15px);
@@ -616,13 +616,13 @@ watch(() => props.loading, (isLoading) => {
 
 .base-select-combo--readonly {
   position: relative;
-  background: #f9fafb;
-  border: 1.5px solid #e5e7eb;
+  background: var(--russ-bg-quaternary);
+  border: 1.5px solid var(--russ-border);
   border-radius: 10px;
   font-size: clamp(13px,
       calc(13px + (15 - 13) * ((100vw - 320px) / (1920 - 320))),
       15px);
-  color: #2D2D2D;
+  color: var(--russ-text-primary);
   padding: 14px 50px 14px 16px;
   min-height: 20px;
   display: flex;
@@ -647,8 +647,8 @@ watch(() => props.loading, (isLoading) => {
 }
 
 .base-select-combo--readonly:disabled {
-  background: #f3f4f6;
-  color: #a1a1aa;
+  background: var(--russ-input-bg-disabled);
+  color: var(--russ-text-quaternary);
   cursor: not-allowed;
 }
 </style>

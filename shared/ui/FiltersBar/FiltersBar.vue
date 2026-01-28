@@ -220,18 +220,18 @@ onMounted(() => {
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  color: #475569;
+  color: var(--russ-text-secondary);
   font-size: clamp(18px, calc(18px + (24 - 18) * ((100vw - 320px) / (1920 - 320))), 24px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px var(--russ-shadow-color);
   min-width: 48px;
   height: 48px;
 }
 
 .mobile-filters-btn:hover {
-  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
-  border-color: #94a3b8;
-  color: #334155;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, var(--russ-border-light) 0%, var(--russ-border-dark) 100%);
+  border-color: var(--russ-border-dark);
+  color: var(--russ-text-secondary);
+  box-shadow: 0 6px 20px var(--russ-shadow-color);
 }
 
 .filter-indicator {
@@ -240,18 +240,18 @@ onMounted(() => {
   right: 8px;
   width: 8px;
   height: 8px;
-  background: #ef4444;
+  background: var(--russ-error);
   border-radius: 50%;
-  border: 2px solid white;
+  border: 2px solid var(--russ-text-inverse);
 }
 
 .filters-container {
   display: flex;
   align-items: flex-end;
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  border: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, var(--russ-bg) 0%, var(--russ-bg-secondary) 100%);
+  border: 1px solid var(--russ-border-light);
   border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(33, 62, 137, 0.08);
+  box-shadow: 0 4px 20px var(--russ-shadow-primary-light);
   padding: 15px 20px;
   gap: 16px;
   flex-wrap: wrap;
@@ -334,7 +334,7 @@ onMounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--russ-overlay);
   z-index: 1000;
   display: flex;
   align-items: flex-end;

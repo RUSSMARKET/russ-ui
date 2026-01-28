@@ -236,7 +236,7 @@ onUnmounted(() => {
 .base-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--russ-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -261,12 +261,12 @@ onUnmounted(() => {
 }
 
 .base-modal {
-  background: #fff;
+  background: var(--russ-bg);
   border-radius: 25px;
   max-width: 1200px;
   width: min(1200px, calc(100vw - 40px));
   max-height: calc(min(90vh, 100dvh) - 40px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px var(--russ-shadow-color);
   padding: 0;
   position: relative;
   display: flex;

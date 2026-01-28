@@ -138,19 +138,19 @@ const handleSearchEnter = () => {
   position: relative;
   display: flex;
   align-items: center;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--russ-border);
   border-radius: 10px;
-  background: #f9fafb;
+  background: var(--russ-bg-quaternary);
   transition: border-color 0.2s, box-shadow 0.2s;
   overflow: hidden;
-  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.04);
+  box-shadow: 0 1px 4px var(--russ-shadow-accent-light);
   height: 36px;
 }
 
 .filter-search-wrapper:focus-within {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
-  background: #fff;
+  border-color: var(--russ-secondary);
+  box-shadow: 0 0 0 3px var(--russ-shadow-secondary);
+  background: var(--russ-input-bg);
 }
 
 .search-input-modern {
@@ -160,7 +160,7 @@ const handleSearchEnter = () => {
   border-radius: 0;
   font-size: 15px;
   background: transparent;
-  color: #1e293b;
+  color: var(--russ-text-primary);
   transition: all 0.2s ease;
   height: 100%;
   box-sizing: border-box;
@@ -172,7 +172,7 @@ const handleSearchEnter = () => {
 }
 
 .search-input-modern::placeholder {
-  color: #9ca3af;
+  color: var(--russ-text-quaternary);
 }
 
 .search-submit-btn {
@@ -182,7 +182,7 @@ const handleSearchEnter = () => {
   padding: 0 12px;
   border: none;
   background: transparent;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   cursor: pointer;
   transition: color 0.2s;
   height: 100%;
@@ -190,7 +190,7 @@ const handleSearchEnter = () => {
 }
 
 .search-submit-btn:hover {
-  color: #6366f1;
+  color: var(--russ-secondary);
 }
 
 .filter-item-wrapper :deep(.base-select-wrapper) {
@@ -202,17 +202,17 @@ const handleSearchEnter = () => {
   font-size: 15px;
   height: 36px;
   min-height: 36px;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--russ-border);
   border-radius: 10px;
-  background: #f9fafb;
-  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.04);
-  color: #1e293b;
+  background: var(--russ-bg-quaternary);
+  box-shadow: 0 1px 4px var(--russ-shadow-accent-light);
+  color: var(--russ-text-primary);
 }
 
 .filter-item-wrapper :deep(.base-select-combo:focus) {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
-  background: #fff;
+  border-color: var(--russ-secondary);
+  box-shadow: 0 0 0 3px var(--russ-shadow-secondary);
+  background: var(--russ-input-bg);
 }
 
 .filter-item-wrapper :deep(.base-select-combo--readonly) {

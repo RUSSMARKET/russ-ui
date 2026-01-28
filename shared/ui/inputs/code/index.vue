@@ -72,7 +72,7 @@ watch(() => props.value, (newValue) => {
 .custom-input {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #ced4da;
+  border: 1px solid var(--russ-input-border);
   border-radius: 0.5rem;
   font-size: clamp(
     14px,
@@ -81,19 +81,19 @@ watch(() => props.value, (newValue) => {
   );
   font-family: 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  background: #ffffff;
-  color: #374151;
+  background: var(--russ-input-bg);
+  color: var(--russ-input-text);
 }
 
 .custom-input:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  border-color: var(--russ-input-border-focus);
+  box-shadow: 0 0 0 2px var(--russ-focus-ring);
 }
 
 .input-error {
-  border: 1px solid #ef4444 !important;
-  box-shadow: 0 0 0 2px #ffd6d6;
+  border: 1px solid var(--russ-input-error) !important;
+  box-shadow: 0 0 0 2px var(--russ-input-error-bg);
 }
 
 .input-label {
@@ -105,10 +105,10 @@ watch(() => props.value, (newValue) => {
     calc(12px + (14 - 12) * ((100vw - 320px) / (1920 - 320))),
     14px
   );
-  color: #6b7280;
+  color: var(--russ-input-placeholder);
   pointer-events: none;
   transition: all 0.2s ease;
-  background: #ffffff;
+  background: var(--russ-input-bg);
   padding: 0 0.25rem;
 }
 
@@ -121,18 +121,18 @@ watch(() => props.value, (newValue) => {
     calc(10px + (12 - 10) * ((100vw - 320px) / (1920 - 320))),
     12px
   );
-  color: #3b82f6;
+  color: var(--russ-input-border-focus);
   border-radius: 5px 5px 0 0;
 }
 
 .custom-input:disabled ~ .input-label,
 .custom-input[readonly] ~ .input-label {
-  background: #f3f4f6;
+  background: var(--russ-input-bg-disabled);
   opacity: 0.6;
 }
 
 .error-text {
-  color: #ef4444;
+  color: var(--russ-input-error);
   font-size: clamp(
     10px,
     calc(10px + (12 - 10) * ((100vw - 320px) / (1920 - 320))),
