@@ -627,7 +627,7 @@ onMounted(() => {
 
 .btn-export:hover:not(:disabled) {
     background: linear-gradient(135deg, var(--russ-success-dark) 0%, var(--russ-success-dark) 100%);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 4px 12px var(--russ-shadow-primary);
 }
 
 .btn-export:disabled {
@@ -640,7 +640,7 @@ onMounted(() => {
 }
 
 .btn-export-loading {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    background: linear-gradient(135deg, var(--russ-primary) 0%, var(--russ-primary-dark) 100%) !important;
     color: white !important;
     cursor: wait !important;
 }
