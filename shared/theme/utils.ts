@@ -114,37 +114,37 @@ export function applyTheme(theme: ThemeConfig): void {
   root.style.setProperty('--russ-primary-gradient-start', colors.primaryGradientStart)
   root.style.setProperty('--russ-primary-gradient-end', colors.primaryGradientEnd)
   
-  // Дополнительные фоновые цвета (fintech — розовый, rusaisklad — серый, иначе зелёный)
+  // Дополнительные фоновые цвета (fintech — синий, rusaisklad — серый, иначе зелёный)
   const isGrayTheme = colors.primary === '#6b7280'
   const isFintechTheme = colors.primaryLight === '#1b3170'
-  const bgTint = isFintechTheme ? '#fce7f3' : isGrayTheme ? '#f3f4f6' : '#e0f2f1'       // pink-100
-  const bgLight = isFintechTheme ? '#fdf2f8' : isGrayTheme ? '#f9fafb' : '#f0fdf4'       // pink-50
-  const bgLighter = isFintechTheme ? '#fbcfe8' : isGrayTheme ? '#e5e7eb' : '#d1fae5'    // pink-200
+  const bgTint = isFintechTheme ? '#e8edff' : isGrayTheme ? '#f3f4f6' : '#e0f2f1'
+  const bgLight = isFintechTheme ? '#f5f7ff' : isGrayTheme ? '#f9fafb' : '#f0fdf4'
+  const bgLighter = isFintechTheme ? '#e0e7ff' : isGrayTheme ? '#e5e7eb' : '#d1fae5'
   root.style.setProperty('--russ-bg-blue-tint', bgTint)
   root.style.setProperty('--russ-bg-blue-light', bgLight)
   root.style.setProperty('--russ-bg-blue-lighter', bgLighter)
-  root.style.setProperty('--russ-bg-gray-light', '#fdf2f8')
+  root.style.setProperty('--russ-bg-gray-light', '#f4f7fb')
 
   // Дополнительные цвета для статусов (для серой темы — серые оттенки)
   root.style.setProperty('--russ-success-text', isGrayTheme ? '#374151' : '#065f46')
   root.style.setProperty('--russ-success-border', isGrayTheme ? '#9ca3af' : '#34d399')
   root.style.setProperty('--russ-warning-text', '#92400e')
   root.style.setProperty('--russ-error-text', '#991b1b')
-  const infoText = isFintechTheme ? '#9d174d' : isGrayTheme ? '#374151' : '#0f766e'     // pink-800
-  const infoBorder = isFintechTheme ? '#f9a8d4' : isGrayTheme ? '#d1d5db' : '#99f6e4'    // pink-300
+  const infoText = isFintechTheme ? '#1e40af' : isGrayTheme ? '#374151' : '#0f766e'
+  const infoBorder = isFintechTheme ? '#bfdbfe' : isGrayTheme ? '#d1d5db' : '#99f6e4'
   root.style.setProperty('--russ-info-text', infoText)
   root.style.setProperty('--russ-info-border', infoBorder)
 
-  // Цвета для акцентов в инпутах (fintech = pink-600, gray = 107, 114, 128)
-  const accentRgb = isFintechTheme ? '219, 39, 119' : isGrayTheme ? '107, 114, 128' : '5, 150, 105'  // pink-600
+  // Цвета для акцентов в инпутах (gray = 107, 114, 128)
+  const accentRgb = isFintechTheme ? '29, 76, 210' : isGrayTheme ? '107, 114, 128' : '5, 150, 105'
   root.style.setProperty('--russ-accent-tint-12', `rgba(${accentRgb}, 0.12)`)
   root.style.setProperty('--russ-accent-tint-18', `rgba(${accentRgb}, 0.18)`)
   root.style.setProperty('--russ-accent-tint-40', `rgba(${accentRgb}, 0.4)`)
 
-  // Цвета для теней с акцентом (fintech = розовые оттенки)
-  const primaryRgb = isFintechTheme ? '157, 23, 77' : isGrayTheme ? '107, 114, 128' : '5, 150, 105'   // pink-800
-  const accentRgbForShadow = isFintechTheme ? '236, 72, 153' : isGrayTheme ? '107, 114, 128' : '14, 184, 166'  // pink-500
-  const secondaryRgb = isFintechTheme ? '244, 114, 182' : isGrayTheme ? '107, 114, 128' : '16, 185, 129'  // pink-400
+  // Цвета для теней с акцентом
+  const primaryRgb = isFintechTheme ? '33, 62, 137' : isGrayTheme ? '107, 114, 128' : '5, 150, 105'
+  const accentRgbForShadow = isFintechTheme ? '37, 99, 235' : isGrayTheme ? '107, 114, 128' : '14, 184, 166'
+  const secondaryRgb = isFintechTheme ? '99, 102, 241' : isGrayTheme ? '107, 114, 128' : '16, 185, 129'
   root.style.setProperty('--russ-shadow-primary', `rgba(${primaryRgb}, 0.1)`)
   root.style.setProperty('--russ-shadow-primary-light', `rgba(${primaryRgb}, 0.06)`)
   root.style.setProperty('--russ-shadow-accent', `rgba(${accentRgbForShadow}, 0.2)`)
