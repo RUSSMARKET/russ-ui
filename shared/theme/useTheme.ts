@@ -8,7 +8,7 @@ import { applyTheme } from './utils'
  */
 export function useTheme(initialTheme?: ThemeName) {
   // Определяем начальную тему: из параметра, localStorage или по умолчанию
-  let startTheme: ThemeName = 'russ-ui-theme'
+  let startTheme: ThemeName = 'fintech'
   if (typeof window !== 'undefined') {
     const savedTheme = localStorage.getItem('russ-ui-theme')
     startTheme = (initialTheme || savedTheme || 'fintech') as ThemeName
