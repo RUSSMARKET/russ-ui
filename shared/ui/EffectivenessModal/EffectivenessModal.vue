@@ -622,7 +622,6 @@ onMounted(() => {
     display: flex;
     align-items: center;
     gap: 8px;
-    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
 }
 
 .btn-export:hover:not(:disabled) {
