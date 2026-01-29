@@ -125,9 +125,9 @@ export function applyTheme(theme: ThemeConfig): void {
   root.style.setProperty('--russ-bg-blue-lighter', bgLighter)
   root.style.setProperty('--russ-bg-gray-light', '#f4f7fb')
 
-  // Дополнительные цвета для статусов
-  root.style.setProperty('--russ-success-text', '#065f46')
-  root.style.setProperty('--russ-success-border', '#34d399')
+  // Дополнительные цвета для статусов (для серой темы — серые оттенки)
+  root.style.setProperty('--russ-success-text', isGrayTheme ? '#374151' : '#065f46')
+  root.style.setProperty('--russ-success-border', isGrayTheme ? '#9ca3af' : '#34d399')
   root.style.setProperty('--russ-warning-text', '#92400e')
   root.style.setProperty('--russ-error-text', '#991b1b')
   const infoText = isFintechTheme ? '#1e40af' : isGrayTheme ? '#374151' : '#0f766e'

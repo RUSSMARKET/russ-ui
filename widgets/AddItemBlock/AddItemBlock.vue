@@ -760,23 +760,23 @@ const updateField = (fieldId?: number) => {
 .supports-all-attached {
   text-align: center;
   padding: 40px 20px;
-  color: #059669;
+  color: var(--russ-primary);
 }
 
 .supports-all-text {
   font-size: 16px;
   font-weight: 600;
-  color: #047857;
+  color: var(--russ-primary-dark);
   margin-bottom: 8px;
 }
 
 .supports-all-subtext {
   font-size: 14px;
-  color: #10b981;
+  color: var(--russ-primary-light);
 }
 
 .product-avatar {
-  background: linear-gradient(135deg, #15bfa2 60%, #1fcfb1 100%) !important;
+  background: linear-gradient(135deg, var(--russ-primary) 60%, var(--russ-primary-light) 100%) !important;
 }
 
 .product-avatar i {
@@ -852,15 +852,15 @@ const updateField = (fieldId?: number) => {
 }
 
 .project-point-modal .supports-all-attached {
-  color: #059669;
+  color: var(--russ-primary);
 }
 
 .project-point-modal .supports-all-text {
-  color: #047857;
+  color: var(--russ-primary-dark);
 }
 
 .project-point-modal .supports-all-subtext {
-  color: #10b981;
+  color: var(--russ-primary-light);
 }
 
 .agent-modal-modern .supports-container {
@@ -919,15 +919,15 @@ const updateField = (fieldId?: number) => {
 }
 
 .agent-modal-modern .supports-all-attached {
-  color: #059669;
+  color: var(--russ-primary);
 }
 
 .agent-modal-modern .supports-all-text {
-  color: #047857;
+  color: var(--russ-primary-dark);
 }
 
 .agent-modal-modern .supports-all-subtext {
-  color: #10b981;
+  color: var(--russ-primary-light);
 }
 
 .agent-modal-modern .support-select-label {

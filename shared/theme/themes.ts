@@ -151,10 +151,10 @@ export const rusaiskladTheme: ThemeConfig = {
     borderLight: '#e2e8f0',
     borderDark: '#d1d5db',
     
-    // Статусные цвета (success/error/warning оставлены для семантики)
-    success: '#22c55e',
-    successLight: '#d1fae5',
-    successDark: '#16a34a',
+    // Статусные цвета (для rusaisklad success = серый, чтобы кнопки/акценты не были зелёными)
+    success: '#6b7280',       // gray-500
+    successLight: '#f3f4f6',  // gray-100
+    successDark: '#4b5563',   // gray-600
     
     error: '#dc3545',
     errorLight: '#fee2e2',

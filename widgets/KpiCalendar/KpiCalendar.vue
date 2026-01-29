@@ -1028,9 +1028,9 @@ onUnmounted(() => {
   --kpi-surface-3: #f8fafc;
   --kpi-primary: #213e89;
   --kpi-primary-bg: #e0e7ff;
-  --kpi-success-bg: #d1fae5;
-  --kpi-success-border: #34d399;
-  --kpi-success-text: #065f46;
+  --kpi-success-bg: var(--russ-success-light);
+  --kpi-success-border: var(--russ-success-border);
+  --kpi-success-text: var(--russ-success-text);
   --kpi-error-bg: #fee2e2;
   --kpi-error-border: #fecaca;
   --kpi-error-text: #991b1b;
