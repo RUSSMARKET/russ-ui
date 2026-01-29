@@ -112,28 +112,28 @@ export const fintechTheme: ThemeConfig = {
 }
 
 /**
- * Тема для проекта rusaisklad (можно настроить под другую цветовую схему)
- * Пока используем другую палитру - например, зеленую или оранжевую
+ * Тема для проекта rusaisklad (склад) — серая палитра
+ * Зелёные оттенки заменены на серые по значению и яркости
  */
 export const rusaiskladTheme: ThemeConfig = {
   name: 'rusaisklad',
   colors: {
-    // Основные цвета (например, зеленые или оранжевые - нужно уточнить)
-    primary: '#059669', // emerald-600
-    primaryDark: '#047857', // emerald-700
-    primaryLight: '#10b981', // emerald-500
-    primaryHover: '#047857',
-    primaryActive: '#065f46', // emerald-800
+    // Основные цвета (серые: primary ~ gray-500, dark ~ gray-600/700, light ~ gray-400)
+    primary: '#6b7280',       // gray-500
+    primaryDark: '#4b5563',   // gray-600
+    primaryLight: '#9ca3af',  // gray-400
+    primaryHover: '#4b5563',
+    primaryActive: '#374151', // gray-700
     
     // Вторичные цвета
-    secondary: '#10b981', // emerald-500
-    secondaryDark: '#059669',
-    secondaryLight: '#34d399', // emerald-400
+    secondary: '#9ca3af',     // gray-400
+    secondaryDark: '#6b7280', // gray-500
+    secondaryLight: '#d1d5db', // gray-300
     
     // Акцентные цвета
-    accent: '#0d9488', // teal-600
-    accentDark: '#0f766e',
-    accentLight: '#14b8a6',
+    accent: '#6b7280',       // gray-500
+    accentDark: '#4b5563',    // gray-600
+    accentLight: '#9ca3af',   // gray-400
     
     // Цвета текста
     textPrimary: '#1f2937',
@@ -151,7 +151,7 @@ export const rusaiskladTheme: ThemeConfig = {
     borderLight: '#e2e8f0',
     borderDark: '#d1d5db',
     
-    // Статусные цвета
+    // Статусные цвета (success/error/warning оставлены для семантики)
     success: '#22c55e',
     successLight: '#d1fae5',
     successDark: '#16a34a',
@@ -164,9 +164,9 @@ export const rusaiskladTheme: ThemeConfig = {
     warningLight: '#fef3c7',
     warningDark: '#d97706',
     
-    info: '#0d9488', // teal-600
-    infoLight: '#ccfbf1',
-    infoDark: '#0f766e',
+    info: '#6b7280',         // gray-500 вместо teal
+    infoLight: '#f3f4f6',    // gray-100
+    infoDark: '#4b5563',     // gray-600
     
     // Нейтральные цвета
     neutral: '#6b7280',
@@ -174,10 +174,10 @@ export const rusaiskladTheme: ThemeConfig = {
     neutralDark: '#374151',
     
     // Дополнительные цвета
-    label: '#059669',
-    value: '#047857',
-    checkboxAccent: '#0d9488',
-    focusRing: 'rgba(5, 150, 105, 0.2)',
+    label: '#6b7280',
+    value: '#4b5563',
+    checkboxAccent: '#6b7280',
+    focusRing: 'rgba(107, 114, 128, 0.2)',
     
     // Дополнительные оттенки текста
     textQuaternary: '#9ca3af',
@@ -192,7 +192,7 @@ export const rusaiskladTheme: ThemeConfig = {
     // Дополнительные оттенки границ
     borderQuaternary: '#ced4da',
     inputBorder: '#ced4da',
-    inputBorderFocus: '#14b8a6',
+    inputBorderFocus: '#9ca3af',  // gray-400
     inputBorderError: '#D60000',
     
     // Цвета для инпутов
@@ -218,8 +218,8 @@ export const rusaiskladTheme: ThemeConfig = {
     purpleLight: '#e0e7ff',
     
     // Дополнительные оттенки primary для градиентов
-    primaryGradientStart: '#059669',
-    primaryGradientEnd: '#047857',
+    primaryGradientStart: '#6b7280',  // gray-500
+    primaryGradientEnd: '#4b5563',     // gray-600
   }
 }
 
