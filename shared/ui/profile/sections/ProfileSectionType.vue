@@ -188,19 +188,19 @@ onMounted(async () => {
   align-items: flex-start;
   font-size: 1.08rem;
   padding-bottom: 0.3rem;
-  border-bottom: 1px solid #e3e8f0;
+  border-bottom: 1px solid var(--russ-border-light);
 }
 .profile-row:last-child {
   border-bottom: none;
 }
 .profile-label {
-  color: #6366f1;
+  color: var(--russ-label);
   min-width: 120px;
   font-weight: 600;
   font-size: 1.05em;
 }
 .profile-value {
-  color: #213e89;
+  color: var(--russ-value);
   font-weight: 500;
   word-break: break-word;
 }
@@ -212,7 +212,7 @@ onMounted(async () => {
 }
 .profile-table td {
   padding: 0.4rem 0.7rem;
-  border-bottom: 1px solid #e3e8f0;
+  border-bottom: 1px solid var(--russ-border-light);
   font-size: 1rem;
 }
 .photos-grid {
@@ -231,20 +231,20 @@ onMounted(async () => {
   font-size: 1rem;
   font-weight: 500;
   margin-top: 0.5rem;
-  color: #3b4a6b;
+  color: var(--russ-text-secondary);
   text-align: center;
 }
 .photo-preview {
   width: 60px;
   height: 60px;
   border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(33, 62, 137, 0.1);
+  box-shadow: 0 2px 8px var(--russ-shadow-primary-light);
   margin: 0.2rem 0.5rem 0.2rem 0;
   object-fit: cover;
   transition: transform 0.18s;
 }
 .photo-preview:hover {
-  box-shadow: 0 4px 16px rgba(33, 62, 137, 0.13);
+  box-shadow: 0 4px 16px var(--russ-shadow-primary);
   transform: scale(1.05);
 }
 @media (max-width: 600px) {

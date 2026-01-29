@@ -66,19 +66,19 @@ defineProps(['filledUserData'])
 .profile-subcard {
   padding: 1rem 1rem 0.3rem;
   border-radius: 14px;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--russ-bg);
+  border: 1px solid var(--russ-border);
 }
 
 .user-data-subcard {
-  background: #f5f7ff;
-  border-color: #d4ddff;
+  background: var(--russ-bg-blue-light);
+  border-color: var(--russ-bg-blue-lighter);
 }
 
 .profile-subcard-title {
   font-weight: 600;
   font-size: 0.95rem;
-  color: #1f2937;
+  color: var(--russ-text-primary);
   margin-bottom: 0.75rem;
 }
 .profile-row {
@@ -87,19 +87,19 @@ defineProps(['filledUserData'])
   align-items: center;
   font-size: 1.08rem;
   padding-bottom: 0.3rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--russ-border);
 }
 .profile-row:last-child {
   border-bottom: none;
 }
 .profile-label {
-  color: #6366f1;
+  color: var(--russ-label);
   min-width: 160px;
   font-weight: 600;
   font-size: 1.05em;
 }
 .profile-value {
-  color: #213e89;
+  color: var(--russ-value);
   font-weight: 500;
   word-break: break-word;
 }

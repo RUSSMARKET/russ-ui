@@ -67,14 +67,14 @@ const onHide = () => {
   cursor: pointer;
   margin-left: 1rem;
   font-size: 24px;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   padding: 4px 8px;
   border-radius: 4px;
   transition: all 0.2s;
 }
 
 .close-x:hover {
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--russ-bg-disabled);
+  color: var(--russ-text-secondary);
 }
 </style>

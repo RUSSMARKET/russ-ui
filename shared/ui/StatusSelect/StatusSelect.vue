@@ -403,7 +403,7 @@ watch(() => props.options, () => {
   margin-bottom: 8px;
   font-size: 14px;
   font-weight: 600;
-  color: #374151;
+  color: var(--russ-text-secondary);
   line-height: 1.4;
 }
 
@@ -421,12 +421,12 @@ watch(() => props.options, () => {
   width: 100%;
   min-height: 48px;
   padding: 12px 16px;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--russ-bg);
+  border: 1px solid var(--russ-border);
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px var(--russ-shadow-color);
 }
 
 .status-select-container.multiple .status-select-trigger {
@@ -436,21 +436,21 @@ watch(() => props.options, () => {
 }
 
 .status-select-trigger:hover:not(.disabled) {
-  border-color: #1d4cd2;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+  border-color: var(--russ-accent);
+  box-shadow: 0 4px 12px var(--russ-shadow-accent-light);
 }
 
 .status-select-trigger.open {
-  border-color: #1d4cd2;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: var(--russ-accent);
+  box-shadow: 0 0 0 3px var(--russ-shadow-accent-light);
 }
 
 .status-select-trigger.has-value {
-  border-color: #1d4cd2;
+  border-color: var(--russ-accent);
 }
 
 .status-select-trigger.disabled {
-  background: #f3f4f6;
+  background: var(--russ-bg-disabled);
   cursor: not-allowed;
   opacity: 0.6;
 }
@@ -494,8 +494,8 @@ watch(() => props.options, () => {
 }
 
 .status-tag:hover {
-  background: #dbeafe;
-  border-color: #93c5fd;
+  background: var(--russ-info-light);
+  border-color: var(--russ-info-border);
 }
 
 .status-tag .status-color-dot {
@@ -514,20 +514,20 @@ watch(() => props.options, () => {
 .tag-remove {
   width: 14px;
   height: 14px;
-  color: #64748b;
+  color: var(--russ-text-muted);
   flex-shrink: 0;
   transition: color 0.15s ease;
 }
 
 .status-tag:hover .tag-remove {
-  color: #dc2626;
+  color: var(--russ-error);
 }
 
 .status-select-selected {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #111827;
+  color: var(--russ-text-primary);
   font-weight: 500;
   min-width: 0;
   flex: 1;
@@ -543,7 +543,7 @@ watch(() => props.options, () => {
 }
 
 .status-select-placeholder {
-  color: #9ca3af;
+  color: var(--russ-text-quaternary);
   font-weight: 400;
 }
 
@@ -561,7 +561,7 @@ watch(() => props.options, () => {
   justify-content: center;
   width: 20px;
   height: 20px;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
 }
@@ -576,7 +576,7 @@ watch(() => props.options, () => {
   top: calc(100% + 8px);
   left: 0;
   right: 0;
-  background: #ffffff;
+  background: var(--russ-bg);
   border: 2px solid #e5e7eb;
   border-radius: 12px;
   z-index: 999;
@@ -630,26 +630,26 @@ watch(() => props.options, () => {
   left: 20px;
   top: 50%;
   transform: translateY(-50%);
-  color: #9ca3af;
+  color: var(--russ-text-quaternary);
   pointer-events: none;
 }
 
 .search-input {
   width: 100%;
   padding: 12px 16px 12px 25px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--russ-border);
   border-radius: 8px;
   font-size: 14px;
-  color: #374151;
+  color: var(--russ-text-secondary);
   background: #f9fafb;
   transition: all 0.2s ease;
 }
 
 .search-input:focus {
   outline: none;
-  border-color: #1d4cd2;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: var(--russ-accent);
+  background: var(--russ-bg);
+  box-shadow: 0 0 0 3px var(--russ-shadow-accent-light);
 }
 
 .status-select-options {
@@ -709,7 +709,7 @@ watch(() => props.options, () => {
   align-items: center;
   gap: 8px;
   padding: 32px 16px;
-  color: #9ca3af;
+  color: var(--russ-text-quaternary);
   font-size: 14px;
 }
 
@@ -721,7 +721,7 @@ watch(() => props.options, () => {
 .status-select-error {
   margin-top: 6px;
   font-size: 12px;
-  color: #dc2626;
+  color: var(--russ-error);
   font-weight: 500;
 }
 
@@ -776,8 +776,8 @@ watch(() => props.options, () => {
 /* Фокус для accessibility */
 .status-select-trigger:focus-visible {
   outline: none;
-  border-color: #1d4cd2;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: var(--russ-accent);
+  box-shadow: 0 0 0 3px var(--russ-shadow-accent-light);
 }
 
 .search-input:focus-visible {

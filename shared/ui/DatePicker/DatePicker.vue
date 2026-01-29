@@ -283,14 +283,14 @@ onBeforeUnmount(() => {
 .date-picker-input {
   width: 100%;
   padding: 8px 16px 8px 12px;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--russ-border);
   border-radius: 10px;
   font-size: 13px;
   height: 36px;
   min-height: 36px;
-  background: #f9fafb;
-  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.04);
-  color: #1e293b;
+  background: var(--russ-bg-quaternary);
+  box-shadow: 0 1px 4px var(--russ-shadow-accent-light);
+  color: var(--russ-text-primary);
   transition: border-color 0.2s, box-shadow 0.2s;
   box-sizing: border-box;
   display: flex;
@@ -301,49 +301,49 @@ onBeforeUnmount(() => {
 }
 
 .date-picker-input:hover:not(.is-disabled) {
-  border-color: #cbd5e1;
+  border-color: var(--russ-border-light);
 }
 
 .date-picker-input.is-focused {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
-  background: #fff;
+  border-color: var(--russ-secondary);
+  box-shadow: 0 0 0 3px var(--russ-shadow-secondary);
+  background: var(--russ-input-bg);
 }
 
 .date-picker-input.is-disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  background: #f3f4f6;
+  background: var(--russ-input-bg-disabled);
 }
 
 .date-display {
   flex: 1;
   text-align: left;
-  color: #1e293b;
+  color: var(--russ-text-primary);
 }
 
 .date-display.placeholder {
-  color: #9ca3af;
+  color: var(--russ-text-quaternary);
 }
 
 .calendar-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   flex-shrink: 0;
   margin-left: 8px;
 }
 
 .date-picker-input.is-focused .calendar-icon {
-  color: #6366f1;
+  color: var(--russ-secondary);
 }
 
 .calendar-dropdown {
-  background: #fff;
-  border: 1.5px solid #e5e7eb;
+  background: var(--russ-input-bg);
+  border: 1.5px solid var(--russ-border);
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 24px var(--russ-shadow-color);
   padding: 16px;
   min-width: 280px;
   max-width: 320px;

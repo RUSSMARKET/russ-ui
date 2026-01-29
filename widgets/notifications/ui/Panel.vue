@@ -44,37 +44,37 @@ const deleteNotification = async (id) => {
             <i
               v-if="item.severity === 'success'"
               class="pi pi-check"
-              style="color: #10b981"
+              style="color: var(--russ-success)"
             ></i>
             <i
               v-else-if="item.severity === 'info'"
               class="pi pi-info-circle"
-              style="color: #3b82f6"
+              style="color: var(--russ-accent-light)"
             ></i>
             <i
               v-else-if="item.severity === 'warn'"
               class="pi pi-exclamation-triangle"
-              style="color: #f59e0b"
+              style="color: var(--russ-warning)"
             ></i>
             <i
               v-else-if="item.severity === 'error'"
               class="pi pi-times-circle"
-              style="color: #ef4444"
+              style="color: var(--russ-error)"
             ></i>
             <i
               v-else-if="item.severity === 'secondary'"
               class="pi pi-circle"
-              style="color: #6b7280"
+              style="color: var(--russ-text-tertiary)"
             ></i>
             <i
               v-else-if="item.severity === 'contrast'"
               class="pi pi-circle-fill"
-              style="color: #9ca3af"
+              style="color: var(--russ-text-quaternary)"
             ></i>
             <i
               v-else
               class="pi pi-bell"
-              style="color: #6b7280"
+              style="color: var(--russ-text-tertiary)"
             ></i>
 
             <div class="notification-title" v-html="item.summary"></div>
@@ -105,57 +105,57 @@ const deleteNotification = async (id) => {
   margin-bottom: 15px;
   border-radius: 10px;
   padding: 15px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px var(--russ-shadow-color);
   transition: all 0.2s ease;
 }
 
 .notification-wrapper .notification:hover {
   
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px var(--russ-shadow-color);
 }
 
 .notification-success {
-  background-color: #d1fae5;
-  border: 1px solid #10b981;
-  border-left: 4px solid #10b981;
+  background-color: var(--russ-success-light);
+  border: 1px solid var(--russ-success);
+  border-left: 4px solid var(--russ-success);
 }
 
 .notification-info {
-  background-color: #dbeafe;
-  border: 1px solid #3b82f6;
-  border-left: 4px solid #3b82f6;
+  background-color: var(--russ-info-light);
+  border: 1px solid var(--russ-accent-light);
+  border-left: 4px solid var(--russ-accent-light);
 }
 
 .notification-warn {
-  background-color: #fef3c7;
-  border: 1px solid #f59e0b;
-  border-left: 4px solid #f59e0b;
+  background-color: var(--russ-warning-light);
+  border: 1px solid var(--russ-warning);
+  border-left: 4px solid var(--russ-warning);
 }
 
 .notification-error {
-  background-color: #fee2e2;
-  border: 1px solid #ef4444;
-  border-left: 4px solid #ef4444;
+  background-color: var(--russ-error-light);
+  border: 1px solid var(--russ-error);
+  border-left: 4px solid var(--russ-error);
 }
 
 .notification-secondary {
-  background-color: #f3f4f6;
-  border: 1px solid #6b7280;
-  border-left: 4px solid #6b7280;
+  background-color: var(--russ-bg-disabled);
+  border: 1px solid var(--russ-text-tertiary);
+  border-left: 4px solid var(--russ-text-tertiary);
 }
 
 .notification-contrast {
-  background-color: #1f2937;
-  border: 1px solid #374151;
-  border-left: 4px solid #374151;
+  background-color: var(--russ-bg-dark);
+  border: 1px solid var(--russ-text-secondary);
+  border-left: 4px solid var(--russ-text-secondary);
 }
 
 .notification-contrast .notification-title {
-  color: #f9fafb;
+  color: var(--russ-text-inverse);
 }
 
 .notification-contrast .notification-content {
-  color: #d1d5db;
+  color: var(--russ-text-light);
 }
 
 .notification-header {
@@ -174,20 +174,20 @@ const deleteNotification = async (id) => {
 }
 
 .remove_icon:hover {
-  background-color: rgba(107, 114, 128, 0.1);
-  color: #374151;
+  background-color: var(--russ-bg-disabled);
+  color: var(--russ-text-secondary);
 }
 
 .notification-title {
   flex: 1;
   font-size: 16px;
   font-weight: 500;
-  color: #111827;
+  color: var(--russ-text-primary);
 }
 
 .notification-content {
   font-size: 14px;
-  color: #374151;
+  color: var(--russ-text-secondary);
 }
 
 .notification-header-bar {
@@ -198,8 +198,8 @@ const deleteNotification = async (id) => {
 
 .clear-all-btn {
   background: transparent;
-  color: #213e89;
-  border: 1px solid #213e89;
+  color: var(--russ-primary);
+  border: 1px solid var(--russ-primary);
   padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
@@ -208,12 +208,12 @@ const deleteNotification = async (id) => {
 }
 
 .clear-all-btn:hover {
-  background-color: #213e89;
-  color: white;
+  background-color: var(--russ-primary);
+  color: var(--russ-text-inverse);
 }
 
 .no-notifications {
-  color: #999;
+  color: var(--russ-text-quaternary);
   text-align: center;
   padding: 20px;
   font-size: 14px;

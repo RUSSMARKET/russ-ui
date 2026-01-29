@@ -32,7 +32,7 @@ defineEmits<{
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: var(--russ-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -44,7 +44,7 @@ defineEmits<{
   position: relative;
   max-width: 90vw;
   max-height: 90vh;
-  background: white;
+  background: var(--russ-bg);
   border-radius: 8px;
   padding: 20px;
   display: flex;
@@ -56,8 +56,8 @@ defineEmits<{
   position: absolute;
   top: 10px;
   right: 10px;
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
+  background: var(--russ-overlay-light);
+  color: var(--russ-text-inverse);
   border: none;
   border-radius: 50%;
   width: 32px;
@@ -71,7 +71,7 @@ defineEmits<{
 }
 
 .photo-modal-close:hover {
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--russ-overlay);
 }
 
 .photo-modal-img {
@@ -83,7 +83,7 @@ defineEmits<{
 .photo-modal-caption {
   margin-top: 10px;
   text-align: center;
-  color: #333;
+  color: var(--russ-text-primary);
   font-size: 14px;
 }
 

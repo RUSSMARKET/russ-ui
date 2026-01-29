@@ -360,17 +360,17 @@ const updateField = (fieldId?: number) => {
   border-radius: 16px;
   padding: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--russ-border);
   height: 500px;
 }
 
 .supports-section-title {
   font-size: 18px;
   font-weight: 700;
-  color: #2d2d2d;
+  color: var(--russ-text-primary);
   margin: 0 0 20px 0;
   padding-bottom: 12px;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid var(--russ-border);
 }
 
 .product-fields-section {
@@ -384,8 +384,8 @@ const updateField = (fieldId?: number) => {
 }
 
 .product-fields-card {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--russ-bg-secondary);
+  border: 1px solid var(--russ-border-light);
   border-radius: 10px;
   padding: 12px;
 }
@@ -393,7 +393,7 @@ const updateField = (fieldId?: number) => {
 .product-fields-header h6 {
   margin: 0 0 8px 0;
   font-size: 14px;
-  color: #334155;
+  color: var(--russ-text-secondary);
 }
 
 .product-fields-list {
@@ -404,7 +404,7 @@ const updateField = (fieldId?: number) => {
 .product-field-input {
   flex: 1;
   padding: 8px 10px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--russ-border-dark);
   border-radius: 6px;
   min-width: 0;
 }
@@ -424,7 +424,7 @@ const updateField = (fieldId?: number) => {
 
 .product-field-save {
   padding: 8px 12px;
-  background: #2563eb;
+  background: var(--russ-accent);
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -448,13 +448,13 @@ const updateField = (fieldId?: number) => {
 }
 
 .product-field-save:hover {
-  background: #1d4ed8;
+  background: var(--russ-accent-dark);
 }
 
 .product-fields-under-item {
   margin-top: 10px;
   padding-top: 8px;
-  border-top: 1px dashed #e5e7eb;
+  border-top: 1px dashed var(--russ-border);
 }
 
 .product-fields-under-item.ultra-compact {
@@ -478,7 +478,7 @@ const updateField = (fieldId?: number) => {
 .product-field-label {
   min-width: 80px;
   font-size: 12px;
-  color: #64748b;
+  color: var(--russ-text-muted);
 }
 
 .product-field-controls {
@@ -499,7 +499,7 @@ const updateField = (fieldId?: number) => {
   align-items: center;
   gap: 12px;
   padding: 20px;
-  color: #2d2d2d;
+  color: var(--russ-text-primary);
   justify-content: center;
   background: #f8fafc;
   border-radius: 12px;
@@ -529,20 +529,20 @@ const updateField = (fieldId?: number) => {
 }
 
 .support-card:hover {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
+  background: var(--russ-bg-tertiary);
+  border-color: var(--russ-border-light);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .support-card-disabled {
   opacity: 0.6;
-  background: #f3f4f6 !important;
-  border-color: #d1d5db !important;
+  background: var(--russ-bg-disabled) !important;
+  border-color: var(--russ-border-dark) !important;
 }
 
 .support-card-disabled:hover {
-  background: #f3f4f6 !important;
-  border-color: #d1d5db !important;
+  background: var(--russ-bg-disabled) !important;
+  border-color: var(--russ-border-dark) !important;
   box-shadow: none !important;
   transform: none !important;
 }
@@ -556,7 +556,7 @@ const updateField = (fieldId?: number) => {
 }
 
 .locked-indicator {
-  color: #ef4444;
+  color: var(--russ-error);
   font-size: 14px;
   margin-left: 4px;
 }
@@ -584,7 +584,7 @@ const updateField = (fieldId?: number) => {
 
 .support-fio {
   font-weight: 600;
-  color: #2d2d2d;
+  color: var(--russ-text-primary);
   font-size: 15px;
 }
 
@@ -616,8 +616,8 @@ const updateField = (fieldId?: number) => {
 }
 
 .support-edit-btn:hover:not([disabled]) {
-  background: #bfdbfe;
-  color: #1d4ed8;
+  background: var(--russ-info-light);
+  color: var(--russ-accent-dark);
   transform: scale(1.05);
 }
 
@@ -714,7 +714,7 @@ const updateField = (fieldId?: number) => {
   font-size: 15px;
   background: #fff;
   transition: all 0.2s ease;
-  color: #2d2d2d;
+  color: var(--russ-text-primary);
 }
 
 .support-select:focus {
@@ -798,8 +798,8 @@ const updateField = (fieldId?: number) => {
 
 .project-point-modal .supports-list-column,
 .project-point-modal .supports-add-column {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--russ-bg-secondary);
+  border: 1px solid var(--russ-border-light);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
@@ -875,7 +875,7 @@ const updateField = (fieldId?: number) => {
 }
 
 .agent-modal-modern .supports-section-title {
-  color: #2d2d2d;
+  color: var(--russ-text-primary);
   border-bottom-color: #f2f2f2;
 }
 
@@ -903,7 +903,7 @@ const updateField = (fieldId?: number) => {
 .agent-modal-modern .supports-add-loading {
   background: #f2f2f2;
   border: 1px dashed #f2f2f2;
-  color: #2d2d2d;
+  color: var(--russ-text-primary);
 }
 
 .agent-modal-modern .supports-empty {
@@ -911,7 +911,7 @@ const updateField = (fieldId?: number) => {
 }
 
 .agent-modal-modern .supports-empty-text {
-  color: #2d2d2d;
+  color: var(--russ-text-primary);
 }
 
 .agent-modal-modern .supports-empty-subtext {
@@ -931,11 +931,11 @@ const updateField = (fieldId?: number) => {
 }
 
 .agent-modal-modern .support-select-label {
-  color: #2d2d2d;
+  color: var(--russ-text-primary);
 }
 
 .agent-modal-modern .support-fio {
-  color: #2d2d2d;
+  color: var(--russ-text-primary);
 }
 
 .agent-modal-modern .support-phone {

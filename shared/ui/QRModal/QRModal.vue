@@ -335,14 +335,14 @@ const onHide = () => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px var(--russ-shadow-color);
   transition: all 0.2s ease;
-  color: #374151;
+  color: var(--russ-text-secondary);
   font-size: 18px;
 }
 
 .qr-close-btn:hover {
-  background: rgba(255, 255, 255, 1);
+  background: var(--russ-bg);
   transform: scale(1.05);
 }
 

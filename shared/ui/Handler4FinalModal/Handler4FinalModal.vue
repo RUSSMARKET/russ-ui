@@ -63,13 +63,13 @@ const onHide = () => {
 .handler4-title {
   font-size: 24px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--russ-text-primary);
   margin-bottom: 12px;
 }
 
 .handler4-subtitle {
   font-size: 16px;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   margin-bottom: 2rem;
   line-height: 1.5;
 }
@@ -88,24 +88,24 @@ const onHide = () => {
 }
 
 .handler4-btn-yes {
-  background: #10b981;
-  border-color: #10b981;
-  color: white;
+  background: var(--russ-success);
+  border-color: var(--russ-success);
+  color: var(--russ-text-inverse);
 }
 
 .handler4-btn-yes:hover:not(:disabled) {
-  background: #059669;
-  border-color: #059669;
+  background: var(--russ-success-dark);
+  border-color: var(--russ-success-dark);
 }
 
 .handler4-btn-no {
-  background: #ef4444;
-  border-color: #ef4444;
-  color: white;
+  background: var(--russ-error);
+  border-color: var(--russ-error);
+  color: var(--russ-text-inverse);
 }
 
 .handler4-btn-no:hover:not(:disabled) {
-  background: #dc2626;
-  border-color: #dc2626;
+  background: var(--russ-error-dark);
+  border-color: var(--russ-error-dark);
 }
 </style>

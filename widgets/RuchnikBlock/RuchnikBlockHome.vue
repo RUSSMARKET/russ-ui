@@ -334,11 +334,11 @@ watch(() => props.resetKey, () => {
 
 .ruchnik-list-column,
 .ruchnik-add-column {
-  background: #fff;
+  background: var(--russ-bg);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px var(--russ-shadow-default);
+  border: 1px solid var(--russ-border);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -347,7 +347,7 @@ watch(() => props.resetKey, () => {
 .ruchnik-section-title {
   font-size: clamp(16px, calc(16px + (20 - 16) * ((100vw - 320px) / (1920 - 320))), 20px);
   font-weight: 700;
-  color: #2d2d2d;
+  color: var(--russ-text-primary);
   margin: 0;
   display: flex;
   align-items: center;
@@ -356,7 +356,7 @@ watch(() => props.resetKey, () => {
 }
 
 .ruchnik-counter {
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   font-weight: 500;
   font-size: 14px;
 }
@@ -366,11 +366,11 @@ watch(() => props.resetKey, () => {
   align-items: center;
   gap: 12px;
   padding: 20px;
-  color: #2d2d2d;
+  color: var(--russ-text-primary);
   justify-content: center;
-  background: #f8fafc;
+  background: var(--russ-bg-secondary);
   border-radius: 12px;
-  border: 1px dashed #cbd5e1;
+  border: 1px dashed var(--russ-border-light);
 }
 
 .ruchnik-list {
@@ -386,17 +386,17 @@ watch(() => props.resetKey, () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #f8fafc;
+  background: var(--russ-bg-secondary);
   border-radius: 12px;
   padding: 16px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--russ-border-light);
   transition: all 0.2s ease;
 }
 
 .ruchnik-card:hover {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: var(--russ-bg-tertiary);
+  border-color: var(--russ-border-dark);
+  box-shadow: 0 4px 12px var(--russ-shadow-color);
 }
 
 .ruchnik-card-content {
@@ -410,14 +410,14 @@ watch(() => props.resetKey, () => {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #6b9eff;
-  color: #fff;
+  background: var(--russ-accent-light);
+  color: var(--russ-text-inverse);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 16px;
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(71, 85, 105, 0.15);
+  box-shadow: 0 2px 8px var(--russ-shadow-color);
 }
 
 .ruchnik-info {
@@ -428,12 +428,12 @@ watch(() => props.resetKey, () => {
 
 .ruchnik-code {
   font-weight: 600;
-  color: #2d2d2d;
+  color: var(--russ-text-primary);
   font-size: clamp(14px, calc(14px + (16 - 14) * ((100vw - 320px) / (1920 - 320))), 16px);
 }
 
 .ruchnik-user {
-  color: #919191;
+  color: var(--russ-text-muted);
   font-size: clamp(12px, calc(12px + (14 - 12) * ((100vw - 320px) / (1920 - 320))), 14px);
 }
 
@@ -444,11 +444,11 @@ watch(() => props.resetKey, () => {
 }
 
 .ruchnik-edit-btn {
-  background: #dbeafe;
+  background: var(--russ-info-light);
   border: none;
   border-radius: 8px;
   padding: 8px 12px;
-  color: #2563eb;
+  color: var(--russ-accent);
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -459,17 +459,17 @@ watch(() => props.resetKey, () => {
 }
 
 .ruchnik-edit-btn:hover {
-  background: #bfdbfe;
-  color: #1d4ed8;
+  background: var(--russ-info-border);
+  color: var(--russ-accent-dark);
   transform: scale(1.05);
 }
 
 .ruchnik-remove-btn {
-  background: #fee2e2;
+  background: var(--russ-error-light);
   border: none;
   border-radius: 8px;
   padding: 8px 12px;
-  color: #dc2626;
+  color: var(--russ-error);
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -480,27 +480,27 @@ watch(() => props.resetKey, () => {
 }
 
 .ruchnik-remove-btn:hover {
-  background: #fecaca;
-  color: #b91c1c;
+  background: var(--russ-error-light);
+  color: var(--russ-error-dark);
   transform: scale(1.05);
 }
 
 .ruchnik-empty {
   text-align: center;
   padding: 40px 20px;
-  color: #919191;
+  color: var(--russ-text-muted);
 }
 
 .ruchnik-empty-text {
   font-size: clamp(14px, calc(14px + (16 - 14) * ((100vw - 320px) / (1920 - 320))), 16px);
   font-weight: 600;
-  color: #475569;
+  color: var(--russ-text-secondary);
   margin-bottom: 8px;
 }
 
 .ruchnik-empty-subtext {
   font-size: clamp(12px, calc(12px + (14 - 12) * ((100vw - 320px) / (1920 - 320))), 14px);
-  color: #94a3b8;
+  color: var(--russ-text-tertiary);
 }
 
 .ruchnik-add-form {
@@ -518,10 +518,10 @@ watch(() => props.resetKey, () => {
   align-items: center;
   gap: 8px;
   padding: 12px 16px;
-  background: #fef3c7;
-  border: 1px solid #f59e0b;
+  background: var(--russ-warning-light);
+  border: 1px solid var(--russ-warning);
   border-radius: 8px;
-  color: #92400e;
+  color: var(--russ-warning-text);
   font-size: 14px;
   font-weight: 600;
   min-height: 44px;
@@ -531,7 +531,7 @@ watch(() => props.resetKey, () => {
 .ruchnik-cancel-edit-btn {
   background: none;
   border: none;
-  color: #92400e;
+  color: var(--russ-warning-text);
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
@@ -539,7 +539,7 @@ watch(() => props.resetKey, () => {
 }
 
 .ruchnik-cancel-edit-btn:hover {
-  background: rgba(146, 64, 14, 0.1);
+  background: var(--russ-warning-light);
 }
 
 .ruchnik-input-group {
@@ -551,39 +551,39 @@ watch(() => props.resetKey, () => {
 .ruchnik-label {
   font-size: clamp(13px, calc(13px + (15 - 13) * ((100vw - 320px) / (1920 - 320))), 15px);
   font-weight: 600;
-  color: #374151;
+  color: var(--russ-text-secondary);
 }
 
 .ruchnik-input {
   padding: 12px 16px;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--russ-input-border);
   border-radius: 10px;
   font-size: clamp(14px, calc(14px + (16 - 14) * ((100vw - 320px) / (1920 - 320))), 16px);
-  background: #fff;
+  background: var(--russ-bg);
   transition: all 0.2s ease;
-  color: #2d2d2d;
+  color: var(--russ-text-primary);
 }
 
 .ruchnik-input:focus {
   outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  border-color: var(--russ-input-border-focus);
+  box-shadow: 0 0 0 3px var(--russ-shadow-secondary);
 }
 
 .ruchnik-input-error {
-  border-color: #ef4444;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  border-color: var(--russ-input-border-error);
+  box-shadow: 0 0 0 3px var(--russ-shadow-error);
 }
 
 .ruchnik-error-message {
-  color: #ef4444;
+  color: var(--russ-error);
   font-size: clamp(11px, calc(11px + (13 - 11) * ((100vw - 320px) / (1920 - 320))), 13px);
   font-weight: 500;
 }
 
 .ruchnik-add-btn {
-  background: #6b9eff;
-  color: #fff;
+  background: var(--russ-accent-light);
+  color: var(--russ-text-inverse);
   border: none;
   border-radius: 12px;
   padding: 14px 20px;
@@ -600,12 +600,12 @@ watch(() => props.resetKey, () => {
 }
 
 .ruchnik-add-btn:hover:not([disabled]) {
-  background: #5a8de8;
+  background: var(--russ-accent-light);
 }
 
 .ruchnik-add-btn[disabled] {
-  background: #9ca3af;
-  color: #6b7280;
+  background: var(--russ-neutral-light);
+  color: var(--russ-text-tertiary);
   cursor: not-allowed;
   opacity: 0.7;
 }
@@ -637,27 +637,27 @@ watch(() => props.resetKey, () => {
 .ruchnik-no-access {
   text-align: center;
   padding: 40px 20px;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
 }
 
 .ruchnik-no-access-text {
   font-size: clamp(14px, calc(14px + (16 - 14) * ((100vw - 320px) / (1920 - 320))), 16px);
   font-weight: 600;
-  color: #4b5563;
+  color: var(--russ-text-secondary);
   margin-bottom: 8px;
 }
 
 .ruchnik-no-access-subtext {
   font-size: clamp(12px, calc(12px + (14 - 12) * ((100vw - 320px) / (1920 - 320))), 14px);
-  color: #9ca3af;
+  color: var(--russ-text-muted);
 }
 
 .ruchnik-search-compact {
   margin-bottom: 16px;
   padding: 12px;
-  background: #f8fafc;
+  background: var(--russ-bg-secondary);
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--russ-border-light);
 }
 
 .ruchnik-search-input-wrapper {
@@ -669,7 +669,7 @@ watch(() => props.resetKey, () => {
 .ruchnik-search-icon {
   position: absolute;
   left: 12px;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   font-size: 14px;
   z-index: 1;
 }
@@ -677,12 +677,12 @@ watch(() => props.resetKey, () => {
 .ruchnik-search-input-compact {
   width: 100%;
   padding: 8px 12px 8px 36px !important;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--russ-border-dark);
   border-radius: 6px;
   font-size: clamp(14px, calc(14px + (16 - 14) * ((100vw - 320px) / (1920 - 320))), 16px);
-  background: #fff;
+  background: var(--russ-bg);
   transition: all 0.2s ease;
-  color: #374151;
+  color: var(--russ-text-secondary);
 }
 
 .ruchnik-search-input-compact:focus {
@@ -699,21 +699,21 @@ watch(() => props.resetKey, () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   cursor: pointer;
   border-radius: 50%;
   transition: all 0.2s ease;
 }
 
 .ruchnik-search-clear:hover {
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--russ-bg-light);
+  color: var(--russ-text-secondary);
 }
 
 .ruchnik-search-count {
   margin-top: 8px;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   font-weight: 500;
   text-align: right;
 }

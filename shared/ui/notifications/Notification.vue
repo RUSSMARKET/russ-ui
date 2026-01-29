@@ -119,7 +119,7 @@ watch(latestNotification, (newNotification) => {
 }
 
 .notification-message {
-  color: #666;
+  color: var(--russ-text-tertiary);
   font-size: clamp(
     12px,
     calc(12px + (14 - 12) * ((100vw - 320px) / (1920 - 320))),
@@ -132,28 +132,28 @@ watch(latestNotification, (newNotification) => {
   border: none;
   padding: 4px;
   cursor: pointer;
-  color: #666;
+  color: var(--russ-text-tertiary);
   transition: color 0.2s;
 }
 
 .notification-close:hover {
-  color: #333;
+  color: var(--russ-text-primary);
 }
 
 .notification.success {
-  border-left: 4px solid #4CAF50;
+  border-left: 4px solid var(--russ-success);
 }
 
 .notification.error {
-  border-left: 4px solid #f44336;
+  border-left: 4px solid var(--russ-error);
 }
 
 .notification.warning {
-  border-left: 4px solid #ff9800;
+  border-left: 4px solid var(--russ-warning);
 }
 
 .notification.info {
-  border-left: 4px solid #2196F3;
+  border-left: 4px solid var(--russ-info);
 }
 
 @keyframes slideIn {

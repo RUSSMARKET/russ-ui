@@ -259,14 +259,14 @@ watch(() => props.visible, (newVisible) => {
 .pages-container {
     max-height: 400px;
     overflow-y: auto;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--russ-border);
     border-radius: 8px;
-    background: #f9fafb;
+    background: var(--russ-bg-quaternary);
 }
 
 .page-item {
-    background: white;
-    border-bottom: 1px solid #e5e7eb;
+    background: var(--russ-bg);
+    border-bottom: 1px solid var(--russ-border);
     transition: all 0.2s ease;
 }
 
@@ -275,12 +275,12 @@ watch(() => props.visible, (newVisible) => {
 }
 
 .page-item:hover {
-    background: #f3f4f6;
+    background: var(--russ-bg-disabled);
 }
 
 .page-item.dragging {
     opacity: 0.5;
-    background: #e5e7eb;
+    background: var(--russ-border);
 }
 
 .modal-page-content {
@@ -291,7 +291,7 @@ watch(() => props.visible, (newVisible) => {
 }
 
 .drag-handle {
-    color: #9ca3af;
+    color: var(--russ-text-quaternary);
     cursor: grab;
     font-size: 14px;
     user-select: none;
@@ -306,18 +306,18 @@ watch(() => props.visible, (newVisible) => {
 
 .page-name {
     font-weight: 500;
-    color: #374151;
+    color: var(--russ-text-secondary);
 }
 
 .page-code {
     font-size: 12px;
-    color: #6b7280;
+    color: var(--russ-text-tertiary);
 }
 
 .remove-btn {
     background: none;
     border: none;
-    color: #ef4444;
+    color: var(--russ-error);
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
@@ -325,7 +325,7 @@ watch(() => props.visible, (newVisible) => {
 }
 
 .remove-btn:hover:not(:disabled) {
-    background: #fef2f2;
+    background: var(--russ-error-light);
 }
 
 .remove-btn:disabled {
@@ -337,7 +337,7 @@ watch(() => props.visible, (newVisible) => {
 .select-role-message {
     text-align: center;
     padding: 40px 20px;
-    color: #6b7280;
+    color: var(--russ-text-tertiary);
 }
 
 .mb-4 {
@@ -389,11 +389,11 @@ watch(() => props.visible, (newVisible) => {
 }
 
 .text-gray-500 {
-    color: #6b7280;
+    color: var(--russ-text-tertiary);
 }
 
 .text-gray-600 {
-    color: #4b5563;
+    color: var(--russ-text-secondary);
 }
 
 .w-full {
@@ -413,8 +413,8 @@ watch(() => props.visible, (newVisible) => {
 .loader {
     width: 40px;
     height: 40px;
-    border: 3px solid #e5e7eb;
-    border-top: 3px solid #213e89;
+    border: 3px solid var(--russ-border);
+    border-top: 3px solid var(--russ-primary);
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 0 auto;

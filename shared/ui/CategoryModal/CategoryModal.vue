@@ -194,11 +194,11 @@ const onHide = () => {
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem;
-  background: #f0f9ff;
-  border: 1px solid #0ea5e9;
+  background: var(--russ-info-light);
+  border: 1px solid var(--russ-info);
   border-radius: 8px;
   margin-bottom: 1rem;
-  color: #0369a1;
+  color: var(--russ-info-text);
   font-weight: 600;
 }
 
@@ -206,7 +206,7 @@ const onHide = () => {
   margin-left: auto;
   background: none;
   border: none;
-  color: #0369a1;
+  color: var(--russ-info-text);
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
@@ -227,47 +227,47 @@ const onHide = () => {
 
 .category-label {
   font-weight: 600;
-  color: #374151;
+  color: var(--russ-text-secondary);
   font-size: 14px;
 }
 
 .category-input {
   width: 100%;
   padding: 14px 16px;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--russ-border);
   border-radius: 10px;
-  background: #f9fafb;
+  background: var(--russ-bg-quaternary);
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.04);
-  color: #2D2D2D;
+  box-shadow: 0 1px 4px var(--russ-shadow-accent-light);
+  color: var(--russ-text-primary);
   box-sizing: border-box;
 }
 
 .category-input:focus {
-  border-color: #667eea;
-  box-shadow: 1px 0px 5px 5px #0000000F;
+  border-color: var(--russ-secondary);
+  box-shadow: 1px 0px 5px 5px var(--russ-shadow-color);
   outline: none;
   background: white;
 }
 
 .category-input:hover {
-  border-color: #d1d5db;
+  border-color: var(--russ-border-dark);
   background: white;
 }
 
 .category-input-error {
-  border-color: #ef4444 !important;
+  border-color: var(--russ-error) !important;
 }
 
 .category-error-message {
-  color: #ef4444;
+  color: var(--russ-error);
   font-size: 12px;
   margin-top: -0.25rem;
 }
 
 .category-add-btn {
   padding: 12px 24px;
-  background: #1D4CD2;
+  background: var(--russ-accent-dark);
   color: white;
   border: none;
   border-radius: 10px;
@@ -282,7 +282,7 @@ const onHide = () => {
 }
 
 .category-add-btn:hover:not(:disabled) {
-  background: #1e40af;
+  background: var(--russ-accent-dark);
   box-shadow: 0 4px 12px rgba(29, 76, 210, 0.3);
 }
 
@@ -292,11 +292,11 @@ const onHide = () => {
 }
 
 .category-edit-btn {
-  background: #10b981;
+  background: var(--russ-success);
 }
 
 .category-edit-btn:hover:not(:disabled) {
-  background: #059669;
+  background: var(--russ-success-dark);
 }
 
 .loader {

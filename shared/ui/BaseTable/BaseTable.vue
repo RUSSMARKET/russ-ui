@@ -192,10 +192,10 @@ const getNestedValue = (obj: any, path: string) => {
   min-width: 800px;
   border-collapse: separate;
   border-spacing: 0;
-  background: white;
+  background: var(--russ-bg);
   border-radius: 0 0 14px 14px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px var(--russ-shadow-color);
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -208,27 +208,27 @@ const getNestedValue = (obj: any, path: string) => {
 .base-table th,
 .base-table td {
   padding: 16px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--russ-border);
   font-size: clamp(14px, calc(14px + (18 - 14) * ((100vw - 320px) / (1920 - 320))), 18px);
-  color: #374151;
-  background: #fff;
+  color: var(--russ-text-secondary);
+  background: var(--russ-bg);
 }
 
 .table-loader-cell {
   text-align: center;
-  color: #2D2D2D;
+  color: var(--russ-text-primary);
   padding: 18px !important;
 }
 
 .base-table td {
-  color: #2D2D2D;
+  color: var(--russ-text-primary);
 }
 
 .base-table th {
-  background: #f7f7f7;
+  background: var(--russ-bg-secondary);
   text-align: left;
   font-weight: 600;
-  color: #4b5563;
+  color: var(--russ-text-secondary);
 }
 
 .base-table thead tr th:first-child {

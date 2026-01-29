@@ -304,14 +304,14 @@ watch(() => props.uploadSuccess, (newValue, oldValue) => {
 .upload-modal-title {
   font-size: 20px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--russ-text-primary);
   margin: 0;
 }
 
 .upload-close-btn {
   background: none;
   border: none;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   font-size: 18px;
   cursor: pointer;
   padding: 8px;
@@ -320,8 +320,8 @@ watch(() => props.uploadSuccess, (newValue, oldValue) => {
 }
 
 .upload-close-btn:hover {
-  background: #f1f5f9;
-  color: #374151;
+  background: var(--russ-bg-tertiary);
+  color: var(--russ-text-secondary);
 }
 
 .upload-section {
@@ -335,36 +335,36 @@ watch(() => props.uploadSuccess, (newValue, oldValue) => {
 }
 
 .file-upload-area {
-  border: 2px dashed #e2e8f0;
+  border: 2px dashed var(--russ-border-light);
   border-radius: 12px;
   padding: 24px 16px;
   margin-bottom: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: #f8fafc;
+  background: var(--russ-bg-secondary);
 }
 
 .file-upload-area:hover,
 .file-upload-area.drag-over {
-  border-color: #1D4CD2;
-  background: #f0f4ff;
+  border-color: var(--russ-accent-dark);
+  background: var(--russ-bg-blue-light);
 }
 
 .upload-icon {
-  color: #1D4CD2;
+  color: var(--russ-accent-dark);
   margin-bottom: 8px;
 }
 
 .upload-text {
   font-size: 18px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--russ-text-primary);
   margin-bottom: 8px;
 }
 
 .upload-hint {
   font-size: 14px;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   margin: 0;
 }
 
@@ -376,7 +376,7 @@ watch(() => props.uploadSuccess, (newValue, oldValue) => {
 .selected-files h4 {
   font-size: 16px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--russ-text-primary);
   margin-bottom: 16px;
   text-align: center;
 }
@@ -391,8 +391,8 @@ watch(() => props.uploadSuccess, (newValue, oldValue) => {
   justify-content: space-between;
   align-items: center;
   padding: 12px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--russ-bg-secondary);
+  border: 1px solid var(--russ-border-light);
   border-radius: 8px;
   margin-bottom: 8px;
 }
@@ -406,13 +406,13 @@ watch(() => props.uploadSuccess, (newValue, oldValue) => {
 }
 
 .file-icon {
-  color: #1D4CD2;
+  color: var(--russ-accent-dark);
   font-size: 20px;
 }
 
 .file-name {
   font-weight: 500;
-  color: #1f2937;
+  color: var(--russ-text-primary);
   max-width: 200px;
   white-space: nowrap;
   overflow: hidden;
@@ -420,13 +420,13 @@ watch(() => props.uploadSuccess, (newValue, oldValue) => {
 }
 
 .file-size {
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   font-size: 14px;
 }
 
 .remove-file-btn {
-  background: #fee2e2;
-  color: #dc2626;
+  background: var(--russ-error-light);
+  color: var(--russ-error);
   border: none;
   border-radius: 6px;
   width: 32px;
@@ -439,8 +439,8 @@ watch(() => props.uploadSuccess, (newValue, oldValue) => {
 }
 
 .remove-file-btn:hover {
-  background: #fecaca;
-  color: #b91c1c;
+  background: var(--russ-error-light);
+  color: var(--russ-error-dark);
   transform: scale(1.05);
 }
 
@@ -451,9 +451,9 @@ watch(() => props.uploadSuccess, (newValue, oldValue) => {
 }
 
 .upload-btn {
-  background: #1D4CD2;
-  border: 1px solid #1D4CD2;
-  color: white;
+  background: var(--russ-accent-dark);
+  border: 1px solid var(--russ-accent-dark);
+  color: var(--russ-text-inverse);
   padding: 12px 32px;
   border-radius: 8px;
   font-weight: 600;
@@ -462,9 +462,9 @@ watch(() => props.uploadSuccess, (newValue, oldValue) => {
 }
 
 .upload-btn:hover:not(:disabled) {
-  background: #1e40af;
-  border-color: #1e40af;
-  box-shadow: 0 4px 12px rgba(29, 76, 210, 0.3);
+  background: var(--russ-accent-dark);
+  border-color: var(--russ-accent-dark);
+  box-shadow: 0 4px 12px var(--russ-shadow-accent);
 }
 
 .upload-btn:disabled {
@@ -476,15 +476,15 @@ watch(() => props.uploadSuccess, (newValue, oldValue) => {
   padding: 12px 32px;
   border-radius: 8px;
   font-weight: 600;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  color: #6b7280;
+  background: var(--russ-bg-secondary);
+  border: 1px solid var(--russ-border-light);
+  color: var(--russ-text-tertiary);
 }
 
 .cancel-btn:hover {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
-  color: #374151;
+  background: var(--russ-bg-tertiary);
+  border-color: var(--russ-border-light);
+  color: var(--russ-text-secondary);
 }
 
 /* Handler 6 specific styles */
@@ -497,14 +497,14 @@ watch(() => props.uploadSuccess, (newValue, oldValue) => {
   display: block;
   font-size: 16px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--russ-text-primary);
   margin-bottom: 8px;
 }
 
 .card-input {
   width: 100%;
   padding: 12px 16px;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--russ-border-light);
   border-radius: 8px;
   font-size: 16px;
   font-family: 'Courier New', monospace;
@@ -515,7 +515,7 @@ watch(() => props.uploadSuccess, (newValue, oldValue) => {
 .card-input:focus {
   outline: none;
   border-color: #1D4CD2;
-  box-shadow: 0 0 0 3px rgba(29, 76, 210, 0.1);
+  box-shadow: 0 0 0 3px var(--russ-shadow-accent-light);
 }
 
 .mobile-app-checkbox {
@@ -527,7 +527,7 @@ watch(() => props.uploadSuccess, (newValue, oldValue) => {
 
 .mobile-app-checkbox-label {
   font-size: 14px;
-  color: #1f2937;
+  color: var(--russ-text-primary);
 }
 
 /* Success section styles */
@@ -543,13 +543,13 @@ watch(() => props.uploadSuccess, (newValue, oldValue) => {
   gap: 12px;
   margin-bottom: 20px;
   padding: 16px;
-  background: #f0f9ff;
-  border: 2px solid #0ea5e9;
+  background: var(--russ-info-light);
+  border: 2px solid var(--russ-info);
   border-radius: 8px;
 }
 
 .success-icon {
-  color: #0ea5e9;
+  color: var(--russ-info);
   font-size: 24px;
 }
 
@@ -557,6 +557,6 @@ watch(() => props.uploadSuccess, (newValue, oldValue) => {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
-  color: #0c4a6e;
+  color: var(--russ-info-dark);
 }
 </style>

@@ -10,6 +10,8 @@
     "./shared/composables": "./shared/composables/index.ts",
     "./shared/ui": "./shared/ui/index.ts",
     "./shared/utils": "./shared/utils/index.ts",
+    "./shared/theme": "./shared/theme/index.ts",
+    "./shared/theme/theme.css": "./shared/theme/theme.css",
     "./widgets": "./widgets/index.ts"
   },
   "files": [

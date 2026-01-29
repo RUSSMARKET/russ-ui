@@ -54,7 +54,7 @@ const onHide = () => {
 .modal-title {
   font-size: clamp(18px, calc(18px + (28 - 18) * ((100vw - 320px) / (1920 - 320))), 28px);
   font-weight: 600;
-  color: #374151;
+  color: var(--russ-text-secondary);
   margin: 0;
   line-height: 1.3;
 }

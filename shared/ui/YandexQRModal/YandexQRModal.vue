@@ -120,7 +120,7 @@ onUnmounted(() => {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: #fed521;
+  background-color: var(--russ-yellow);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -129,7 +129,7 @@ onUnmounted(() => {
 }
 
 .yandex-qr-modal-overlay[data-white="true"] {
-  background-color: #ffffff !important;
+  background-color: var(--russ-bg) !important;
 }
 
 
@@ -156,14 +156,14 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px var(--russ-shadow-color);
   transition: all 0.2s ease;
-  color: #374151;
+  color: var(--russ-text-secondary);
   font-size: 18px;
 }
 
 .yandex-close-btn:hover {
-  background: rgba(255, 255, 255, 1);
+  background: var(--russ-bg);
   transform: scale(1.05);
 }
 
@@ -190,7 +190,7 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  color: #000;
+  color: var(--russ-text-primary);
   font-size: clamp(25px, calc(25px + (40 - 25) * ((100vw - 320px) / (600 - 320))), 40px);
   margin: 0;
 }

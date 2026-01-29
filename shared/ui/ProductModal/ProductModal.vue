@@ -175,7 +175,7 @@ const onHide = () => {
 
 .form-label {
   font-weight: 600;
-  color: #374151;
+  color: var(--russ-text-secondary);
   font-size: 14px;
 }
 
@@ -191,7 +191,7 @@ const onHide = () => {
   height: 150px;
   border-radius: 8px;
   overflow: hidden;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--russ-border);
 }
 
 .logo-preview {
@@ -238,31 +238,31 @@ const onHide = () => {
 .remove-icon {
   width: 20px;
   height: 20px;
-  fill: #ef4444;
+  fill: var(--russ-error);
 }
 
 .modern-select {
   width: 100%;
   padding: 14px 16px;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--russ-border);
   border-radius: 10px;
-  background: #f9fafb;
+  background: var(--russ-bg-quaternary);
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.04);
-  color: #2D2D2D;
+  box-shadow: 0 1px 4px var(--russ-shadow-accent-light);
+  color: var(--russ-text-primary);
   box-sizing: border-box;
   font-size: 14px;
 }
 
 .modern-select:focus {
-  border-color: #667eea;
-  box-shadow: 1px 0px 5px 5px #0000000F;
+  border-color: var(--russ-secondary);
+  box-shadow: 1px 0px 5px 5px var(--russ-shadow-color);
   outline: none;
   background: white;
 }
 
 .modern-select:hover {
-  border-color: #d1d5db;
+  border-color: var(--russ-border-dark);
   background: white;
 }
 
@@ -275,9 +275,9 @@ const onHide = () => {
 
 .form-actions .cancel-btn {
   flex: 1;
-  background: #f3f4f6 !important;
-  color: #6b7280 !important;
-  border: 1px solid #e5e7eb !important;
+  background: var(--russ-bg-disabled) !important;
+  color: var(--russ-text-tertiary) !important;
+  border: 1px solid var(--russ-border) !important;
   border-radius: 10px !important;
   padding: 0.75rem 1rem !important;
   font-weight: 600 !important;
@@ -285,16 +285,16 @@ const onHide = () => {
 }
 
 .form-actions .cancel-btn:hover {
-  background: #e5e7eb !important;
-  color: #374151 !important;
+  background: var(--russ-border) !important;
+  color: var(--russ-text-secondary) !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
 }
 
 .form-actions .create-btn {
   flex: 1;
-  background: #1D4CD2 !important;
-  color: white !important;
-  border: 1px solid #1D4CD2 !important;
+  background: var(--russ-accent-dark) !important;
+  color: var(--russ-text-inverse) !important;
+  border: 1px solid var(--russ-accent-dark) !important;
   border-radius: 10px !important;
   padding: 0.75rem 1rem !important;
   font-weight: 600 !important;
@@ -302,8 +302,8 @@ const onHide = () => {
 }
 
 .form-actions .create-btn:hover {
-  background: #1e40af !important;
-  border-color: #1e40af !important;
+  background: var(--russ-accent-dark) !important;
+  border-color: var(--russ-accent-dark) !important;
   box-shadow: 0 4px 12px rgba(29, 76, 210, 0.3) !important;
 }
 

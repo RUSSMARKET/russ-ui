@@ -710,11 +710,11 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .ruchnik-list-column {
-  background: #fff;
+  background: var(--russ-bg);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px var(--russ-shadow-default);
+  border: 1px solid var(--russ-border);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -729,10 +729,10 @@ watch(() => props.canManage, (canManage) => {
 .ruchnik-section-title {
   font-size: 18px;
   font-weight: 700;
-  color: #2d2d2d;
+  color: var(--russ-text-primary);
   margin: 0 0 20px 0;
   padding-bottom: 12px;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid var(--russ-border);
 }
 
 .ruchnik-content {
@@ -748,11 +748,11 @@ watch(() => props.canManage, (canManage) => {
   align-items: center;
   gap: 12px;
   padding: 20px;
-  color: #2d2d2d;
+  color: var(--russ-text-primary);
   justify-content: center;
-  background: #f8fafc;
+  background: var(--russ-bg-secondary);
   border-radius: 12px;
-  border: 1px dashed #cbd5e1;
+  border: 1px dashed var(--russ-border-dark);
   flex: 1;
   min-height: 200px;
   animation: fadeIn 0.3s ease-out;
@@ -783,10 +783,10 @@ watch(() => props.canManage, (canManage) => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #f8fafc;
+  background: var(--russ-bg-secondary);
   border-radius: 12px;
   padding: 16px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--russ-border-light);
   transition: all 0.3s ease;
   gap: 10px;
   opacity: 1;
@@ -794,9 +794,9 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .ruchnik-card:hover {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: var(--russ-bg-tertiary);
+  border-color: var(--russ-border-dark);
+  box-shadow: 0 4px 12px var(--russ-shadow-hover);
 }
 
 .ruchnik-card-content {
@@ -811,13 +811,13 @@ watch(() => props.canManage, (canManage) => {
   height: 40px;
   border-radius: 50%;
   background: #6b9eff;
-  color: #fff;
+  color: var(--russ-text-inverse);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 16px;
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(71, 85, 105, 0.15);
+  box-shadow: 0 2px 8px var(--russ-shadow-gray);
 }
 
 .ruchnik-info {
@@ -827,12 +827,12 @@ watch(() => props.canManage, (canManage) => {
 
 .ruchnik-code {
   font-weight: 600;
-  color: #2d2d2d;
+  color: var(--russ-text-primary);
   font-size: 15px;
 }
 
 .ruchnik-user {
-  color: #919191;
+  color: var(--russ-text-muted);
   font-size: 13px;
 }
 
@@ -848,22 +848,22 @@ watch(() => props.canManage, (canManage) => {
   border-radius: 6px;
   font-size: 11px;
   font-weight: 600;
-  color: #475569;
-  background: #e2e8f0;
-  border: 1px solid #cbd5e1;
+  color: var(--russ-text-secondary);
+  background: var(--russ-bg-light);
+  border: 1px solid var(--russ-border-dark);
 }
 
 .status-type {
-  color: #334155;
+  color: var(--russ-text-dark);
 }
 
 .status-date {
-  color: #334155;
+  color: var(--russ-text-dark);
 }
 
 .ruchnik-report {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--russ-bg);
+  border: 1px solid var(--russ-border);
   border-radius: 8px;
   padding: 8px 10px;
   display: grid;
@@ -875,12 +875,12 @@ watch(() => props.canManage, (canManage) => {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #374151;
+  color: var(--russ-text-secondary);
   font-size: 13px;
 }
 
 .report-row i {
-  color: #64748b;
+  color: var(--russ-text-tertiary);
   font-size: 13px;
 }
 
@@ -895,15 +895,15 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .status-confirmed {
-  background-color: #dcfce7;
-  color: #166534;
-  border: 1px solid #bbf7d0;
+  background-color: var(--russ-success-light);
+  color: var(--russ-success-text);
+  border: 1px solid var(--russ-success-border);
 }
 
 .status-not-confirmed {
-  background-color: #fef2f2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
+  background-color: var(--russ-error-light);
+  color: var(--russ-error-text);
+  border: 1px solid var(--russ-error-light);
 }
 
 .ruchnik-actions {
@@ -913,11 +913,11 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .ruchnik-edit-btn {
-  background: #dbeafe;
+  background: var(--russ-info-light);
   border: none;
   border-radius: 8px;
   padding: 8px 12px;
-  color: #2563eb;
+  color: var(--russ-accent);
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -928,17 +928,17 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .ruchnik-edit-btn:hover {
-  background: #bfdbfe;
-  color: #1d4ed8;
+  background: var(--russ-info-border);
+  color: var(--russ-accent-dark);
   transform: scale(1.05);
 }
 
 .ruchnik-remove-btn {
-  background: #fee2e2;
+  background: var(--russ-error-light);
   border: none;
   border-radius: 8px;
   padding: 8px 12px;
-  color: #dc2626;
+  color: var(--russ-error);
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -949,15 +949,15 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .ruchnik-remove-btn:hover {
-  background: #fecaca;
-  color: #b91c1c;
+  background: var(--russ-error-light);
+  color: var(--russ-error-dark);
   transform: scale(1.05);
 }
 
 .ruchnik-empty {
   text-align: center;
   padding: 40px 20px;
-  color: #919191;
+  color: var(--russ-text-muted);
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -971,21 +971,21 @@ watch(() => props.canManage, (canManage) => {
 .ruchnik-empty-text {
   font-size: 16px;
   font-weight: 600;
-  color: #475569;
+  color: var(--russ-text-secondary);
   margin-bottom: 8px;
 }
 
 .ruchnik-empty-subtext {
   font-size: 14px;
-  color: #94a3b8;
+  color: var(--russ-text-tertiary);
 }
 
 .ruchnik-add-column {
-  background: #fff;
+  background: var(--russ-bg);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px var(--russ-shadow-default);
+  border: 1px solid var(--russ-border);
   display: flex;
   flex-direction: column;
   overflow: visible;
@@ -1003,11 +1003,11 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .ruchnik-edit-mode {
-  background: rgb(230, 230, 230);
+  background: var(--russ-bg-light);
   border-radius: 16px;
   padding: 0;
   margin-bottom: 20px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--russ-border);
 }
 
 .edit-header {
@@ -1031,14 +1031,14 @@ watch(() => props.canManage, (canManage) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--russ-text-inverse);
   font-size: 20px;
   backdrop-filter: blur(10px);
 }
 
 .edit-title h5 {
   margin: 0;
-  color: white;
+  color: var(--russ-text-inverse);
   font-size: 18px;
   font-weight: 700;
   line-height: 1.2;
@@ -1055,7 +1055,7 @@ watch(() => props.canManage, (canManage) => {
 .ruchnik-cancel-edit-btn {
   background: rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
+  color: var(--russ-text-inverse);
   cursor: pointer;
   padding: 12px;
   border-radius: 10px;
@@ -1093,8 +1093,8 @@ watch(() => props.canManage, (canManage) => {
   gap: 10px;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 2px solid #f1f5f9;
-  color: #475569;
+  border-bottom: 2px solid var(--russ-bg-tertiary);
+  color: var(--russ-text-secondary);
   font-weight: 600;
   font-size: 14px;
   text-transform: uppercase;
@@ -1102,7 +1102,7 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .edit-section-header i {
-  color: #6366f1;
+  color: var(--russ-secondary);
   font-size: 16px;
 }
 
@@ -1119,17 +1119,17 @@ watch(() => props.canManage, (canManage) => {
   gap: 8px;
   font-size: 14px;
   font-weight: 600;
-  color: #374151;
+  color: var(--russ-text-secondary);
   margin-bottom: 4px;
 }
 
 .required {
-  color: #ef4444;
+  color: var(--russ-error);
   font-weight: 700;
 }
 
 .optional {
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   font-weight: 400;
   font-size: 12px;
 }
@@ -1144,9 +1144,9 @@ watch(() => props.canManage, (canManage) => {
   top: 50%;
   transform: translateY(-50%);
   font-size: 12px;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   font-weight: 500;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--russ-overlay-light);
   padding: 2px 6px;
   border-radius: 4px;
   pointer-events: none;
@@ -1178,7 +1178,7 @@ watch(() => props.canManage, (canManage) => {
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   font-style: italic;
   margin-top: 4px;
 }
@@ -1194,15 +1194,15 @@ watch(() => props.canManage, (canManage) => {
   justify-content: flex-end;
   margin-top: 24px;
   padding-top: 20px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--russ-border);
 }
 
 .ruchnik-cancel-btn {
   padding: 12px 24px;
-  background: #f8fafc;
-  border: 2px solid #e2e8f0;
+  background: var(--russ-bg-secondary);
+  border: 2px solid var(--russ-border-light);
   border-radius: 12px;
-  color: #64748b;
+  color: var(--russ-text-tertiary);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -1213,10 +1213,10 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .ruchnik-cancel-btn:hover:not([disabled]) {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
-  color: #475569;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--russ-bg-tertiary);
+  border-color: var(--russ-border-dark);
+  color: var(--russ-text-secondary);
+  box-shadow: 0 4px 12px var(--russ-shadow-hover);
 }
 
 .ruchnik-cancel-btn[disabled] {
@@ -1227,10 +1227,10 @@ watch(() => props.canManage, (canManage) => {
 
 .ruchnik-save-btn {
   padding: 12px 24px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--russ-success) 0%, var(--russ-success-dark) 100%);
   border: none;
   border-radius: 12px;
-  color: white;
+  color: var(--russ-text-inverse);
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -1238,17 +1238,17 @@ watch(() => props.canManage, (canManage) => {
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 12px var(--russ-shadow-success);
 }
 
 .ruchnik-save-btn:hover:not([disabled]) {
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  background: linear-gradient(135deg, var(--russ-success-dark) 0%, var(--russ-success-dark) 100%);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 8px 20px var(--russ-shadow-success-light);
 }
 
 .ruchnik-save-btn[disabled] {
-  background: #9ca3af;
+  background: var(--russ-neutral-light);
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -1277,19 +1277,19 @@ watch(() => props.canManage, (canManage) => {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #ef4444;
+  color: var(--russ-error);
   font-size: 12px;
   font-weight: 500;
   margin-top: 6px;
   padding: 8px 12px;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: var(--russ-error-light);
+  border: 1px solid var(--russ-error-light);
   border-radius: 8px;
 }
 
 .error-message i {
   font-size: 14px;
-  color: #dc2626;
+  color: var(--russ-error);
 }
 
 .ruchnik-input-group {
@@ -1301,39 +1301,39 @@ watch(() => props.canManage, (canManage) => {
 .ruchnik-label {
   font-size: 14px;
   font-weight: 600;
-  color: #374151;
+  color: var(--russ-text-secondary);
 }
 
 .ruchnik-input {
   padding: 12px 16px;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--russ-input-border);
   border-radius: 10px;
   font-size: 15px;
-  background: #fff;
+  background: var(--russ-bg);
   transition: all 0.2s ease;
-  color: #2d2d2d;
+  color: var(--russ-text-primary);
 }
 
 .ruchnik-input:focus {
   outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  border-color: var(--russ-input-border-focus);
+  box-shadow: 0 0 0 3px var(--russ-shadow-secondary);
 }
 
 .ruchnik-input-error {
-  border-color: #ef4444;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  border-color: var(--russ-input-border-error);
+  box-shadow: 0 0 0 3px var(--russ-shadow-error);
 }
 
 .ruchnik-error-message {
-  color: #ef4444;
+  color: var(--russ-error);
   font-size: 12px;
   font-weight: 500;
 }
 
 .ruchnik-add-btn {
   background: #6b9eff;
-  color: #fff;
+  color: var(--russ-text-inverse);
   border: none;
   border-radius: 12px;
   padding: 14px 20px;
@@ -1348,12 +1348,12 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .ruchnik-add-btn:hover:not([disabled]) {
-  background: #5a8de8;
+  background: var(--russ-accent);
 }
 
 .ruchnik-add-btn[disabled] {
-  background: #9ca3af;
-  color: #6b7280;
+  background: var(--russ-neutral-light);
+  color: var(--russ-text-tertiary);
   cursor: not-allowed;
   opacity: 0.7;
 }
@@ -1369,10 +1369,10 @@ watch(() => props.canManage, (canManage) => {
 .ruchnik-filters-container {
   margin-bottom: 20px;
   padding: 16px;
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  border: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, var(--russ-bg) 0%, var(--russ-bg-secondary) 100%);
+  border: 1px solid var(--russ-border-light);
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 8px var(--russ-shadow-default);
 }
 
 .ruchnik-filters-grid {
@@ -1401,12 +1401,12 @@ watch(() => props.canManage, (canManage) => {
   gap: 6px;
   font-size: 13px;
   font-weight: 600;
-  color: #475569;
+  color: var(--russ-text-secondary);
   margin-bottom: 2px;
 }
 
 .ruchnik-filter-label i {
-  color: #6366f1;
+  color: var(--russ-secondary);
   font-size: 14px;
 }
 
@@ -1419,10 +1419,10 @@ watch(() => props.canManage, (canManage) => {
   align-items: center;
   gap: 6px;
   padding: 10px 16px;
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
+  background: var(--russ-bg-light);
+  border: 1px solid var(--russ-border-dark);
   border-radius: 8px;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -1431,10 +1431,10 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .ruchnik-reset-btn:hover {
-  background: #e5e7eb;
-  border-color: #9ca3af;
-  color: #374151;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--russ-border);
+  border-color: var(--russ-text-muted);
+  color: var(--russ-text-secondary);
+  box-shadow: 0 2px 4px var(--russ-shadow-default);
 }
 
 .ruchnik-reset-btn:active {
@@ -1464,7 +1464,7 @@ watch(() => props.canManage, (canManage) => {
 .ruchnik-search-icon {
   position: absolute;
   left: 12px;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   font-size: 14px;
   z-index: 1;
 }
@@ -1472,21 +1472,21 @@ watch(() => props.canManage, (canManage) => {
 .ruchnik-search-input-compact {
   width: 100%;
   padding: 10px 12px 10px 36px !important;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--russ-input-border);
   border-radius: 8px;
   font-size: 14px;
-  background: #fff;
+  background: var(--russ-bg);
   transition: all 0.2s ease;
-  color: #374151;
+  color: var(--russ-text-secondary);
   height: 42px;
   box-sizing: border-box;
 }
 
 .ruchnik-search-input-compact:focus {
   outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-  background: #fff;
+  border-color: var(--russ-input-border-focus);
+  box-shadow: 0 0 0 3px var(--russ-shadow-secondary);
+  background: var(--russ-bg);
 }
 
 .ruchnik-search-clear {
@@ -1497,15 +1497,15 @@ watch(() => props.canManage, (canManage) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   cursor: pointer;
   border-radius: 50%;
   transition: all 0.2s ease;
 }
 
 .ruchnik-search-clear:hover {
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--russ-bg-light);
+  color: var(--russ-text-secondary);
 }
 
 @media (max-width: 700px) {
@@ -1538,9 +1538,9 @@ watch(() => props.canManage, (canManage) => {
 .ruchnik-pagination {
   margin-top: 16px;
   padding: 12px 16px;
-  background: #f8fafc;
+  background: var(--russ-bg-secondary);
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--russ-border-light);
   flex-shrink: 0;
 }
 
@@ -1557,20 +1557,20 @@ watch(() => props.canManage, (canManage) => {
   gap: 12px;
   font-size: 13px;
   font-weight: 500;
-  color: #374151;
+  color: var(--russ-text-secondary);
 }
 
 .page-info-text {
-  color: #2563eb;
+  color: var(--russ-accent);
   font-weight: 600;
-  background: #e0e7ff;
+  background: var(--russ-bg-blue-lighter);
   padding: 4px 8px;
   border-radius: 6px;
   font-size: 12px;
 }
 
 .total-info-text {
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   font-size: 12px;
 }
 
@@ -1583,9 +1583,9 @@ watch(() => props.canManage, (canManage) => {
 .pagination-select-compact {
   padding: 4px 6px;
   border-radius: 4px;
-  border: 1px solid #d1d5db;
-  background: #fff;
-  color: #374151;
+  border: 1px solid var(--russ-border-dark);
+  background: var(--russ-bg);
+  color: var(--russ-text-secondary);
   font-size: 12px;
   font-weight: 500;
   transition: border-color 0.2s;
@@ -1595,15 +1595,15 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .pagination-select-compact:focus {
-  border-color: #2563eb;
+  border-color: var(--russ-accent);
 }
 
 .page-btn-compact {
-  background: #fff;
-  border: 1px solid #d1d5db;
+  background: var(--russ-bg);
+  border: 1px solid var(--russ-border-dark);
   border-radius: 4px;
   padding: 4px 8px;
-  color: #374151;
+  color: var(--russ-text-secondary);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1616,14 +1616,14 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .page-btn-compact:hover:not([disabled]) {
-  background: #f3f4f6;
-  border-color: #9ca3af;
-  color: #1f2937;
+  background: var(--russ-bg-light);
+  border-color: var(--russ-text-muted);
+  color: var(--russ-text-dark);
 }
 
 .page-btn-compact[disabled] {
-  background: #f9fafb;
-  color: #9ca3af;
+  background: var(--russ-bg-secondary);
+  color: var(--russ-text-muted);
   cursor: not-allowed;
   opacity: 0.6;
 }
@@ -1759,13 +1759,13 @@ watch(() => props.canManage, (canManage) => {
   .ruchnik-edit-mode {
     margin-bottom: 12px;
     border-radius: 12px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background: var(--russ-bg-secondary);
+    border: 1px solid var(--russ-border-light);
   }
 
   .edit-header {
     padding: 8px 12px;
-    background: #e2e8f0;
+    background: var(--russ-bg-light);
     border-radius: 12px 12px 0 0;
   }
 
@@ -1777,7 +1777,7 @@ watch(() => props.canManage, (canManage) => {
     width: 32px;
     height: 32px;
     font-size: 14px;
-    background: #64748b;
+    background: var(--russ-text-tertiary);
   }
 
   .edit-title h5 {
@@ -1787,7 +1787,7 @@ watch(() => props.canManage, (canManage) => {
 
   .edit-code {
     font-size: 12px;
-    color: #64748b;
+    color: var(--russ-text-tertiary);
   }
 
   .ruchnik-cancel-edit-btn {
@@ -1837,7 +1837,7 @@ watch(() => props.canManage, (canManage) => {
     gap: 8px;
     margin-top: 12px;
     padding-top: 8px;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--russ-border-light);
   }
 
   .ruchnik-cancel-btn,

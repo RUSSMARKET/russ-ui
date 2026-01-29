@@ -53,21 +53,21 @@ const onCancel = () => {
       calc(16px + (18 - 16) * ((100vw - 320px) / (1920 - 320))),
       18px);
   font-weight: 600;
-  color: #1e293b;
+  color: var(--russ-text-primary);
   margin-bottom: 1.5rem;
   line-height: 1.5;
 }
 
 .confirm-error {
-  color: #dc2626;
+  color: var(--russ-error);
   font-size: clamp(12px,
       calc(12px + (14 - 12) * ((100vw - 320px) / (1920 - 320))),
       14px);
   margin-bottom: 1.5rem;
   padding: 0.75rem;
-  background: #fef2f2;
+  background: var(--russ-error-light);
   border-radius: 8px;
-  border: 1px solid #fecaca;
+  border: 1px solid var(--russ-error-light);
 }
 
 .confirm-actions {
@@ -92,32 +92,32 @@ const onCancel = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.07);
+  box-shadow: 0 2px 8px var(--russ-shadow-accent-light);
 }
 
 .btn-cancel {
-  background: #f3f4f6;
-  color: #374151;
-  border: 1.5px solid #d1d5db;
+  background: var(--russ-bg-disabled);
+  color: var(--russ-text-secondary);
+  border: 1.5px solid var(--russ-border-dark);
 }
 
 .btn-submit {
-  background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
-  color: white;
+  background: linear-gradient(90deg, var(--russ-accent) 0%, var(--russ-accent-light) 100%);
+  color: var(--russ-text-inverse);
   border: none;
 }
 
 .btn-cancel:hover {
-  background: #e5e7eb;
-  color: #2563eb;
-  border-color: #2563eb;
+  background: var(--russ-bg-active);
+  color: var(--russ-accent);
+  border-color: var(--russ-accent);
 
 }
 
 .btn-submit:hover {
-  background: linear-gradient(90deg, #1d4ed8 0%, #2563eb 100%);
+  background: linear-gradient(90deg, var(--russ-accent-dark) 0%, var(--russ-accent) 100%);
 
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.13);
+  box-shadow: 0 4px 12px var(--russ-shadow-accent);
 }
 
 .btn-cancel:disabled,

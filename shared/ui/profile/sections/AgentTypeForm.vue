@@ -206,10 +206,10 @@ const selectedAgentType = computed({
 }
 
 .form-section {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: linear-gradient(135deg, var(--russ-bg-secondary) 0%, var(--russ-bg-tertiary) 100%);
   border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px var(--russ-shadow-color);
   border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
@@ -217,7 +217,7 @@ const selectedAgentType = computed({
   display: block;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--russ-text-primary);
   margin-bottom: 1rem;
   text-align: center;
 }
@@ -231,24 +231,24 @@ const selectedAgentType = computed({
   width: 100%;
   padding: 1rem 1.5rem;
   font-size: 1rem;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--russ-border-light);
   border-radius: 12px;
-  background: #ffffff;
-  color: #1e293b;
+  background: var(--russ-bg);
+  color: var(--russ-text-primary);
   appearance: none;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 8px var(--russ-shadow-color);
 }
 
 .form-select:focus {
   outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  border-color: var(--russ-secondary);
+  box-shadow: 0 0 0 3px var(--russ-shadow-secondary);
 }
 
 .form-select:hover {
-  border-color: #cbd5e1;
+  border-color: var(--russ-border-light);
 }
 
 .select-arrow {
@@ -256,7 +256,7 @@ const selectedAgentType = computed({
   right: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  color: #64748b;
+  color: var(--russ-text-muted);
   pointer-events: none;
   transition: transform 0.3s ease;
 }
@@ -266,12 +266,12 @@ const selectedAgentType = computed({
 }
 
 .conditional-section {
-  background: #ffffff;
+  background: var(--russ-bg);
   border-radius: 16px;
   padding: 1.5rem;
   margin-top: 1.5rem;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--russ-border-light);
+  box-shadow: 0 2px 12px var(--russ-shadow-color);
   animation: slideIn 0.3s ease-out;
 }
 
@@ -293,25 +293,25 @@ const selectedAgentType = computed({
   gap: 0.75rem;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid #f1f5f9;
+  border-bottom: 2px solid var(--russ-bg-tertiary);
 }
 
 .section-icon {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, var(--russ-secondary) 0%, var(--russ-purple) 100%);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  color: var(--russ-text-inverse);
+  box-shadow: 0 4px 12px var(--russ-shadow-secondary);
 }
 
 .section-header h3 {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--russ-text-primary);
   margin: 0;
 }
 
@@ -331,22 +331,22 @@ const selectedAgentType = computed({
   width: 100%;
   padding: 0.875rem 1rem;
   font-size: 0.95rem;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--russ-border-light);
   border-radius: 10px;
-  background: #ffffff;
-  color: #1e293b;
+  background: var(--russ-bg);
+  color: var(--russ-text-primary);
   transition: all 0.3s ease;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 1px 4px var(--russ-shadow-color);
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  border-color: var(--russ-secondary);
+  box-shadow: 0 0 0 3px var(--russ-shadow-secondary);
 }
 
 .form-input:hover {
-  border-color: #cbd5e1;
+  border-color: var(--russ-border-light);
 }
 
 .file-upload-group {
@@ -362,7 +362,7 @@ const selectedAgentType = computed({
   display: block;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--russ-text-secondary);
   margin-bottom: 0.75rem;
 }
 
@@ -383,18 +383,18 @@ const selectedAgentType = computed({
   align-items: center;
   gap: 0.75rem;
   padding: 1rem 1.25rem;
-  background: #ffffff;
-  border: 2px dashed #cbd5e1;
+  background: var(--russ-bg);
+  border: 2px dashed var(--russ-border-light);
   border-radius: 12px;
-  color: #64748b;
+  color: var(--russ-text-muted);
   transition: all 0.3s ease;
   min-height: 60px;
 }
 
 .file-input-display:hover {
-  border-color: #6366f1;
-  background: #f8fafc;
-  color: #6366f1;
+  border-color: var(--russ-secondary);
+  background: var(--russ-bg-secondary);
+  color: var(--russ-secondary);
 }
 
 .file-input-display svg {

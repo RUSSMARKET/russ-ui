@@ -133,7 +133,7 @@ const onHide = () => {
 }
 
 .success-icon {
-  color: #4caf50;
+  color: var(--russ-success);
   font-size: 48px;
 }
 
@@ -141,11 +141,11 @@ const onHide = () => {
   font-weight: 700;
   margin-bottom: 0.5rem;
   font-size: 24px;
-  color: #1f2937;
+  color: var(--russ-text-primary);
 }
 
 .success-subtitle {
-  color: #666;
+  color: var(--russ-text-tertiary);
   margin-bottom: 1.2rem;
   font-size: 16px;
 }
@@ -155,10 +155,10 @@ const onHide = () => {
   flex-direction: column;
   gap: 0.5rem;
   margin: 1.2rem 0 1.2rem 0;
-  background: #f8fafc;
+  background: var(--russ-bg-secondary);
   border-radius: 10px;
   padding: 1.1rem 1.2rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--russ-border-light);
   width: 100%;
   text-align: left;
 }
@@ -171,12 +171,12 @@ const onHide = () => {
 
 .grid-client-info .final-client-label {
   min-width: 90px;
-  color: #213e89;
+  color: var(--russ-value);
   font-weight: 600;
 }
 
 .grid-client-info .final-client-value {
-  color: #222;
+  color: var(--russ-text-primary);
   font-weight: 500;
   word-break: break-all;
   display: flex;
@@ -196,7 +196,7 @@ const onHide = () => {
 }
 
 .final-modal-link {
-  color: #2563eb;
+  color: var(--russ-accent);
   font-weight: 600;
   text-decoration: underline;
   word-break: break-all;

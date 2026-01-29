@@ -85,7 +85,7 @@ const emit = defineEmits(['close']);
 .status-form-block h4 {
     margin-bottom: 18px;
     font-size: clamp(14px, calc(14px + (18 - 14) * ((100vw - 320px) / (1920 - 320))), 18px);
-    color: #374151;
+    color: var(--russ-text-secondary);
     font-weight: 600;
 }
 
@@ -100,7 +100,7 @@ const emit = defineEmits(['close']);
     align-items: center;
     gap: 10px;
     padding: 10px 8px;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--russ-border);
 }
 
 .status-item:last-child {
@@ -115,7 +115,7 @@ const emit = defineEmits(['close']);
 
 .status-name {
     flex: 1;
-    color: #111827;
+    color: var(--russ-text-primary);
     font-weight: 500;
     font-size: clamp(14px, calc(14px + (18 - 14) * ((100vw - 320px) / (1920 - 320))), 18px);
 }
@@ -123,7 +123,7 @@ const emit = defineEmits(['close']);
 .edit-status-btn {
     background: none;
     border: none;
-    color: #2563eb;
+    color: var(--russ-accent);
     font-size: clamp(14px, calc(14px + (18 - 14) * ((100vw - 320px) / (1920 - 320))), 18px);
     margin-right: 8px;
     cursor: pointer;
@@ -131,12 +131,12 @@ const emit = defineEmits(['close']);
 }
 
 .edit-status-btn:hover {
-    color: #1d4ed8;
+    color: var(--russ-accent-dark);
 }
 
 .delete-status-btn {
     padding: 6px 12px;
-    background-color: #ef4444;
+    background-color: var(--russ-error);
     color: white;
     border: none;
     border-radius: 6px;
@@ -147,11 +147,11 @@ const emit = defineEmits(['close']);
 }
 
 .delete-status-btn:hover {
-    background-color: #dc2626;
+    background-color: var(--russ-error-dark);
 }
 
 .delete-status-btn:disabled {
-    background-color: #ef444480;
+    background-color: var(--russ-error-light);
     cursor: not-allowed;
 }
 
@@ -182,13 +182,13 @@ const emit = defineEmits(['close']);
 }
 
 .input-error {
-    border-color: #dc2626 !important;
-    background: #fef2f2;
+    border-color: var(--russ-error) !important;
+    background: var(--russ-error-light);
     border-radius: 8px;
 }
 
 .input-error-message {
-    color: #dc2626;
+    color: var(--russ-error);
     font-size: clamp(14px, calc(14px + (18 - 14) * ((100vw - 320px) / (1920 - 320))), 18px);
     margin-top: 4px;
     margin-left: 2px;
@@ -203,9 +203,9 @@ const emit = defineEmits(['close']);
 .btn-cancel {
     padding: 12px 24px 12px 22px;
     background: #fff;
-    border: 1.5px solid #e5e7eb;
+    border: 1.5px solid var(--russ-border);
     border-radius: 8px;
-    color: #374151;
+    color: var(--russ-text-secondary);
     font-size: clamp(14px, calc(14px + (18 - 14) * ((100vw - 320px) / (1920 - 320))), 18px);
     font-weight: 500;
     cursor: pointer;
@@ -215,12 +215,12 @@ const emit = defineEmits(['close']);
 
 .btn-cancel:hover {
     background: #f3f4f6;
-    color: #2563eb;
+    color: var(--russ-accent);
     border-color: #2563eb;
 }
 
 .btn-submit {
-    background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+    background: linear-gradient(90deg, var(--russ-accent) 0%, var(--russ-accent-light) 100%);
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -232,7 +232,7 @@ const emit = defineEmits(['close']);
 }
 
 .btn-submit:hover {
-    background: linear-gradient(90deg, #1d4ed8 0%, #2563eb 100%);
+    background: linear-gradient(90deg, var(--russ-accent-dark) 0%, var(--russ-accent) 100%);
     box-shadow: 0 4px 16px rgba(37, 99, 235, 0.13);
     cursor: pointer;
 }

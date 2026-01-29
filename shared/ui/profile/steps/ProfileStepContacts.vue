@@ -160,19 +160,19 @@ const handleContinue = () => {
   gap: 18px;
   align-items: center;
   padding: 12px 0;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--russ-border);
   margin-bottom: 16px;
 }
 
 .profile-readonly-field .profile-label {
-  color: #6366f1;
+  color: var(--russ-label);
   min-width: 120px;
   font-weight: 600;
   font-size: 1.05em;
 }
 
 .profile-readonly-field .profile-value {
-  color: #213e89;
+  color: var(--russ-value);
   font-weight: 500;
   word-break: break-word;
 }
@@ -193,11 +193,11 @@ const handleContinue = () => {
 }
 
 .form-input.error {
-  border-color: #dc3545;
+  border-color: var(--russ-error);
 }
 
 .error-message {
-  color: #dc3545;
+  color: var(--russ-error);
   font-size: clamp(0.75rem, calc(0.75rem + (0.85 - 0.75) * ((100vw - 320px) / (960 - 320))), 0.85rem);
   margin-top: -0.5rem;
   margin-bottom: 0.5rem;
@@ -215,7 +215,7 @@ const handleContinue = () => {
   gap: 8px;
   cursor: pointer;
   font-size: 14px;
-  color: #374151;
+  color: var(--russ-text-secondary);
   user-select: none;
 }
 
@@ -223,7 +223,7 @@ const handleContinue = () => {
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: #2563eb;
+  accent-color: var(--russ-checkbox-accent);
 }
 
 .no-patronymic-checkbox span {
