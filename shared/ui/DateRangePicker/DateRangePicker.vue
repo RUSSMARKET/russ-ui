@@ -268,15 +268,35 @@ const selectDate = (date) => {
     else if (dateTime === toTime) {
       newTo = null;
     }
-    // Если кликнули между датами, обновляем ближайшую
+    // Если кликнули между датами
     else if (dateTime > fromTime && dateTime < toTime) {
-      const distToFrom = Math.abs(dateTime - fromTime);
-      const distToTo = Math.abs(dateTime - toTime);
-      
-      if (distToFrom < distToTo) {
-        newFrom = date;
-      } else {
+      const clickedMonth = date.getMonth();
+      const clickedYear = date.getFullYear();
+      const fromMonth = newFrom.getMonth();
+      const fromYear = newFrom.getFullYear();
+      const toMonth = newTo.getMonth();
+      const toYear = newTo.getFullYear();
+      const sameMonthAsFrom = clickedMonth === fromMonth && clickedYear === fromYear;
+      const sameMonthAsTo = clickedMonth === toMonth && clickedYear === toYear;
+
+      // Клик в том же месяце, что и "от", но "до" в другом месяце — пользователь выбирает конец периода в текущем месяце (напр. 12–14 декабря при 12 дек – 31 янв)
+      if (sameMonthAsFrom && !sameMonthAsTo) {
         newTo = date;
+      }
+      // Клик в месяце, отличном от текущего диапазона — начинаем новый период с этой даты
+      else if (!sameMonthAsFrom && !sameMonthAsTo) {
+        newFrom = date;
+        newTo = null;
+      }
+      // Иначе обновляем ближайшую границу (оба конца в том же месяце или обычная подстройка)
+      else {
+        const distToFrom = Math.abs(dateTime - fromTime);
+        const distToTo = Math.abs(dateTime - toTime);
+        if (distToFrom < distToTo) {
+          newFrom = date;
+        } else {
+          newTo = date;
+        }
       }
     }
     // Если кликнули раньше "от", она становится новой "от"
