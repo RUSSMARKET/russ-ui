@@ -58,25 +58,24 @@ defineProps(['filledUserData'])
 <style scoped>
 .profile-section-card {
   background: var(--russ-bg);
-  border: 1px solid var(--russ-border);
-  border-radius: 12px;
-  padding: 1.5rem 1.2rem;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px var(--russ-shadow-color);
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 1.1rem;
-  box-shadow: 0 1px 4px var(--russ-shadow-primary-light);
 }
 
 .profile-subcard {
-  padding: 1rem 1rem 0.3rem;
-  border-radius: 14px;
+  padding: 1rem;
+  border-radius: 10px;
   background: var(--russ-bg);
-  border: 1px solid var(--russ-border);
+  box-shadow: 0 1px 3px var(--russ-shadow-color);
 }
 
 .user-data-subcard {
   background: var(--russ-bg-blue-light);
-  border-color: var(--russ-bg-blue-lighter);
+  box-shadow: 0 1px 3px var(--russ-shadow-color);
 }
 
 .profile-subcard-title {

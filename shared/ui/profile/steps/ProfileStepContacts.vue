@@ -179,14 +179,13 @@ const handleContinue = () => {
 
 .form-section {
   background: var(--russ-bg);
-  border: 1px solid var(--russ-border);
-  border-radius: 12px;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px var(--russ-shadow-color);
   padding: 1.25rem;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  box-shadow: 0 1px 4px var(--russ-shadow-primary-light);
 }
 
 .form-input {
