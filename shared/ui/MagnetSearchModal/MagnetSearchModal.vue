@@ -140,9 +140,16 @@ const props = defineProps({
     },
     baseURL: {
         type: String,
-        required: true
+        default: ''
     }
 })
+
+defineOptions({ inheritAttrs: false })
+
+const effectiveBaseURL = computed(() => props.baseURL || 'https://server.rusaifin.ru')
+function getFileUrl(file) {
+    return `${effectiveBaseURL.value}/document/${file.code}`
+}
 
 // Flatten the grouped results for display
 const flattenedResults = computed(() => {
@@ -188,11 +195,6 @@ const modalVisible = computed({
 
 const searchNumber = ref('')
 const hasSearched = ref(false)
-
-// Helper functions - defined before computed properties that use them
-function getFileUrl(file) {
-    return `${props.baseURL}/document/${file.code}`
-}
 
 function formatFileDate(dateString) {
     if (!dateString) return ''

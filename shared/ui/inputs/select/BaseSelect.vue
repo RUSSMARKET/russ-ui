@@ -475,6 +475,8 @@ watch(() => props.loading, (isLoading) => {
   flex-direction: column;
   gap: 6px;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   position: relative;
   overflow: visible;
 }
@@ -491,6 +493,7 @@ watch(() => props.loading, (isLoading) => {
 .base-select-container {
   position: relative;
   width: 100%;
+  min-width: 0;
   max-width: 100%;
   overflow: visible;
   isolation: isolate;
@@ -498,6 +501,8 @@ watch(() => props.loading, (isLoading) => {
 
 .base-select-combo {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   padding: 14px 50px 14px 16px;
   border: 1.5px solid var(--russ-border);
   border-radius: 10px;

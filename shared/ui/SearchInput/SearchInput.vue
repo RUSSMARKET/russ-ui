@@ -44,10 +44,13 @@ const handleSearch = () => {
 .search-wrapper {
   position: relative;
   flex: 1;
+  min-width: 0;
+  max-width: 100%;
   height: 48px;
   background: var(--russ-bg-blue-tint);
   border-radius: 12px;
   transition: all 0.2s ease;
+  overflow: hidden;
 }
 
 .search-wrapper:focus-within {
@@ -71,7 +74,10 @@ const handleSearch = () => {
 }
 
 .search-input {
+  box-sizing: border-box;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   background: var(--russ-accent-tint-12);
   border: 2px solid var(--russ-accent-tint-12);
   border-radius: 8px;

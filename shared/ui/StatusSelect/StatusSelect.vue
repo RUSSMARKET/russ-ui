@@ -419,20 +419,20 @@ watch(() => props.options, () => {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  min-height: 48px;
-  padding: 12px 16px;
+  min-height: 36px;
+  padding: 6px 12px;
   background: var(--russ-bg);
   border: 1px solid var(--russ-border);
-  border-radius: 12px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 3px var(--russ-shadow-color);
+  box-shadow: 0 1px 2px var(--russ-shadow-color);
 }
 
 .status-select-container.multiple .status-select-trigger {
   align-items: flex-start;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .status-select-trigger:hover:not(.disabled) {
@@ -747,8 +747,8 @@ watch(() => props.options, () => {
 /* Адаптивность */
 @media (max-width: 768px) {
   .status-select-trigger {
-    min-height: 44px;
-    padding: 10px 14px;
+    min-height: 36px;
+    padding: 6px 12px;
   }
 
   .status-select-dropdown {
