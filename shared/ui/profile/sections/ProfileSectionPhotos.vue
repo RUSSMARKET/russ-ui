@@ -58,9 +58,10 @@ function handlePhotoClick(event, file, label) {
 </script>
 <style scoped>
 .profile-section-card {
-  background: var(--russ-bg);
-  border-radius: 10px;
-  box-shadow: 0 1px 3px var(--russ-shadow-color);
+  background: var(--russ-bg-secondary);
+  border: 1px solid var(--russ-border);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px var(--russ-shadow-color);
   padding: 1.25rem;
 }
 .photos-grid {
@@ -85,9 +86,10 @@ function handlePhotoClick(event, file, label) {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--russ-bg-secondary);
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(33,62,137,0.06);
+  background: var(--russ-bg-tertiary);
+  border: 1px solid var(--russ-border);
+  border-radius: 12px;
+  box-shadow: 0 1px 4px var(--russ-shadow-color);
   overflow: hidden;
   position: relative;
   cursor: pointer;
@@ -95,7 +97,7 @@ function handlePhotoClick(event, file, label) {
 }
 .photo-preview-wrapper:hover {
   transform: scale(1.02);
-  box-shadow: 0 4px 16px rgba(33,62,137,0.13);
+  box-shadow: 0 2px 12px var(--russ-shadow-color);
 }
 .photo-link {
   display: block;
@@ -111,7 +113,7 @@ function handlePhotoClick(event, file, label) {
   display: block;
 }
 .photo-placeholder {
-  color: var(--russ-text-tertiary);
+  color: var(--russ-text-muted);
   font-size: 2.2rem;
   text-align: center;
 }

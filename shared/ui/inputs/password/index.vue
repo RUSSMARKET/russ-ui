@@ -142,16 +142,28 @@ const togglePassword = () => {
 <style scoped>
 .input-wrapper {
   position: relative;
+  display: block;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: visible;
 }
 
 .password-input-container {
   position: relative;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .custom-input {
+  display: block;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   padding: 0.75rem;
   padding-right: 2.5rem;
   border: 1px solid var(--russ-input-border);
@@ -229,6 +241,7 @@ const togglePassword = () => {
   position: absolute;
   left: 0.75rem;
   top: 1rem;
+  z-index: 2;
   font-size: clamp(
     12px,
     calc(12px + (14 - 12) * ((100vw - 320px) / (1920 - 320))),
@@ -239,9 +252,10 @@ const togglePassword = () => {
   transition: all 0.2s ease;
   background: var(--russ-input-bg);
   padding: 0 0.25rem;
+  line-height: 1.2;
 }
 
-.custom-input:focus ~ .input-label,
+.input-wrapper:focus-within .input-label,
 .label-active {
   top: -0.625rem;
   left: 0.5rem;
@@ -254,8 +268,8 @@ const togglePassword = () => {
   border-radius: 5px 5px 0 0;
 }
 
-.custom-input:disabled ~ .input-label,
-.custom-input[readonly] ~ .input-label {
+.input-wrapper:has(.custom-input:disabled) .input-label,
+.input-wrapper:has(.custom-input[readonly]) .input-label {
   background: var(--russ-input-bg-disabled);
   opacity: 0.6;
 }

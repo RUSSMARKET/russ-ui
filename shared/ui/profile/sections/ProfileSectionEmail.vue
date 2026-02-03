@@ -17,9 +17,10 @@ defineProps(['filledUserData'])
 </script>
 <style scoped>
 .profile-section-card {
-  background: var(--russ-bg);
-  border-radius: 10px;
-  box-shadow: 0 1px 3px var(--russ-shadow-color);
+  background: var(--russ-bg-secondary);
+  border: 1px solid var(--russ-border);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px var(--russ-shadow-color);
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
@@ -30,20 +31,23 @@ defineProps(['filledUserData'])
   gap: 18px;
   align-items: center;
   font-size: 1.08rem;
-  padding-bottom: 0.3rem;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
   border-bottom: 1px solid var(--russ-border);
 }
 .profile-row:last-child {
   border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 .profile-label {
-  color: var(--russ-label);
+  color: var(--russ-text-secondary);
   min-width: 120px;
   font-weight: 600;
   font-size: 1.05em;
 }
 .profile-value {
-  color: var(--russ-value);
+  color: var(--russ-text-primary);
   font-weight: 500;
   word-break: break-word;
 }
@@ -57,12 +61,12 @@ defineProps(['filledUserData'])
 .profile-status.confirmed {
   background: var(--russ-success-light);
   color: var(--russ-success);
-  border: 1.5px solid var(--russ-success);
+  border: 1px solid var(--russ-success);
 }
 .profile-status.unconfirmed {
   background: var(--russ-error-light);
   color: var(--russ-error);
-  border: 1.5px solid var(--russ-error);
+  border: 1px solid var(--russ-error);
 }
 @media (max-width: 600px) {
   .profile-section-card {

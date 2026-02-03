@@ -180,9 +180,10 @@ onMounted(async () => {
 </script>
 <style scoped>
 .profile-section-card {
-  background: var(--russ-bg);
-  border-radius: 10px;
-  box-shadow: 0 1px 3px var(--russ-shadow-color);
+  background: var(--russ-bg-secondary);
+  border: 1px solid var(--russ-border);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px var(--russ-shadow-color);
   padding: 1.25rem;
 }
 .profile-row {
@@ -190,20 +191,23 @@ onMounted(async () => {
   gap: 18px;
   align-items: flex-start;
   font-size: 1.08rem;
-  padding-bottom: 0.3rem;
-  border-bottom: 1px solid var(--russ-border-light);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--russ-border);
 }
 .profile-row:last-child {
   border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 .profile-label {
-  color: var(--russ-label);
+  color: var(--russ-text-secondary);
   min-width: 120px;
   font-weight: 600;
   font-size: 1.05em;
 }
 .profile-value {
-  color: var(--russ-value);
+  color: var(--russ-text-primary);
   font-weight: 500;
   word-break: break-word;
 }
@@ -214,8 +218,8 @@ onMounted(async () => {
   margin-bottom: 0.5rem;
 }
 .profile-table td {
-  padding: 0.4rem 0.7rem;
-  border-bottom: 1px solid var(--russ-border-light);
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--russ-border);
   font-size: 1rem;
 }
 .photos-grid {
@@ -226,7 +230,6 @@ onMounted(async () => {
 .photo-block {
   flex: 0 0 180px;
   display: flex;
-  flex-direction: column;
   flex-direction: column-reverse;
   align-items: center;
 }
@@ -240,14 +243,15 @@ onMounted(async () => {
 .photo-preview {
   width: 60px;
   height: 60px;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px var(--russ-shadow-primary-light);
+  border-radius: 8px;
+  box-shadow: 0 1px 4px var(--russ-shadow-color);
   margin: 0.2rem 0.5rem 0.2rem 0;
   object-fit: cover;
   transition: transform 0.18s;
+  border: 1px solid var(--russ-border);
 }
 .photo-preview:hover {
-  box-shadow: 0 4px 16px var(--russ-shadow-primary);
+  box-shadow: 0 2px 12px var(--russ-shadow-color);
   transform: scale(1.05);
 }
 @media (max-width: 600px) {

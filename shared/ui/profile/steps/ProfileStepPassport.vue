@@ -1,6 +1,6 @@
 <template>
   <div class="step-panel">
-    <section class="form-wrapper">
+    <section class="form-section">
       <h3 class="form-block-title">Паспортные данные</h3>
       <InputPassport :value="form.passport" @update:value="updateField('passport', $event)"
         placeholder="Номер паспорта *" class="form-input" :class="{ 'error': errors.passport }" />
@@ -15,7 +15,7 @@
       <div v-if="errors.passport_code" class="error-message">{{ errors.passport_code }}</div>
     </section>
 
-    <section class="form-wrapper user-data-block">
+    <section class="form-section user-data-block">
       <h3 class="form-block-title">Личные и банковские данные</h3>
       <InputDate :model-value="form.birthday" @update:model-value="updateField('birthday', $event)" placeholder="Дата рождения *" name="birthday" />
       <div v-if="errors.birthday" class="error-message">{{ errors.birthday }}</div>
@@ -95,15 +95,18 @@ const updateField = (field: keyof FormData, value: any) => {
 
 <style scoped>
 .step-panel {
-  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
-.form-wrapper {
-  background: var(--russ-bg);
-  border-radius: 10px;
-  box-shadow: 0 1px 3px var(--russ-shadow-color);
-  padding: 1.25rem;
-  margin: 0 auto 1.25rem;
+.form-section {
+  background: var(--russ-bg-secondary);
+  border: 1px solid var(--russ-border);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px var(--russ-shadow-color);
+  padding: 0rem;
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -111,7 +114,8 @@ const updateField = (field: keyof FormData, value: any) => {
 
 .user-data-block {
   background: var(--russ-bg-blue-light);
-  box-shadow: 0 1px 3px var(--russ-shadow-color);
+  border: 1px solid var(--russ-info-border);
+  box-shadow: 0 1px 4px var(--russ-shadow-color);
 }
 
 .form-block-title {

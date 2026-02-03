@@ -151,10 +151,6 @@ const handleContinue = () => {
 </script>
 
 <style scoped>
-.step-panel {
-  margin-top: 2rem;
-}
-
 .profile-readonly-field {
   display: flex;
   gap: 18px;
@@ -178,9 +174,10 @@ const handleContinue = () => {
 }
 
 .form-section {
-  background: var(--russ-bg);
-  border-radius: 10px;
-  box-shadow: 0 1px 3px var(--russ-shadow-color);
+  background: var(--russ-bg-secondary);
+  border: 1px solid var(--russ-border);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px var(--russ-shadow-color);
   padding: 1.25rem;
   margin: 0 auto;
   display: flex;

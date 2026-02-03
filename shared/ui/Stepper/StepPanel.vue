@@ -24,7 +24,5 @@ const activateCallback = goToStep
 </script>
 
 <style scoped>
-.step-panel {
-  padding: 1rem 0;
-}
+
 </style>
