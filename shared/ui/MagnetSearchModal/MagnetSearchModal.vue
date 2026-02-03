@@ -120,9 +120,9 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import BaseModal from '../BaseModal/BaseModal.vue'
-import { InputText } from '@/shared/ui'
+import { InputText } from '../inputs/text'
 import { useToast } from '../Toast'
-import { Fancybox } from '@fancyapps/ui'
+import { Fancybox } from '@fancyapps/ui/dist/fancybox/fancybox.js'
 import '@fancyapps/ui/dist/fancybox/fancybox.css'
 
 const props = defineProps({
