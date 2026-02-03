@@ -436,7 +436,7 @@ watch(() => props.options, () => {
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  min-height: 36px;
+  min-height: 48px;
   padding: 6px 12px;
   background: var(--russ-bg);
   border: 1px solid var(--russ-border);
