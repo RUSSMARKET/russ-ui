@@ -417,9 +417,11 @@ const updateField = (fieldId?: number) => {
 
 .product-field-input.ultra-compact-input,
 .product-field-input.ultra-compact {
-  padding: 4px 6px;
-  height: 28px;
+  padding: 4px 6px !important;
   font-size: 12px;
+  line-height: 1.35;
+  max-width: 220px;
+  box-sizing: border-box;
 }
 
 .product-field-save {
@@ -491,6 +493,7 @@ const updateField = (fieldId?: number) => {
 
 .product-field-controls.ultra-compact-controls {
   gap: 4px;
+  max-width: 260px;
 }
 
 .supports-loading,
@@ -998,8 +1001,8 @@ const updateField = (fieldId?: number) => {
   .product-field-input,
   .product-field-input.ultra-compact-input {
     width: 100%;
-    flex: 1 1 100%;
   }
+
 
   .product-field-save,
   .product-field-save.ultra-compact-save {
