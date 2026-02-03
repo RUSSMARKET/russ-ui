@@ -5,4 +5,5 @@ export * from './UploadModal';
 export * from './ProjectInfoModal';
 export * from './TaskDetailsModal';
 export * from './ArticlesStories';
-export * from './KpiCalendar'; 
+export * from './KpiCalendar';
+export * from './Layout'; 

@@ -165,6 +165,11 @@ const getNestedValue = (obj: any, path: string) => {
 <style scoped>
 .table-container {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .table-filters {
@@ -185,6 +190,9 @@ const getNestedValue = (obj: any, path: string) => {
 .table-scroll {
   height: 100%;
   width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: auto;
 }
 
 .base-table {
@@ -196,9 +204,6 @@ const getNestedValue = (obj: any, path: string) => {
   border-radius: 0 0 14px 14px;
   overflow: hidden;
   box-shadow: 0 1px 3px var(--russ-shadow-color);
-  overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
 }
 
 .base-table::-webkit-scrollbar {

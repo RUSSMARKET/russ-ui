@@ -157,16 +157,34 @@ const onHide = () => {
 </script>
 
 <style scoped>
+.product-modal :deep(.base-modal-content) {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 .product-form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .form-row {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.product-form :deep(.input-wrapper),
+.product-form :deep(.custom-input) {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .form-label {
@@ -179,6 +197,14 @@ const onHide = () => {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.product-form :deep(.file-upload) {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .logo-preview-container {
@@ -239,6 +265,8 @@ const onHide = () => {
 
 .modern-select {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   padding: 14px 16px;
   border: 1.5px solid var(--russ-border);
   border-radius: 10px;

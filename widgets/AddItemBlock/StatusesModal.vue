@@ -63,6 +63,15 @@ const emit = defineEmits(['close']);
 
 <style scoped>
 
+/* Скрыть скроллбар контента модалки */
+.status-modal :deep(.base-modal-content) {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.status-modal :deep(.base-modal-content)::-webkit-scrollbar {
+    display: none;
+}
+
 .status-modal-content {
     display: flex;
     gap: 32px;
@@ -159,6 +168,8 @@ const emit = defineEmits(['close']);
     display: flex;
     gap: 12px;
     margin-bottom: 24px;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .color-input {
@@ -179,6 +190,22 @@ const emit = defineEmits(['close']);
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.status-input-wrap :deep(.input-wrapper),
+.status-input-wrap :deep(.custom-input) {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.status-input-wrap input {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .input-error {

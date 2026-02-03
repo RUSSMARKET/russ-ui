@@ -52,11 +52,28 @@ function toggle(event) {
   }
   if (event && event.currentTarget && props.popup) {
     const rect = event.currentTarget.getBoundingClientRect()
+    const minWidth = Math.max(rect.width, 180)
+    const padding = 8
+    let top = rect.bottom + 4
+    let left = rect.left
+
+    // Ограничиваем по viewport: на мобилке меню не должно уезжать вправо за экран
+    if (typeof window !== 'undefined') {
+      const vw = window.innerWidth
+      const vh = window.innerHeight
+      const maxLeft = vw - minWidth - padding
+      const minLeft = padding
+      left = Math.min(Math.max(left, minLeft), maxLeft)
+      if (top + 280 > vh - padding) top = Math.max(padding, rect.top - 280)
+      if (top < padding) top = padding
+    }
+
     panelStyle.value = {
       position: 'fixed',
-      top: `${rect.bottom + 4}px`,
-      left: `${rect.left}px`,
-      minWidth: `${Math.max(rect.width, 180)}px`
+      top: `${top}px`,
+      left: `${left}px`,
+      minWidth: `${minWidth}px`,
+      maxWidth: typeof window !== 'undefined' ? `${window.innerWidth - padding * 2}px` : 'none'
     }
   } else {
     panelStyle.value = {}
@@ -135,9 +152,13 @@ defineExpose({
 }
 
 .menu-item-icon {
-  font-size: 1rem;
+  font-size: 14px;
+  width: 14px;
   color: var(--russ-text-tertiary);
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .menu-item-label {
