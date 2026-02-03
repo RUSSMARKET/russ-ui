@@ -52,12 +52,13 @@ function toggle(event) {
   }
   if (event && event.currentTarget && props.popup) {
     const rect = event.currentTarget.getBoundingClientRect()
-    const minWidth = Math.max(rect.width, 180)
     const padding = 8
-    let top = rect.bottom + 4
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+    const minWidth = isMobile ? Math.min(220, (typeof window !== 'undefined' ? window.innerWidth : 320) - padding * 2) : Math.max(rect.width, 180)
+    let top = rect.bottom + (isMobile ? 20 : 12)
     let left = rect.left
 
-    // Ограничиваем по viewport: на мобилке меню не должно уезжать вправо за экран
+    // Меню справа под иконкой, но не за пределами экрана
     if (typeof window !== 'undefined') {
       const vw = window.innerWidth
       const vh = window.innerHeight

@@ -212,7 +212,9 @@ defineExpose({
 }
 
 .close-nav i {
-  font-size: 20px;
+  font-size: 18px !important;
+  width: 18px;
+  height: 18px;
   line-height: 1;
   display: inline-flex;
   align-items: center;
