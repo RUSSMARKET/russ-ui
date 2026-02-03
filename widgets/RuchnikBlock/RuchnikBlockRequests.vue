@@ -302,7 +302,7 @@
 import { ref, computed, watch, onMounted } from "vue";
 import { getAgents, updateRuchnik } from "@/pages/requests/api";
 import type { RuchnikType } from "@/pages/requests/api";
-import { useToast } from "primevue/usetoast";
+import { useToast } from "bibli/shared/ui";
 import { StatusSelect } from "@/shared/ui/";
 
 interface Ruchnik {

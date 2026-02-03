@@ -74,7 +74,7 @@
 import { ref, computed, watch } from "vue";
 import BaseModal from "../BaseModal/BaseModal.vue";
 import { Button, BaseSelect } from "@/shared/ui";
-import { useToast } from "primevue/usetoast";
+import { useToast } from "../Toast";
 
 export interface Page {
     id: number;

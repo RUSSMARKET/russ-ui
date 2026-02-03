@@ -34,7 +34,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import { FiltersBar, type FilterConfig, BaseModal } from '@/shared/ui';
-import { useToast } from 'primevue/usetoast';
+import { useToast } from '../Toast';
 import { useProjects, useAgents } from '@/shared/composables';
 import type { Agent } from '@/stores/agents';
 

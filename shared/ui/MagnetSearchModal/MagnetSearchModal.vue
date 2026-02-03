@@ -121,7 +121,7 @@
 import { ref, computed, watch } from 'vue'
 import BaseModal from '../BaseModal/BaseModal.vue'
 import { InputText } from '@/shared/ui'
-import { useToast } from 'primevue/usetoast'
+import { useToast } from '../Toast'
 import { Fancybox } from '@fancyapps/ui'
 import '@fancyapps/ui/dist/fancybox/fancybox.css'
 

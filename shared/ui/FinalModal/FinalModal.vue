@@ -61,7 +61,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { BaseModal, Button } from '~/shared/ui';
-import { useToast } from 'primevue/usetoast';
+import { useToast } from '../Toast';
 
 interface Props {
   visible: boolean;
