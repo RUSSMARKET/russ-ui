@@ -63,8 +63,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import BaseModal from "../BaseModal/BaseModal.vue";
-import { Button } from "../buttons";
-import { BaseSelect } from "../inputs/select";
+import { Button, BaseSelect } from "@/shared/ui";
 import { useToast } from "../Toast";
 import type { Page } from "../RolePagesModal/RolePagesModal.vue";
 

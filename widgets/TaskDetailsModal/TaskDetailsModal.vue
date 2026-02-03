@@ -107,7 +107,7 @@
 import { ref, onMounted } from 'vue';
 import { http } from '@/shared/api';
 import { BaseModal } from '@/shared/ui';
-import { Fancybox } from "@fancyapps/ui/dist/fancybox/fancybox.js";
+import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 
 onMounted(() => {

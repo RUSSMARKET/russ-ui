@@ -26,7 +26,7 @@
   </div>
 </template>
 <script setup>
-import { Fancybox } from "@fancyapps/ui/dist/fancybox/fancybox.js";
+import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 
 const props = defineProps(['photoFiles', 'getFileUrl']);
