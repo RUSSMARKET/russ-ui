@@ -394,8 +394,6 @@ watch(() => props.options, () => {
 .status-select-wrapper {
   position: relative;
   width: 100%;
-  min-width: 0;
-  max-width: 100%;
   font-family: 'Onest', sans-serif;
   overflow: visible;
 }
@@ -412,8 +410,6 @@ watch(() => props.options, () => {
 .status-select-container {
   position: relative;
   width: 100%;
-  min-width: 0;
-  max-width: 100%;
   overflow: visible;
   isolation: isolate;
 }
@@ -423,7 +419,6 @@ watch(() => props.options, () => {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  min-width: 0;
   min-height: 48px;
   padding: 12px 16px;
   background: var(--russ-bg);
@@ -468,7 +463,6 @@ watch(() => props.options, () => {
   min-width: 0;
   flex-wrap: wrap;
   height: 100%;
-  overflow: hidden;
 }
 
 .status-select-container.multiple .status-select-content {
@@ -538,7 +532,6 @@ watch(() => props.options, () => {
   min-width: 0;
   flex: 1;
   overflow: hidden;
-  max-width: 100%;
 }
 
 .status-text {
@@ -547,16 +540,11 @@ watch(() => props.options, () => {
   white-space: nowrap;
   min-width: 0;
   flex: 1;
-  max-width: 100%;
 }
 
 .status-select-placeholder {
   color: var(--russ-text-quaternary);
   font-weight: 400;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  min-width: 0;
 }
 
 .status-color-dot {

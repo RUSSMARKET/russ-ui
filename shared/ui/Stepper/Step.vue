@@ -1,14 +1,10 @@
 <template>
-  <div :class="['step', props.class]" @click="$emit('click')">
+  <div class="step" @click="$emit('click')">
     <slot />
   </div>
 </template>
 
 <script setup>
-defineProps({
-  class: { type: String, default: '' }
-})
-
 defineEmits(['click'])
 </script>
 
