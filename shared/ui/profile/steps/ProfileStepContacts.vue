@@ -178,12 +178,15 @@ const handleContinue = () => {
 }
 
 .form-section {
-  border-radius: 1rem;
-  padding: 1rem;
+  background: var(--russ-bg);
+  border: 1px solid var(--russ-border);
+  border-radius: 12px;
+  padding: 1.25rem;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  box-shadow: 0 1px 4px var(--russ-shadow-primary-light);
 }
 
 .form-input {

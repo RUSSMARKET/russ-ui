@@ -58,7 +58,11 @@ function handlePhotoClick(event, file, label) {
 </script>
 <style scoped>
 .profile-section-card {
+  background: var(--russ-bg);
+  border: 1px solid var(--russ-border);
+  border-radius: 12px;
   padding: 1.5rem 1.2rem;
+  box-shadow: 0 1px 4px var(--russ-shadow-primary-light);
 }
 .photos-grid {
   display: flex;
@@ -76,13 +80,13 @@ function handlePhotoClick(event, file, label) {
   font-size: 1rem;
   font-weight: 500;
   margin-bottom: 0.5rem;
-  color: #3b4a6b;
+  color: var(--russ-text-secondary);
 }
 .photo-preview-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f4f7fb;
+  background: var(--russ-bg-secondary);
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(33,62,137,0.06);
   overflow: hidden;
@@ -108,7 +112,7 @@ function handlePhotoClick(event, file, label) {
   display: block;
 }
 .photo-placeholder {
-  color: #b0b8c9;
+  color: var(--russ-text-tertiary);
   font-size: 2.2rem;
   text-align: center;
 }
