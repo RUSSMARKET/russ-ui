@@ -80,7 +80,7 @@ const handleSearch = () => {
   max-width: 100%;
   background: var(--russ-accent-tint-12);
   border: 2px solid var(--russ-accent-tint-12);
-  border-radius: 8px;
+  border-radius: 13px;
   min-height: 48px;
   height: 100%;
   padding: 0 25px 0 40px !important;

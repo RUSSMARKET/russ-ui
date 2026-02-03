@@ -34,16 +34,16 @@
       </div>
       <div class="form-row">
         <label for="product-category" class="form-label">Категория продукта</label>
-        <select
+        <BaseSelect
           id="product-category"
-          :value="productForm.category_id"
-          @change="updateField('category_id', ($event.target as HTMLSelectElement).value)"
-          class="modern-select"
+          :model-value="productForm.category_id != null && productForm.category_id !== '' ? Number(productForm.category_id) : undefined"
+          :options="categories"
+          option-label="name"
+          option-value="id"
+          placeholder="Выберите категорию"
           required
-        >
-          <option value="" disabled>Выберите категорию</option>
-          <option v-for="cat in categories" :key="cat.id" :value="String(cat.id)">{{ cat.name }}</option>
-        </select>
+          @update:model-value="updateField('category_id', $event != null ? String($event) : '')"
+        />
       </div>
       <div class="form-row">
         <label class="form-label">Логотип продукта</label>
@@ -92,7 +92,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { BaseModal, InputText, Button, FileUpload } from '@/shared/ui';
+import { BaseModal, InputText, Button, FileUpload, BaseSelect } from '@/shared/ui';
 import type { Category } from '~/entities/product';
 
 interface ProductForm {
@@ -263,31 +263,10 @@ const onHide = () => {
   fill: var(--russ-error);
 }
 
-.modern-select {
-  width: 100%;
+.product-form :deep(.base-select-wrapper) {
   min-width: 0;
   max-width: 100%;
-  padding: 14px 16px;
-  border: 1.5px solid var(--russ-border);
-  border-radius: 10px;
-  background: var(--russ-bg-quaternary);
-  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-  box-shadow: 0 1px 4px var(--russ-shadow-accent-light);
-  color: var(--russ-text-primary);
-  box-sizing: border-box;
-  font-size: 14px;
-}
-
-.modern-select:focus {
-  border-color: var(--russ-secondary);
-  box-shadow: 1px 0px 5px 5px var(--russ-shadow-color);
-  outline: none;
-  background: white;
-}
-
-.modern-select:hover {
-  border-color: var(--russ-border-dark);
-  background: white;
+  width: 100%;
 }
 
 .form-actions {
