@@ -163,7 +163,7 @@ function toggle(event: Event) {
 }
 
 #overlay_menu {
-  margin-top: 30px !important;
+  margin-top: 6px !important;
 }
 
 .hidden-icon {
