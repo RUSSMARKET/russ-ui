@@ -1,6 +1,6 @@
 export type ToastSeverity = 'success' | 'info' | 'warn' | 'error'
 
-/** severity для add() — допускаем 'warning' как синоним 'warn' (совместимость с PrimeVue) */
+/** severity для add() — допускаем 'warning' как синоним 'warn' */
 export type ToastMessageOptionsSeverity = ToastSeverity | 'warning'
 
 export interface ToastMessageOptions {
@@ -20,7 +20,6 @@ export interface ToastMessage extends ToastMessageOptions {
   group?: string
 }
 
-/** API совместимый с PrimeVue ToastServiceMethods для простой замены */
 export interface ToastServiceMethods {
   add(options: ToastMessageOptions): void
   removeGroup(group: string): void

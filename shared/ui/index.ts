@@ -31,6 +31,8 @@ export { Card } from './Card';
 export { Chip } from './Chip';
 export { Form } from './Form';
 export { ProgressSpinner } from './ProgressSpinner';
+export { FileUpload } from './FileUpload';
+export { Checkbox } from './Checkbox';
 export { default as Toast } from './Toast/Toast.vue';
 export { useToast } from './Toast';
 export type { ToastServiceMethods, ToastMessage, ToastMessageOptions, ToastSeverity } from './Toast';

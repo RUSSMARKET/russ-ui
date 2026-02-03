@@ -92,8 +92,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { BaseModal, InputText, Button } from '@/shared/ui';
-import FileUpload from 'primevue/fileupload';
+import { BaseModal, InputText, Button, FileUpload } from '@/shared/ui';
 import type { Category } from '~/entities/product';
 
 interface ProductForm {
@@ -132,13 +131,10 @@ const updateField = (field: keyof ProductForm, value: any) => {
   emit('update:product-form', { ...props.productForm, [field]: value });
 };
 
-const handleLogoSelect = (event: any) => {
-  // PrimeVue FileUpload emits event with files property
-  // We need to recreate the event structure that parent expects
-  const file = event.files?.[0];
-  if (file) {
-    // Create event-like object that parent's onLogoSelect expects
-    emit('logo-select', { files: [file] } as any);
+const handleLogoSelect = (event: { files: File[]; originalEvent: Event }) => {
+  // FileUpload emits event with files property
+  if (event.files && event.files.length > 0) {
+    emit('logo-select', { files: event.files });
   }
 };
 

@@ -32,14 +32,10 @@
   "peerDependencies": {
     "vue": "^3.0.0",
     "axios": "^1.0.0",
-    "primevue": "^3.0.0 || ^4.0.0",
     "@fancyapps/ui": "^5.0.0",
     "qrcode": "^1.5.0"
   },
   "peerDependenciesMeta": {
-    "primevue": {
-      "optional": true
-    },
     "@fancyapps/ui": {
       "optional": true
     },

@@ -18,7 +18,6 @@ export default defineNuxtConfig({
 ```vue
 <script setup lang="ts">
 import { useTheme } from '@russ-ui/bibli/shared/theme'
-import { useToast } from 'primevue/usetoast'
 // ... другие импорты
 
 // Установить тему fintech (синяя)
@@ -46,7 +45,6 @@ export default defineNuxtConfig({
 ```vue
 <script setup lang="ts">
 import { useTheme } from '@russ-ui/bibli/shared/theme'
-import { useToast } from 'primevue/usetoast'
 // ... другие импорты
 
 // Установить тему rusaisklad (зеленая)
