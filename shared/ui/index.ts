@@ -33,6 +33,8 @@ export { Form } from './Form';
 export { ProgressSpinner } from './ProgressSpinner';
 export { FileUpload } from './FileUpload';
 export { Checkbox } from './Checkbox';
+export { Menu } from './Menu';
+export { Stepper, StepItem, Step, StepPanel } from './Stepper';
 export { default as Toast } from './Toast/Toast.vue';
 export { useToast } from './Toast';
 export type { ToastServiceMethods, ToastMessage, ToastMessageOptions, ToastSeverity } from './Toast';

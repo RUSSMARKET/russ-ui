@@ -90,17 +90,30 @@ const handleClick = (event) => {
   vertical-align: middle;
   cursor: pointer;
   user-select: none;
-  border: 1px solid transparent;
+  border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 0.5rem;
-  transition: all 0.2s ease;
-  background-color: var(--russ-primary);
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  /* Градиент как в PrimeVue: светлее сверху, темнее снизу */
+  background: linear-gradient(
+    180deg,
+    var(--russ-primary-light) 0%,
+    var(--russ-primary) 50%,
+    var(--russ-primary-dark) 100%
+  );
   color: var(--russ-text-inverse);
   min-height: 2.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .custom-button:hover:not(:disabled):not(.custom-button-disabled) {
-  background-color: var(--russ-primary-hover);
-  border-color: var(--russ-primary-hover);
+  background: linear-gradient(
+    180deg,
+    var(--russ-primary) 0%,
+    var(--russ-primary-hover) 50%,
+    var(--russ-primary-dark) 100%
+  );
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
 .custom-button:focus {
@@ -109,8 +122,14 @@ const handleClick = (event) => {
 }
 
 .custom-button:active:not(:disabled):not(.custom-button-disabled) {
-  background-color: var(--russ-primary-active);
-  border-color: var(--russ-primary-active);
+  background: linear-gradient(
+    180deg,
+    var(--russ-primary-dark) 0%,
+    var(--russ-primary-active) 50%,
+    var(--russ-primary-dark) 100%
+  );
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 .custom-button:disabled,
@@ -146,48 +165,81 @@ const handleClick = (event) => {
   font-size: 1rem;
 }
 
-/* Варианты кнопок */
+/* Варианты кнопок — градиенты и переходы */
 .custom-button.custom-button-secondary {
-  background-color: var(--russ-bg);
+  background: linear-gradient(
+    180deg,
+    var(--russ-bg) 0%,
+    var(--russ-bg-secondary) 100%
+  );
   color: var(--russ-primary);
   border-color: var(--russ-primary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .custom-button.custom-button-secondary:hover:not(:disabled):not(.custom-button-disabled) {
-  background-color: var(--russ-primary);
+  background: linear-gradient(
+    180deg,
+    var(--russ-bg-hover) 0%,
+    var(--russ-primary) 100%
+  );
   color: var(--russ-text-inverse);
+  border-color: var(--russ-primary);
+  box-shadow: 0 2px 6px var(--russ-shadow-color);
 }
 
 .custom-button.custom-button-success {
-  background-color: var(--russ-success);
+  background: linear-gradient(
+    180deg,
+    var(--russ-success) 0%,
+    var(--russ-success-dark) 100%
+  );
   color: var(--russ-text-inverse);
-  border-color: var(--russ-success);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .custom-button.custom-button-success:hover:not(:disabled):not(.custom-button-disabled) {
-  background-color: var(--russ-success-dark);
-  border-color: var(--russ-success-dark);
+  background: linear-gradient(
+    180deg,
+    var(--russ-success-dark) 0%,
+    var(--russ-success) 100%
+  );
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
 .custom-button.custom-button-danger {
-  background-color: var(--russ-error);
+  background: linear-gradient(
+    180deg,
+    var(--russ-error) 0%,
+    var(--russ-error-dark) 100%
+  );
   color: var(--russ-text-inverse);
-  border-color: var(--russ-error);
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .custom-button.custom-button-danger:hover:not(:disabled):not(.custom-button-disabled) {
-  background-color: var(--russ-error-dark);
-  border-color: var(--russ-error-dark);
+  background: linear-gradient(
+    180deg,
+    var(--russ-error-dark) 0%,
+    var(--russ-error) 100%
+  );
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
 .custom-button.custom-button-text {
-  background-color: transparent;
+  background: transparent;
   color: var(--russ-primary);
   border-color: transparent;
   padding: 0.5rem;
+  box-shadow: none;
 }
 
 .custom-button.custom-button-text:hover:not(:disabled):not(.custom-button-disabled) {
-  background-color: var(--russ-bg-secondary);
+  background: var(--russ-bg-secondary);
+  box-shadow: none;
 }
 </style>
