@@ -27,4 +27,7 @@ export { FinalModal } from './FinalModal';
 export { Handler4FinalModal } from './Handler4FinalModal';
 export { ProductModal } from './ProductModal';
 export { CategoryModal } from './CategoryModal';
+export { default as Toast } from './Toast/Toast.vue';
+export { useToast } from './Toast';
+export type { ToastServiceMethods, ToastMessage, ToastMessageOptions, ToastSeverity } from './Toast';
 export * from './profile';
