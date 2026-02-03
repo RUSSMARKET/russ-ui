@@ -113,7 +113,7 @@ const props = defineProps({
   },
   searchable: {
     type: Boolean,
-    default: true
+    default: false
   },
   disableAutoPosition: {
     type: Boolean,
@@ -196,6 +196,9 @@ function isOptionSelected(option) {
   return value == props.modelValue;
 }
 
+const DROPDOWN_MIN_WIDTH = 180
+const DROPDOWN_VIEWPORT_PADDING = 8
+
 function calculateDropdownPosition() {
   if (!wrapperRef.value) return;
 
@@ -204,31 +207,39 @@ function calculateDropdownPosition() {
   const viewportWidth = window.innerWidth;
   const isMobile = viewportWidth <= 768;
   
-  // На мобильных используем больше доступного пространства
   const maxDropdownHeight = isMobile ? Math.min(viewportHeight * 0.6, 400) : 300;
   const dropdownHeight = Math.min(maxDropdownHeight, props.options.length * 50 + 100);
   const spaceBelow = viewportHeight - rect.bottom;
   const spaceAbove = rect.top;
 
   const minSpace = 50;
-  // Если disableAutoPosition = true, всегда открываем вниз
   if (props.disableAutoPosition) {
     openUpward.value = false;
   } else {
     openUpward.value = spaceBelow < dropdownHeight + minSpace && spaceAbove > dropdownHeight + minSpace;
   }
 
-  // Используем fixed позиционирование для отображения поверх модалок
-  const baseZIndex = 1001; // Выше модалки (1000)
+  let width = Math.max(rect.width, DROPDOWN_MIN_WIDTH)
+  let left = rect.left
+  if (left + width > viewportWidth - DROPDOWN_VIEWPORT_PADDING) {
+    left = viewportWidth - width - DROPDOWN_VIEWPORT_PADDING
+  }
+  if (left < DROPDOWN_VIEWPORT_PADDING) {
+    left = DROPDOWN_VIEWPORT_PADDING
+    width = Math.min(width, viewportWidth - left * 2)
+  }
+
+  const baseZIndex = 1001
   
   if (openUpward.value) {
     dropdownStyles.value = {
       position: 'fixed',
       top: 'auto',
       bottom: `${viewportHeight - rect.top + 8}px`,
-      left: `${rect.left}px`,
+      left: `${left}px`,
       right: 'auto',
-      width: `${rect.width}px`,
+      width: `${width}px`,
+      minWidth: `${DROPDOWN_MIN_WIDTH}px`,
       zIndex: baseZIndex,
       maxHeight: `${Math.min(spaceAbove - 8, maxDropdownHeight)}px`
     };
@@ -237,9 +248,10 @@ function calculateDropdownPosition() {
       position: 'fixed',
       top: `${rect.bottom + 8}px`,
       bottom: 'auto',
-      left: `${rect.left}px`,
+      left: `${left}px`,
       right: 'auto',
-      width: `${rect.width}px`,
+      width: `${width}px`,
+      minWidth: `${DROPDOWN_MIN_WIDTH}px`,
       zIndex: baseZIndex,
       maxHeight: `${Math.min(spaceBelow - 8, maxDropdownHeight)}px`
     };
@@ -410,15 +422,20 @@ watch(() => props.options, () => {
 .status-select-container {
   position: relative;
   width: 100%;
-  overflow: visible;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
   isolation: isolate;
 }
 
 .status-select-trigger {
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   min-height: 36px;
   padding: 6px 12px;
   background: var(--russ-bg);
@@ -576,22 +593,22 @@ watch(() => props.options, () => {
   top: calc(100% + 8px);
   left: 0;
   right: 0;
+  min-width: 180px;
   background: var(--russ-bg);
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
+  border: 1px solid var(--russ-border);
+  border-radius: 8px;
   z-index: 999;
   max-height: 300px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   animation: slideDown 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 16px var(--russ-shadow-color);
   will-change: transform;
   contain: layout style paint;
 }
 
 .status-select-dropdown.dropdown-upward {
-  /* Позиционирование управляется через inline стили */
   animation: slideUp 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -621,13 +638,14 @@ watch(() => props.options, () => {
 
 .status-select-search {
   position: relative;
-  padding: 16px;
-  border-bottom: 1px solid #f3f4f6;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--russ-border);
+  flex-shrink: 0;
 }
 
 .search-icon {
   position: absolute;
-  left: 20px;
+  left: 14px;
   top: 50%;
   transform: translateY(-50%);
   color: var(--russ-text-quaternary);
@@ -635,13 +653,15 @@ watch(() => props.options, () => {
 }
 
 .search-input {
+  box-sizing: border-box;
   width: 100%;
-  padding: 12px 16px 12px 25px;
+  min-width: 0;
+  padding: 8px 12px 8px 36px;
   border: 1px solid var(--russ-border);
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 14px;
-  color: var(--russ-text-secondary);
-  background: #f9fafb;
+  color: var(--russ-text-primary);
+  background: var(--russ-bg-quaternary);
   transition: all 0.2s ease;
 }
 
@@ -653,35 +673,37 @@ watch(() => props.options, () => {
 }
 
 .status-select-options {
-  max-height: 215px;
+  max-height: 220px;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0;
+  padding: 6px 0;
   flex: 1;
+  min-height: 0;
   -webkit-overflow-scrolling: touch;
 }
 
 .status-select-option {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
+  gap: 10px;
+  padding: 8px 12px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.15s ease;
   position: relative;
+  min-width: 0;
 }
 
 .status-select-option:hover {
-  background: #f8fafc;
+  background: var(--russ-bg-hover);
 }
 
 .status-select-option.highlighted {
-  background: #eff6ff;
+  background: var(--russ-bg-blue-tint);
 }
 
 .status-select-option.selected {
-  background: #dbeafe;
-  color: #1e40af;
+  background: var(--russ-info-light);
+  color: var(--russ-info-text);
 }
 
 .option-text {
@@ -697,9 +719,9 @@ watch(() => props.options, () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
-  color: #1d4cd2;
+  width: 18px;
+  height: 18px;
+  color: var(--russ-accent);
   flex-shrink: 0;
 }
 
@@ -762,7 +784,7 @@ watch(() => props.options, () => {
   }
 
   .status-select-search {
-    padding: 12px;
+    padding: 8px 10px;
     flex-shrink: 0;
   }
 }
