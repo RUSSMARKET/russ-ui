@@ -300,10 +300,16 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
-import { getAgents, updateRuchnik } from "@/pages/requests/api";
-import type { RuchnikType } from "@/pages/requests/api";
 import { useToast } from "bibli/shared/ui";
 import { StatusSelect } from "@/shared/ui/";
+
+/** Тип ручника (передаётся со страницы или из shared api). */
+export interface RuchnikType {
+  id: number;
+  name?: string;
+  slug?: string;
+  [key: string]: unknown;
+}
 
 interface Ruchnik {
   id: number;
@@ -339,8 +345,22 @@ interface Agent {
   is_attached: boolean;
 }
 
+/** Функции API ручников — передаются со страницы (requests), чтобы bibli не зависел от @/pages. */
+export type GetAgentsFn = () => Promise<Agent[]>;
+export type UpdateRuchnikFn = (
+  id: number,
+  code: string,
+  userId?: number,
+  _pointId?: unknown,
+  typeSlug?: string
+) => Promise<void>;
+
 interface Props {
   items: Ruchnik[];
+  /** Загрузка списка агентов — передаётся со страницы (например из pages/requests/api или shared/api/ruchnik). */
+  getAgents: GetAgentsFn;
+  /** Обновление ручника — передаётся со страницы. */
+  updateRuchnik: UpdateRuchnikFn;
   loading?: boolean;
   canManage?: boolean;
   searchQuery?: string;
@@ -525,7 +545,7 @@ const loadAgents = async () => {
   if (agentsLoading.value) return;
   agentsLoading.value = true;
   try {
-    const agentsData = await getAgents();
+    const agentsData = await props.getAgents();
     agents.value = agentsData;
   } catch (error) {
     console.error('Ошибка загрузки агентов:', error);
@@ -545,7 +565,7 @@ const saveEdit = async () => {
 
   editLoading.value = true;
   try {
-    await updateRuchnik(
+    await props.updateRuchnik(
       editingRuchnik.value.id,
       editCode.value,
       editUserId.value || undefined,
