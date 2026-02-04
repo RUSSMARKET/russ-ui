@@ -9,26 +9,22 @@
   "exports": {
     ".": {
       "import": "./dist/index.js",
-      "types": "./dist/index.d.ts",
-      "default": "./index.ts"
+      "types": "./dist/index.d.ts"
     },
     "./shared/ui": {
       "import": "./dist/shared/ui/index.js",
-      "types": "./dist/shared/ui/index.d.ts",
-      "default": "./shared/ui/index.ts"
+      "types": "./dist/shared/ui/index.d.ts"
     },
     "./shared/theme": {
       "import": "./dist/shared/theme/index.js",
-      "types": "./dist/shared/theme/index.d.ts",
-      "default": "./shared/theme/index.ts"
+      "types": "./dist/shared/theme/index.d.ts"
     },
     "./shared/theme/theme.css": {
       "default": "./shared/theme/theme.css"
     },
     "./widgets": {
       "import": "./dist/widgets/index.js",
-      "types": "./dist/widgets/index.d.ts",
-      "default": "./widgets/index.ts"
+      "types": "./dist/widgets/index.d.ts"
     }
   },
   "files": [
