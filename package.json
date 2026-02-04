@@ -19,6 +19,9 @@
       "import": "./dist/shared/theme/index.js",
       "types": "./dist/shared/theme/index.d.ts"
     },
+    "./shared/theme/theme.css": {
+      "default": "./shared/theme/theme.css"
+    },
     "./widgets": {
       "import": "./dist/widgets/index.js",
       "types": "./dist/widgets/index.d.ts"
@@ -26,6 +29,7 @@
   },
   "files": [
     "dist",
+    "shared/theme",
     "docs",
     "README.md"
   ],
