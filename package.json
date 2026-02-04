@@ -44,6 +44,13 @@
   ],
   "author": "",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RUSSMARKET/russ-ui.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "peerDependencies": {
     "vue": "^3.0.0",
     "vue-router": "^4.0.0"
