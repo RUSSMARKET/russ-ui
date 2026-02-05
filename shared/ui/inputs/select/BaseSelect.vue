@@ -4,9 +4,15 @@
     <div class="base-select-container" ref="containerRef" :class="{ 'has-error': error }">
       <template v-if="props.searchable">
         <input :id="id" v-model="inputValue" :placeholder="placeholder" :disabled="disabled || loading"
-          :required="required" class="base-select-combo" @focus="handleFocus" @click="handleFocus" @input="onInput"
+          :required="required" class="base-select-combo" 
+          @focus="isMobile ? null : handleFocus" 
+          @click="handleFocus" 
+          @input="onInput"
           @keydown.down.prevent="highlightNext" @keydown.up.prevent="highlightPrev"
-          @keydown.enter.prevent="selectHighlighted" @keydown.esc="closeDropdown" autocomplete="off"
+          @keydown.enter.prevent="selectHighlighted" @keydown.esc="closeDropdown" 
+          autocomplete="off"
+          :inputmode="isMobile ? 'none' : undefined"
+          :readonly="isMobile && !dropdownOpen"
           :style="{ width: props.width, height: props.height, minHeight: props.height }" />
       </template>
       <template v-else>
@@ -90,6 +96,12 @@ const dropdownRef = ref(null);
 const openUpward = ref(false);
 const dropdownStyles = ref({});
 let lastSelectedLabel = '';
+
+// Определяем мобильное устройство
+const isMobile = computed(() => {
+  if (typeof window === 'undefined') return false;
+  return window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+});
 
 function getOptionLabel(option) {
   return typeof option === 'object' ? option[props.optionLabel] : option;
@@ -311,7 +323,31 @@ function calculateDropdownPosition() {
   }
 }
 
-function handleFocus() {
+function handleFocus(event) {
+  // На мобильных устройствах предотвращаем автоматическую прокрутку при фокусе
+  if (isMobile.value && event && event.target) {
+    // Сохраняем текущую позицию прокрутки
+    const scrollY = window.scrollY;
+    const scrollX = window.scrollX;
+    
+    // Открываем dropdown
+    if (inputValue.value && inputValue.value === lastSelectedLabel) {
+      inputValue.value = '';
+    }
+    openDropdown();
+    
+    // Восстанавливаем позицию прокрутки после небольшой задержки
+    // Это предотвращает автоматическую прокрутку браузера к input
+    requestAnimationFrame(() => {
+      window.scrollTo(scrollX, scrollY);
+      // Дополнительная проверка после открытия dropdown
+      setTimeout(() => {
+        window.scrollTo(scrollX, scrollY);
+      }, 100);
+    });
+    return;
+  }
+  
   // Если поле содержит выбранное значение (не пустое и не является поисковым запросом), очищаем его
   if (inputValue.value && inputValue.value === lastSelectedLabel) {
     inputValue.value = '';
