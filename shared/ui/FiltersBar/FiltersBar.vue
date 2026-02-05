@@ -201,6 +201,9 @@ onMounted(() => {
 <style scoped>
 .filters-bar-wrapper {
   width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .mobile-filters-btn-wrapper {
@@ -401,6 +404,8 @@ onMounted(() => {
 @media (max-width: 1024px) {
   .mobile-filters-btn-wrapper {
     display: inline-flex;
+    margin-left: auto;
+    justify-content: flex-end;
   }
 
   /* Скрываем desktop-фильтры на мобильных устройствах */
