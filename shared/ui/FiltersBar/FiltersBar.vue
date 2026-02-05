@@ -222,7 +222,6 @@ onMounted(() => {
   position: relative;
   color: var(--russ-text-secondary);
   font-size: clamp(18px, calc(18px + (24 - 18) * ((100vw - 320px) / (1920 - 320))), 24px);
-  box-shadow: 0 4px 12px var(--russ-shadow-color);
   min-width: 48px;
   height: 48px;
 }
@@ -231,7 +230,6 @@ onMounted(() => {
   background: linear-gradient(135deg, var(--russ-border-light) 0%, var(--russ-border-dark) 100%);
   border-color: var(--russ-border-dark);
   color: var(--russ-text-secondary);
-  box-shadow: 0 6px 20px var(--russ-shadow-color);
 }
 
 .filter-indicator {
