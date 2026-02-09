@@ -57,14 +57,16 @@ defineProps(['filledUserData'])
 </script>
 <style scoped>
 .profile-section-card {
-  background: var(--russ-bg-secondary);
-  border: 1px solid var(--russ-border);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px var(--russ-shadow-color);
-  padding: 1.25rem;
+  background: none;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .profile-subcard {
@@ -73,6 +75,11 @@ defineProps(['filledUserData'])
   background: var(--russ-bg);
   border: 1px solid var(--russ-border);
   box-shadow: 0 1px 4px var(--russ-shadow-color);
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .user-data-subcard {
@@ -86,15 +93,21 @@ defineProps(['filledUserData'])
   font-size: 0.95rem;
   color: var(--russ-text-primary);
   margin-bottom: 0.75rem;
+  min-width: 0;
+  overflow: hidden;
+  word-break: break-word;
 }
 .profile-row {
   display: flex;
   gap: 18px;
-  align-items: center;
+  align-items: flex-start;
   font-size: 1.08rem;
   padding-bottom: 0.5rem;
   margin-bottom: 0.5rem;
   border-bottom: 1px solid var(--russ-border);
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 .profile-row:last-child {
   border-bottom: none;
@@ -103,20 +116,32 @@ defineProps(['filledUserData'])
 }
 .profile-label {
   color: var(--russ-text-secondary);
-  min-width: 160px;
+  min-width: 120px;
+  max-width: 45%;
+  flex-shrink: 0;
   font-weight: 600;
   font-size: 1.05em;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .profile-value {
   color: var(--russ-text-primary);
   font-weight: 500;
   word-break: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
+  flex: 1;
+  max-width: 100%;
+  overflow: hidden;
 }
 @media (max-width: 600px) {
   .profile-section-card {
-    padding: 0.5rem 0.2rem;
-    border-radius: 8px;
+    padding: 0;
     gap: 0.3rem;
+    width: 100%;
+  }
+  .profile-subcard {
+    padding: 0.75rem 0.5rem;
   }
   .profile-row {
     flex-direction: column;
@@ -124,10 +149,17 @@ defineProps(['filledUserData'])
     gap: 2px;
     font-size: 0.95rem;
     padding-bottom: 0.1rem;
+    min-width: 0;
+    width: 100%;
   }
   .profile-label {
     min-width: 0;
+    max-width: none;
     font-size: 0.95em;
+  }
+  .profile-value {
+    max-width: 100%;
+    word-break: break-all;
   }
 }
 </style> 

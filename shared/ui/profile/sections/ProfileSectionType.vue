@@ -180,11 +180,8 @@ onMounted(async () => {
 </script>
 <style scoped>
 .profile-section-card {
-  background: var(--russ-bg-secondary);
-  border: 1px solid var(--russ-border);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px var(--russ-shadow-color);
-  padding: 1.25rem;
+  background: none;
+  padding: 0;
 }
 .profile-row {
   display: flex;
@@ -256,8 +253,7 @@ onMounted(async () => {
 }
 @media (max-width: 600px) {
   .profile-section-card {
-    padding: 0.5rem 0.2rem;
-    border-radius: 8px;
+    padding: 0;
     gap: 0.3rem;
   }
   .profile-row {

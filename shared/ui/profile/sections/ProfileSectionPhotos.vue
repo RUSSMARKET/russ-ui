@@ -58,11 +58,8 @@ function handlePhotoClick(event, file, label) {
 </script>
 <style scoped>
 .profile-section-card {
-  background: var(--russ-bg-secondary);
-  border: 1px solid var(--russ-border);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px var(--russ-shadow-color);
-  padding: 1.25rem;
+  background: none;
+  padding: 0;
 }
 .photos-grid {
   display: flex;
@@ -119,8 +116,7 @@ function handlePhotoClick(event, file, label) {
 }
 @media (max-width: 600px) {
   .profile-section-card {
-    padding: 0.5rem 0.2rem;
-    border-radius: 8px;
+    padding: 0;
   }
   .photos-grid {
     gap: 0.5rem;

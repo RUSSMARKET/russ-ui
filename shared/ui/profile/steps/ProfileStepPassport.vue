@@ -154,6 +154,5 @@ const updateField = (field: keyof FormData, value: any) => {
 
 .button-row.spaced {
   justify-content: space-between;
-  padding-right: 20px;
 }
 </style>
