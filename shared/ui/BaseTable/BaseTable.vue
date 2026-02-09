@@ -62,6 +62,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { ColumnFilter } from '../ColumnFilter'
+import { fuzzyMatch } from '../../utils/levenshtein'
 
 interface TableColumn {
   key: string
@@ -105,12 +106,12 @@ const filterableColumns = computed(() => {
 const filteredItems = computed(() => {
   let filtered = props.items
 
-  // Apply column filters
+  // Apply column filters with Levenshtein distance
   Object.entries(columnFilters.value).forEach(([columnKey, filterValue]) => {
     if (filterValue.trim()) {
       filtered = filtered.filter(item => {
         const value = getNestedValue(item, columnKey)
-        return String(value).toLowerCase().includes(filterValue.toLowerCase())
+        return fuzzyMatch(String(value), filterValue, 0.3)
       })
     }
   })

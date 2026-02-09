@@ -86,6 +86,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { Teleport } from 'vue';
+import { fuzzyMatch } from '../../utils/levenshtein';
 
 const props = defineProps({
   modelValue: [String, Number, Array],
@@ -171,10 +172,10 @@ const filteredOptions = computed(() => {
     return props.options;
   }
 
-  const query = searchQuery.value.toLowerCase();
+  const query = searchQuery.value.trim();
   return props.options.filter(option => {
-    const label = getOptionLabel(option).toLowerCase();
-    return label.includes(query);
+    const label = getOptionLabel(option);
+    return fuzzyMatch(label, query, 0.3);
   });
 });
 

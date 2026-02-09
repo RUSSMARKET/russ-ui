@@ -41,6 +41,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { Teleport } from 'vue';
+import { fuzzyMatch } from '../../../utils/levenshtein';
 const props = defineProps({
   modelValue: [String, Number],
   options: {
@@ -120,18 +121,18 @@ const filteredOptions = computed(() => {
   
   // Если включен поиск, всегда фильтруем по поисковому запросу
   if (props.searchable) {
-    const q = inputValue.value.trim().toLowerCase();
+    const q = inputValue.value.trim();
     if (!q) {
       return allOption ? [allOption, ...restOptions] : restOptions;
     } else {
-      // Ищем и по label, и по value (ID)
+      // Ищем и по label, и по value (ID) с использованием расстояния Левенштейна
       const filtered = restOptions.filter(opt => {
-        const label = String(getOptionLabel(opt)).toLowerCase();
-        const value = String(getOptionValue(opt)).toLowerCase();
-        return label.includes(q) || value.includes(q);
+        const label = String(getOptionLabel(opt));
+        const value = String(getOptionValue(opt));
+        return fuzzyMatch(label, q, 0.3) || fuzzyMatch(value, q, 0.3);
       });
       // Если есть совпадения с "Все", включаем его в начало
-      const allMatches = allOption && String(getOptionLabel(allOption)).toLowerCase().includes(q);
+      const allMatches = allOption && fuzzyMatch(String(getOptionLabel(allOption)), q, 0.3);
       return allMatches && allOption ? [allOption, ...filtered] : filtered;
     }
   }
