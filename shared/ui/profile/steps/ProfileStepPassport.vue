@@ -8,7 +8,8 @@
       <InputText :model-value="form.passport_issued" @update:model-value="updateField('passport_issued', $event)" placeholder="Кем выдан *" class="form-input"
         :class="{ 'error': errors.passport_issued }" />
       <div v-if="errors.passport_issued" class="error-message">{{ errors.passport_issued }}</div>
-      <InputDate :model-value="form.passport_date" @update:model-value="updateField('passport_date', $event)" placeholder="Дата выдачи *" name="passport_date" />
+      <InputDate :model-value="form.passport_date" @update:model-value="updateField('passport_date', $event)"
+        placeholder="Дата выдачи *" name="passport_date" :error="!!errors.passport_date" />
       <div v-if="errors.passport_date" class="error-message">{{ errors.passport_date }}</div>
       <InputCode :value="form.passport_code" @update:value="updateField('passport_code', $event)"
         placeholder="Код подразделения *" class="form-input" :class="{ 'error': errors.passport_code }" />
@@ -17,7 +18,8 @@
 
     <section class="form-section user-data-block">
       <h3 class="form-block-title">Личные и банковские данные</h3>
-      <InputDate :model-value="form.birthday" @update:model-value="updateField('birthday', $event)" placeholder="Дата рождения *" name="birthday" />
+      <InputDate :model-value="form.birthday" @update:model-value="updateField('birthday', $event)"
+        placeholder="Дата рождения *" name="birthday" :error="!!errors.birthday" />
       <div v-if="errors.birthday" class="error-message">{{ errors.birthday }}</div>
       <InputText :model-value="form.birthday_place" @update:model-value="updateField('birthday_place', $event)" placeholder="Место рождения *" class="form-input"
         :class="{ 'error': errors.birthday_place }" />
@@ -25,16 +27,16 @@
       <InputText :model-value="form.registration_address" @update:model-value="updateField('registration_address', $event)" placeholder="Адрес регистрации *" class="form-input"
         :class="{ 'error': errors.registration_address }" />
       <div v-if="errors.registration_address" class="error-message">{{ errors.registration_address }}</div>
-      <InputText :model-value="form.inn" @update:model-value="updateField('inn', $event)" placeholder="ИНН" class="form-input"
+      <InputText :model-value="form.inn" @update:model-value="updateField('inn', $event)" placeholder="ИНН *" class="form-input"
         :class="{ 'error': errors.inn }" />
       <div v-if="errors.inn" class="error-message">{{ errors.inn }}</div>
-      <InputText :model-value="form.bank_account" @update:model-value="updateField('bank_account', $event)" placeholder="Расчётный счёт" class="form-input"
+      <InputText :model-value="form.bank_account" @update:model-value="updateField('bank_account', $event)" placeholder="Расчётный счёт *" class="form-input"
         :class="{ 'error': errors.bank_account }" />
       <div v-if="errors.bank_account" class="error-message">{{ errors.bank_account }}</div>
-      <InputText :model-value="form.bank_bik" @update:model-value="updateField('bank_bik', $event)" placeholder="БИК банка" class="form-input"
+      <InputText :model-value="form.bank_bik" @update:model-value="updateField('bank_bik', $event)" placeholder="БИК банка *" class="form-input"
         :class="{ 'error': errors.bank_bik }" />
       <div v-if="errors.bank_bik" class="error-message">{{ errors.bank_bik }}</div>
-      <InputText :model-value="form.bank_name" @update:model-value="updateField('bank_name', $event)" placeholder="Название банка" class="form-input"
+      <InputText :model-value="form.bank_name" @update:model-value="updateField('bank_name', $event)" placeholder="Название банка *" class="form-input"
         :class="{ 'error': errors.bank_name }" />
       <div v-if="errors.bank_name" class="error-message">{{ errors.bank_name }}</div>
     </section>

@@ -8,7 +8,7 @@
       @blur="onBlur"
       :name="name"
       :placeholder="variant === 'on' ? '' : placeholder"
-      :class="['custom-input', { 'input-error': touched && error }]"
+      :class="['custom-input', { 'input-error': props.error || (touched && internalError) }]"
       type="text"
       inputmode="numeric"
       maxlength="10"
@@ -29,12 +29,13 @@ const props = defineProps({
   placeholder: { type: String, default: "Дата (ДД.ММ.ГГГГ)" },
   name: { type: String, default: "date" },
   variant: { type: String, default: "on" },
+  error: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(["update:modelValue", "update:value", "validation"]);
 
 const internalValue = ref(props.modelValue || props.value);
-const error = ref("");
+const internalError = ref("");
 const touched = ref(false);
 const isFocused = ref(false);
 
@@ -67,7 +68,7 @@ function validate(val: string) {
     isValid =
       date.getFullYear() === year && date.getMonth() === month && date.getDate() === day;
   }
-  error.value = isValid ? "" : "Введите корректную дату";
+  internalError.value = isValid ? "" : "Введите корректную дату";
   emit("validation", isValid);
 }
 
