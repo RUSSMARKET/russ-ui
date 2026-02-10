@@ -256,7 +256,6 @@ onMounted(() => {
   padding: 15px 20px;
   gap: 16px;
   flex-wrap: wrap;
-  min-height: 90px;
   width: 100%;
   box-sizing: border-box;
 }
