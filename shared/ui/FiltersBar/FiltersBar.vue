@@ -284,7 +284,6 @@ onMounted(() => {
 
 .filter-item--reset {
   min-height: auto;
-  margin-top: 8px;
 }
 
 .filter-item--actions {
