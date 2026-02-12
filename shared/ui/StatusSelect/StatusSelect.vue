@@ -449,7 +449,7 @@ watch(() => props.options, () => {
 }
 
 .status-select-container.multiple .status-select-trigger {
-  align-items: flex-start;
+  /* align-items: flex-start; */
   padding-top: 6px;
   padding-bottom: 6px;
 }
@@ -501,12 +501,12 @@ watch(() => props.options, () => {
   align-items: center;
   gap: 6px;
   padding: 4px 8px;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  background: var(--russ-info-light);
+  border: 1px solid var(--russ-info-border);
   border-radius: 6px;
   font-size: 13px;
   font-weight: 500;
-  color: #1e40af;
+  color: var(--russ-info-text);
   transition: all 0.15s ease;
   cursor: pointer;
   flex-shrink: 0;
@@ -571,7 +571,7 @@ watch(() => props.options, () => {
   height: 12px;
   border-radius: 50%;
   flex-shrink: 0;
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0 2px var(--russ-shadow-color);
 }
 
 .status-select-arrow {
@@ -587,7 +587,7 @@ watch(() => props.options, () => {
 
 .status-select-arrow.rotated {
   transform: rotate(180deg);
-  color: #1d4cd2;
+  color: var(--russ-accent-dark);
 }
 
 .status-select-dropdown {
@@ -755,17 +755,17 @@ watch(() => props.options, () => {
 }
 
 .status-select-options::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--russ-bg-tertiary);
   border-radius: 3px;
 }
 
 .status-select-options::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--russ-border-dark);
   border-radius: 3px;
 }
 
 .status-select-options::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--russ-neutral-light);
 }
 
 /* Адаптивность */
