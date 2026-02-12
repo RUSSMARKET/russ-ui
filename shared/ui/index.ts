@@ -27,6 +27,8 @@ export { FinalModal } from './FinalModal';
 export { Handler4FinalModal } from './Handler4FinalModal';
 export { ProductModal } from './ProductModal';
 export { CategoryModal } from './CategoryModal';
+export { CategoryNode } from './CategoryNode';
+export type { Category } from './CategoryNode';
 export { Card } from './Card';
 export { Chip } from './Chip';
 export { Form } from './Form';

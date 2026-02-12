@@ -47,27 +47,34 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { BaseSelect, BaseModal, StatusSelect } from '@/shared/ui';
-import { updateProjectAPI } from '~/pages/project/api/index';
+import { BaseSelect, BaseModal, StatusSelect } from '../../shared/ui';
+
+interface Project {
+  id: number;
+  name: string;
+  project_manager_id?: number | string;
+  regional_director_id?: number | string;
+  regional_director_ids?: (number | string)[];
+  regional_directors?: Array<{
+    id: number;
+    name: string;
+    surname: string;
+    patronymic?: string | null;
+  }>;
+}
 
 interface Props {
   visible: boolean;
-  project: {
-    id: number;
-    name: string;
-    project_manager_id?: number | string;
-    regional_director_id?: number | string;
-    regional_director_ids?: (number | string)[];
-    regional_directors?: Array<{
-      id: number;
-      name: string;
-      surname: string;
-      patronymic?: string | null;
-    }>;
-  } | null;
+  project: Project | null;
   projectManagers: any[];
   regionalDirectors: any[];
   staffLoading: boolean;
+  onUpdate?: (data: {
+    id: number;
+    name: string;
+    project_manager_id: string;
+    regional_director_ids: (string | number)[];
+  }) => Promise<void>;
 }
 
 interface Emits {
@@ -138,14 +145,15 @@ const handleSubmit = async () => {
       return;
     }
 
-    const updateData: any = {
-      name: form.value.name,
-      disabled: "1",
-      project_manager_id: form.value.project_manager_id || "",
-      regional_director_ids: directorIds.length > 0 ? directorIds : [],
-    };
-
-    await updateProjectAPI(form.value.id, updateData);
+    if (props.onUpdate) {
+      await props.onUpdate({
+        id: form.value.id,
+        name: form.value.name,
+        project_manager_id: form.value.project_manager_id || "",
+        regional_director_ids: directorIds.length > 0 ? directorIds : [],
+      });
+    }
+    
     emit('updated');
     closeModal();
   } catch (err) {
@@ -199,7 +207,7 @@ const handleSubmit = async () => {
 .project-info-block-form .form-row input {
   width: 100%;
   padding: 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--russ-border);
   border-radius: 8px;
   font-size: clamp(14px, calc(14px + (16 - 14) * ((100vw - 320px) / (1920 - 320))), 16px);
   color: var(--russ-text-primary);
@@ -303,4 +311,3 @@ const handleSubmit = async () => {
   }
 }
 </style>
-
