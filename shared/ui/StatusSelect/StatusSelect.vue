@@ -448,12 +448,6 @@ watch(() => props.options, () => {
   box-shadow: 0 1px 2px var(--russ-shadow-color);
 }
 
-.status-select-container.multiple .status-select-trigger {
-  /* align-items: flex-start; */
-  padding-top: 6px;
-  padding-bottom: 6px;
-}
-
 .status-select-trigger:hover:not(.disabled) {
   border-color: var(--russ-accent);
   box-shadow: 0 4px 12px var(--russ-shadow-accent-light);
