@@ -71,6 +71,8 @@ interface TableColumn {
   cellClass?: string
   sortable?: boolean
   filterable?: boolean
+  /** Ключ для сортировки (например для колонки "#" задать sortKey: 'id') */
+  sortKey?: string
 }
 
 interface Props {
@@ -122,9 +124,12 @@ const filteredItems = computed(() => {
 const sortedItems = computed(() => {
   if (!sortColumn.value) return filteredItems.value
 
+  const column = props.columns.find(c => c.key === sortColumn.value)
+  const sortByKey = column?.sortKey ?? sortColumn.value
+
   return [...filteredItems.value].sort((a, b) => {
-    const aValue = getNestedValue(a, sortColumn.value)
-    const bValue = getNestedValue(b, sortColumn.value)
+    const aValue = getNestedValue(a, sortByKey)
+    const bValue = getNestedValue(b, sortByKey)
 
     // Handle null/undefined values
     if (aValue == null && bValue == null) return 0
