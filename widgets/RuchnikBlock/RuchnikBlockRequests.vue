@@ -32,15 +32,14 @@
                 <i class="pi pi-user"></i>
                 Агент
               </label>
-              <StatusSelect
+              <BaseSelect
                 :options="agentOptions"
                 optionLabel="name"
                 optionValue="id"
                 placeholder="Все агенты"
                 :searchable="true"
-                :clearable="true"
                 :disabled="agentsLoading"
-                :model-value="localSelectedUserId || undefined"
+                :model-value="localSelectedUserId ?? undefined"
                 @update:model-value="handleUserFilterChange"
                 class="ruchnik-filter-select"
               />
@@ -51,15 +50,14 @@
                 <i class="pi pi-tags"></i>
                 Тип ручника
               </label>
-              <StatusSelect
+              <BaseSelect
                 :options="typeOptions"
                 optionLabel="name"
                 optionValue="slug"
                 placeholder="Все типы"
                 :searchable="true"
-                :clearable="true"
                 :disabled="typesLoading"
-                :model-value="localSelectedType || undefined"
+                :model-value="localSelectedType ?? undefined"
                 @update:model-value="handleTypeFilterChange"
                 class="ruchnik-filter-select"
               />
@@ -200,9 +198,20 @@
                   <i class="pi pi-hashtag"></i>
                   Код ручника
                 </label>
-                <input v-model="editCode" type="text" inputmode="tel" pattern="[0-9-]*" enterkeyhint="done"
-                  class="ruchnik-input" placeholder="Введите код ручника..." @input="handleEditCodeInput"
-                  @paste="handleEditPaste" />
+                <input
+                  ref="editCodeInputRef"
+                  v-model="editCode"
+                  type="text"
+                  inputmode="tel"
+                  pattern="[0-9-]*"
+                  enterkeyhint="done"
+                  class="ruchnik-input"
+                  placeholder="Введите код ручника..."
+                  @input="handleEditCodeInput"
+                  @paste="handleEditPaste"
+                  @focus="onEditCodeInputFocusOrClick"
+                  @click="onEditCodeInputFocusOrClick"
+                />
               </div>
 
               <div class="edit-field">
@@ -210,10 +219,16 @@
                   <i class="pi pi-user"></i>
                   Назначить агенту
                 </label>
-                <StatusSelect :options="agentOptions" optionLabel="name" optionValue="id"
-                  placeholder="Выберите агента..." :searchable="true" class="ruchnik-select" :clearable="true"
-                  :model-value="editUserId || undefined"
-                  @update:model-value="(value: number | null) => editUserId = value" />
+                <BaseSelect
+                  :options="agentOptions"
+                  optionLabel="name"
+                  optionValue="id"
+                  placeholder="Выберите агента..."
+                  :searchable="true"
+                  class="ruchnik-select"
+                  :model-value="editUserId ?? undefined"
+                  @update:model-value="(value: number | null) => editUserId = value ?? null"
+                />
               </div>
 
               <div class="edit-field">
@@ -221,16 +236,16 @@
                   <i class="pi pi-tags"></i>
                   Тип ручника
                 </label>
-                <StatusSelect
+                <BaseSelect
                   :options="typeOptions"
                   optionLabel="name"
                   optionValue="slug"
                   placeholder="Выберите тип..."
                   :searchable="true"
-                  :clearable="true"
                   :disabled="typesLoading || !typeOptions.length"
-                  :model-value="editRuchnikTypeSlug || undefined"
+                  :model-value="editRuchnikTypeSlug ?? undefined"
                   @update:model-value="(value: string | null) => editRuchnikTypeSlug = value || null"
+                  class="ruchnik-select"
                 />
               </div>
 
@@ -248,9 +263,39 @@
           </div>
 
           <div v-if="!isEditing" class="ruchnik-input-group">
+            <label class="ruchnik-label">
+              <i class="pi pi-tags"></i>
+              Тип ручника
+            </label>
+            <BaseSelect
+              :options="typeOptions"
+              optionLabel="name"
+              optionValue="slug"
+              placeholder="Выберите тип..."
+              :searchable="true"
+              :disabled="typesLoading || !typeOptions.length"
+              :model-value="newRuchnikTypeSlug ?? undefined"
+              @update:model-value="(value: string | null) => newRuchnikTypeSlug = value || null"
+              class="ruchnik-select"
+            />
+          </div>
+
+          <div v-if="!isEditing" class="ruchnik-input-group">
             <label class="ruchnik-label">Код ручника (цифры и «-»)</label>
-            <input v-model="newRuchnikCode" type="text" inputmode="tel" pattern="[0-9-]*" enterkeyhint="done"
-              class="ruchnik-input" placeholder="Введите ID заявки..." @input="handleInput" @paste="handlePaste" />
+            <input
+              ref="newCodeInputRef"
+              v-model="newRuchnikCode"
+              type="text"
+              inputmode="tel"
+              pattern="[0-9-]*"
+              enterkeyhint="done"
+              class="ruchnik-input"
+              placeholder="Введите ID заявки..."
+              @input="handleInput"
+              @paste="handlePaste"
+              @focus="onCodeInputFocusOrClick"
+              @click="onCodeInputFocusOrClick"
+            />
           </div>
 
           <div v-if="!isEditing" class="ruchnik-input-group">
@@ -258,26 +303,15 @@
               <i class="pi pi-user"></i>
               Назначить агенту
             </label>
-            <StatusSelect :options="agentOptions" optionLabel="name" optionValue="id" placeholder="Выберите агента..."
-              :searchable="true" class="ruchnik-select" :clearable="true" :model-value="newUserId || undefined"
-              @update:model-value="(value: number | null) => newUserId = value" />
-          </div>
-
-          <div v-if="!isEditing" class="ruchnik-input-group">
-            <label class="ruchnik-label">
-              <i class="pi pi-tags"></i>
-              Тип ручника
-            </label>
-            <StatusSelect
-              :options="typeOptions"
+            <BaseSelect
+              :options="agentOptions"
               optionLabel="name"
-              optionValue="slug"
-              placeholder="Выберите тип..."
+              optionValue="id"
+              placeholder="Выберите агента..."
               :searchable="true"
-              :clearable="true"
-              :disabled="typesLoading || !typeOptions.length"
-              :model-value="newRuchnikTypeSlug || undefined"
-              @update:model-value="(value: string | null) => newRuchnikTypeSlug = value || null"
+              class="ruchnik-select"
+              :model-value="newUserId ?? undefined"
+              @update:model-value="(value: number | null) => newUserId = value ?? null"
             />
           </div>
 
@@ -301,7 +335,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
 import { useToast } from "bibli/shared/ui";
-import { StatusSelect } from "@/shared/ui/";
+import { BaseSelect } from "@/shared/ui";
 
 /** Тип ручника (передаётся со страницы или из shared api). */
 export interface RuchnikType {
@@ -424,7 +458,65 @@ const toast = useToast();
 
 const localPerPage = ref(props.perPage);
 const typeOptions = computed(() => props.ruchnikTypes || []);
-const sanitizeRuchnikValue = (value: string) => value.replace(/[^0-9-]/g, '');
+const newCodeInputRef = ref<HTMLInputElement | null>(null);
+const editCodeInputRef = ref<HTMLInputElement | null>(null);
+
+/** Только цифры, макс. 11 для OTP. */
+const sanitizeRuchnikDigits = (value: string, maxLen = 11) =>
+  String(value || "").replace(/\D/g, "").slice(0, maxLen);
+
+/** OTP: XXXXXX-X-XX..XXXX (6 цифр, дефис, 1 цифра, дефис, 2–4 цифры). */
+const formatOtpCode = (digits: string): string => {
+  const limited = sanitizeRuchnikDigits(digits, 11);
+  const part1 = limited.slice(0, 6);
+  const part2 = limited.slice(6, 7);
+  const part3 = limited.slice(7, 11);
+  let formatted = part1;
+  if (part2) formatted += `-${part2}`;
+  if (part3) formatted += `-${part3}`;
+  return formatted;
+};
+
+/** Форматирование по типу: alfa — 7 цифр, otp — маска XXXXXX-X-XX..XXXX, иначе только [0-9-]. */
+const formatCodeByType = (raw: string, typeSlug: string | null): string => {
+  const slug = (typeSlug || "").toLowerCase();
+  if (slug.includes("alfa")) {
+    return sanitizeRuchnikDigits(raw, 7);
+  }
+  if (slug.includes("otp")) {
+    return formatOtpCode(raw);
+  }
+  return String(raw || "").replace(/[^0-9-]/g, "");
+};
+
+const sanitizeRuchnikValue = (value: string) => value.replace(/[^0-9-]/g, "");
+
+function onCodeInputFocusOrClick(ev: FocusEvent | MouseEvent) {
+  const typeSlug = newRuchnikTypeSlug.value || props.selectedType || null;
+  if (!typeSlug) {
+    toast.add({
+      severity: "warn",
+      summary: "Тип не выбран",
+      detail: "Сначала выберите тип ручника",
+      life: 3000,
+    });
+    const el = (ev.target as HTMLInputElement);
+    if (el?.blur) el.blur();
+  }
+}
+
+function onEditCodeInputFocusOrClick(ev: FocusEvent | MouseEvent) {
+  if (!editRuchnikTypeSlug.value) {
+    toast.add({
+      severity: "warn",
+      summary: "Тип не выбран",
+      detail: "Сначала выберите тип ручника",
+      life: 3000,
+    });
+    const el = (ev.target as HTMLInputElement);
+    if (el?.blur) el.blur();
+  }
+}
 
 const getStatus = (item: Ruchnik): 'confirmed' | 'pending' | 'rejected' => {
   const hasReport = !!item.report;
@@ -470,32 +562,32 @@ const formatUser = (user: { surname: string; name: string; patronymic?: string |
 
 const handleInput = (event: Event) => {
   const target = event.target as HTMLInputElement;
-  const sanitizedValue = sanitizeRuchnikValue(target.value);
-  if (target.value !== sanitizedValue) {
-    newRuchnikCode.value = sanitizedValue;
+  const typeSlug = newRuchnikTypeSlug.value || props.selectedType || null;
+  const formatted = formatCodeByType(target.value, typeSlug);
+  if (target.value !== formatted) {
+    newRuchnikCode.value = formatted;
   }
 };
 
 const handlePaste = (event: ClipboardEvent) => {
   event.preventDefault();
-
-  const pastedText = event.clipboardData?.getData('text') || '';
-  newRuchnikCode.value = sanitizeRuchnikValue(pastedText);
+  const pastedText = event.clipboardData?.getData("text") || "";
+  const typeSlug = newRuchnikTypeSlug.value || props.selectedType || null;
+  newRuchnikCode.value = formatCodeByType(pastedText, typeSlug);
 };
 
 const handleEditCodeInput = (event: Event) => {
   const target = event.target as HTMLInputElement;
-  const sanitizedValue = sanitizeRuchnikValue(target.value);
-  if (target.value !== sanitizedValue) {
-    editCode.value = sanitizedValue;
+  const formatted = formatCodeByType(target.value, editRuchnikTypeSlug.value);
+  if (target.value !== formatted) {
+    editCode.value = formatted;
   }
 };
 
 const handleEditPaste = (event: ClipboardEvent) => {
   event.preventDefault();
-
-  const pastedText = event.clipboardData?.getData('text') || '';
-  editCode.value = sanitizeRuchnikValue(pastedText);
+  const pastedText = event.clipboardData?.getData("text") || "";
+  editCode.value = formatCodeByType(pastedText, editRuchnikTypeSlug.value);
 };
 
 const agentOptions = computed(() => {
@@ -710,7 +802,7 @@ watch(() => props.canManage, (canManage) => {
 <style scoped>
 .ruchnik-block {
   width: 100%;
-  height: 73vh;
+  max-height: 650px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -732,14 +824,12 @@ watch(() => props.canManage, (canManage) => {
 .ruchnik-list-column {
   background: var(--russ-bg);
   border-radius: 16px;
-  padding: 24px;
+  padding: 16px;
   box-shadow: 0 2px 8px var(--russ-shadow-default);
   border: 1px solid var(--russ-border);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  min-height: 400px;
-  /* Фиксированная минимальная высота */
 }
 
 .ruchnik-list-column-full {
@@ -1002,7 +1092,7 @@ watch(() => props.canManage, (canManage) => {
 
 .ruchnik-add-column {
   background: var(--russ-bg);
-  border-radius: 16px;
+  border-radius: 14px;
   padding: 24px;
   box-shadow: 0 2px 8px var(--russ-shadow-default);
   border: 1px solid var(--russ-border);
@@ -1332,9 +1422,39 @@ watch(() => props.canManage, (canManage) => {
   background: var(--russ-bg);
   transition: all 0.2s ease;
   color: var(--russ-text-primary);
+  min-height: 48px;
+  height: 48px;
+  box-sizing: border-box;
 }
 
 .ruchnik-input:focus {
+  outline: none;
+  border-color: var(--russ-input-border-focus);
+  box-shadow: 0 0 0 3px var(--russ-shadow-secondary);
+}
+
+/* Унификация BaseSelect с input в форме добавления/редактирования */
+.ruchnik-add-column .ruchnik-select :deep(.base-select-container),
+.ruchnik-edit-mode .ruchnik-select :deep(.base-select-container) {
+  min-height: 48px;
+}
+
+.ruchnik-add-column .ruchnik-select :deep(.base-select-combo),
+.ruchnik-edit-mode .ruchnik-select :deep(.base-select-combo) {
+  padding: 12px 16px;
+  border: 2px solid var(--russ-input-border);
+  border-radius: 10px;
+  font-size: 15px;
+  background: var(--russ-bg);
+  color: var(--russ-text-primary);
+  min-height: 48px;
+  height: 48px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ruchnik-add-column .ruchnik-select :deep(.base-select-container:focus-within .base-select-combo),
+.ruchnik-edit-mode .ruchnik-select :deep(.base-select-container:focus-within .base-select-combo) {
   outline: none;
   border-color: var(--russ-input-border-focus);
   box-shadow: 0 0 0 3px var(--russ-shadow-secondary);
@@ -1388,8 +1508,8 @@ watch(() => props.canManage, (canManage) => {
 /* Красивые фильтры */
 .ruchnik-filters-container {
   margin-bottom: 20px;
-  padding: 16px;
-  background: linear-gradient(135deg, var(--russ-bg) 0%, var(--russ-bg-secondary) 100%);
+  padding: 8px;
+  background: var(--russ-bg-secondary);
   border: 1px solid var(--russ-border-light);
   border-radius: 12px;
   box-shadow: 0 2px 8px var(--russ-shadow-default);
@@ -1398,7 +1518,7 @@ watch(() => props.canManage, (canManage) => {
 .ruchnik-filters-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  gap: 8px;
   align-items: end;
 }
 
@@ -1432,6 +1552,17 @@ watch(() => props.canManage, (canManage) => {
 
 .ruchnik-filter-select {
   width: 100%;
+}
+
+.ruchnik-filters-container .ruchnik-filter-select :deep(.base-select-combo) {
+  padding: 10px 12px 10px 36px;
+  border: 2px solid var(--russ-input-border);
+  border-radius: 8px;
+  font-size: 14px;
+  background: var(--russ-bg);
+  min-height: 42px;
+  height: 42px;
+  box-sizing: border-box;
 }
 
 .ruchnik-reset-btn {
@@ -1663,7 +1794,7 @@ watch(() => props.canManage, (canManage) => {
 
   .ruchnik-list-column,
   .ruchnik-add-column {
-    padding: 16px;
+    padding: 10px;
     min-height: auto;
     overflow: visible;
   }

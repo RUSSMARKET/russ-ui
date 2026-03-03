@@ -336,7 +336,7 @@ watch(() => props.resetKey, () => {
 .ruchnik-add-column {
   background: var(--russ-bg);
   border-radius: 16px;
-  padding: 24px;
+  padding: 16px;
   box-shadow: 0 2px 8px var(--russ-shadow-default);
   border: 1px solid var(--russ-border);
   display: flex;
@@ -726,7 +726,7 @@ watch(() => props.resetKey, () => {
 
   .ruchnik-list-column,
   .ruchnik-add-column {
-    padding: 16px;
+    padding: 10px;
   }
 
 
