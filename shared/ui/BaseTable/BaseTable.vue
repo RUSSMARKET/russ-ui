@@ -136,7 +136,17 @@ const sortedItems = computed(() => {
     if (aValue == null) return sortDirection.value === 'asc' ? -1 : 1
     if (bValue == null) return sortDirection.value === 'asc' ? 1 : -1
 
-    // Convert to strings for comparison
+    // Если оба значения можно привести к числу — сравниваем как числа
+    const aNum = Number(aValue)
+    const bNum = Number(bValue)
+
+    if (!Number.isNaN(aNum) && !Number.isNaN(bNum)) {
+      if (aNum < bNum) return sortDirection.value === 'asc' ? -1 : 1
+      if (aNum > bNum) return sortDirection.value === 'asc' ? 1 : -1
+      return 0
+    }
+
+    // Иначе сравниваем как строки
     const aStr = String(aValue).toLowerCase()
     const bStr = String(bValue).toLowerCase()
 
