@@ -210,7 +210,6 @@
                   @input="handleEditCodeInput"
                   @paste="handleEditPaste"
                   @focus="onEditCodeInputFocusOrClick"
-                  @click="onEditCodeInputFocusOrClick"
                 />
               </div>
 
@@ -294,7 +293,6 @@
               @input="handleInput"
               @paste="handlePaste"
               @focus="onCodeInputFocusOrClick"
-              @click="onCodeInputFocusOrClick"
             />
           </div>
 
