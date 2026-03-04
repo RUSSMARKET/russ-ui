@@ -216,10 +216,8 @@ const getNestedValue = (obj: any, path: string) => {
   min-width: 800px;
   border-collapse: separate;
   border-spacing: 0;
-  background: var(--russ-bg);
   border-radius: 0 0 14px 14px;
   overflow: hidden;
-  box-shadow: 0 1px 3px var(--russ-shadow-color);
 }
 
 .base-table::-webkit-scrollbar {
@@ -399,9 +397,14 @@ const getNestedValue = (obj: any, path: string) => {
 
 /* Card-like layout for mobile phones */
 @media (max-width: 640px) {
+  .table-container {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
   .table-scroll {
     overflow-x: hidden;
-    padding: 0 8px;
+    padding: 0;
   }
 
   .base-table {
@@ -419,10 +422,12 @@ const getNestedValue = (obj: any, path: string) => {
   .base-table td {
     display: block;
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .table-row {
-    margin: 8px 0;
+    margin: 10px 0;
     border-radius: 10px;
     background: var(--russ-bg-secondary);
     border: 1px solid var(--russ-border-light);
@@ -437,6 +442,10 @@ const getNestedValue = (obj: any, path: string) => {
     padding: 6px 10px;
     word-break: break-word;
     font-size: 12px;
+  }
+
+  .base-table td > * {
+    max-width: 100%;
   }
 
   /* аккуратное разделение полей внутри карточки */
