@@ -36,13 +36,13 @@
           </tr>
           <tr v-for="(item, index) in sortedItems" :key="item.id || index" class="table-row" :class="rowClass"
             @click="handleRowClick ? handleRowClick(item) : null">
-            <td v-for="column in columns" :key="column.key" :class="column.cellClass">
+            <td v-for="column in columns" :key="column.key" :class="column.cellClass" :data-label="column.header">
               <slot :name="`cell-${column.key}`" :item="item" :column="column"
                 :value="getNestedValue(item, column.key)">
                 {{ getNestedValue(item, column.key) }}
               </slot>
             </td>
-            <td v-if="showActions">
+            <td v-if="showActions" class="actions-cell" data-label="Действия">
               <slot name="actions" :item="item">
                 <!-- Default actions slot -->
               </slot>
@@ -394,6 +394,63 @@ const getNestedValue = (obj: any, path: string) => {
   .base-table td {
     padding: 8px;
     font-size: 12px;
+  }
+}
+
+/* Card-like layout for mobile phones */
+@media (max-width: 640px) {
+  .table-scroll {
+    overflow-x: hidden;
+  }
+
+  .base-table {
+    min-width: 0;
+    border-radius: 12px;
+  }
+
+  .base-table thead {
+    display: none;
+  }
+
+  .base-table,
+  .base-table tbody,
+  .base-table tr,
+  .base-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .table-row {
+    margin-bottom: 12px;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px var(--russ-shadow-color);
+    background: var(--russ-bg);
+  }
+
+  .base-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    border-bottom: 1px solid var(--russ-border);
+  }
+
+  .base-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--russ-text-secondary);
+    margin-right: 8px;
+    flex: 0 0 45%;
+    max-width: 160px;
+    white-space: nowrap;
+  }
+
+  .base-table tr:last-child td:last-child {
+    border-bottom: none;
+  }
+
+  .actions-cell {
+    justify-content: flex-start;
   }
 }
 </style>
