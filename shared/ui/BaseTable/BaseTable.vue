@@ -401,11 +401,12 @@ const getNestedValue = (obj: any, path: string) => {
 @media (max-width: 640px) {
   .table-scroll {
     overflow-x: hidden;
+    padding: 0 8px;
   }
 
   .base-table {
     min-width: 0;
-    border-radius: 12px;
+    border-radius: 8px;
   }
 
   .base-table thead {
@@ -421,9 +422,9 @@ const getNestedValue = (obj: any, path: string) => {
   }
 
   .table-row {
-    margin-bottom: 12px;
-    border-radius: 12px;
-    box-shadow: 0 1px 4px var(--russ-shadow-color);
+    margin-bottom: 8px;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px var(--russ-shadow-color);
     background: var(--russ-bg);
   }
 
@@ -431,18 +432,29 @@ const getNestedValue = (obj: any, path: string) => {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px;
+    gap: 2px;
+    padding: 6px 10px;
     border-bottom: 1px solid var(--russ-border);
     word-break: break-word;
+    font-size: 12px;
+  }
+
+  /* визуальное разделение "колонок" внутри карточки */
+  .base-table tr td + td {
+    margin-top: 4px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--russ-border-light);
   }
 
   .base-table td::before {
     content: attr(data-label);
     font-weight: 600;
     color: var(--russ-text-secondary);
-    margin: 0 0 2px 0;
+    margin: 0 0 1px 0;
     max-width: 100%;
     white-space: normal;
+    font-size: 11px;
+    opacity: 0.9;
   }
 
   .base-table tr:last-child td:last-child {
