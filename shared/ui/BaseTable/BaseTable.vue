@@ -450,6 +450,17 @@ const getNestedValue = (obj: any, path: string) => {
     max-width: 100%;
   }
 
+  /* колонка "#" — в одну строку (номер + значение) */
+  .base-table td[data-label="#"] {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .base-table td[data-label="#"]::before {
+    margin: 0;
+  }
+
   /* убираем радиусы углов последней строки на мобильных */
   .base-table tbody tr:last-child td:first-child,
   .base-table tbody tr:last-child td:last-child {
