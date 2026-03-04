@@ -429,20 +429,20 @@ const getNestedValue = (obj: any, path: string) => {
 
   .base-table td {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    gap: 4px;
     border-bottom: 1px solid var(--russ-border);
+    word-break: break-word;
   }
 
   .base-table td::before {
     content: attr(data-label);
     font-weight: 600;
     color: var(--russ-text-secondary);
-    margin-right: 8px;
-    flex: 0 0 45%;
-    max-width: 160px;
-    white-space: nowrap;
+    margin: 0 0 2px 0;
+    max-width: 100%;
+    white-space: normal;
   }
 
   .base-table tr:last-child td:last-child {
