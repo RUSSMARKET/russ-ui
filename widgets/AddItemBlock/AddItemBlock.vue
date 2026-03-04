@@ -566,6 +566,8 @@ const updateField = (fieldId?: number) => {
 .support-avatar {
   width: 40px;
   height: 40px;
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
   border-radius: 50%;
   background: #6b9eff;
   color: #fff;
@@ -575,6 +577,10 @@ const updateField = (fieldId?: number) => {
   font-size: 16px;
   font-weight: 700;
   box-shadow: 0 2px 8px rgba(71, 85, 105, 0.15);
+}
+
+.category-avatar {
+  border-radius: 12px;
 }
 
 .support-info {
@@ -963,7 +969,6 @@ const updateField = (fieldId?: number) => {
 
   .support-card {
     padding: 12px;
-    flex-direction: column;
     align-items: stretch;
   }
 
