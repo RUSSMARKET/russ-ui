@@ -258,12 +258,14 @@ const getNestedValue = (obj: any, path: string) => {
   border-top-right-radius: 0;
 }
 
-.base-table tbody tr:last-child td:first-child {
-  border-bottom-left-radius: 14px;
-}
+@media (min-width: 641px) {
+  .base-table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 0px;
+  }
 
-.base-table tbody tr:last-child td:last-child {
-  border-bottom-right-radius: 14px;
+  .base-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 0px;
+  }
 }
 
 .projects-section tbody tr:last-child td:last-child {
