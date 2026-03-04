@@ -406,7 +406,7 @@ const getNestedValue = (obj: any, path: string) => {
 
   .base-table {
     min-width: 0;
-    border-radius: 8px;
+    border-radius: 0;
   }
 
   .base-table thead {
@@ -422,10 +422,11 @@ const getNestedValue = (obj: any, path: string) => {
   }
 
   .table-row {
-    margin-bottom: 8px;
-    border-radius: 8px;
-    box-shadow: 0 1px 2px var(--russ-shadow-color);
-    background: var(--russ-bg);
+    margin: 8px 0;
+    border-radius: 10px;
+    background: var(--russ-bg-secondary);
+    border: 1px solid var(--russ-border-light);
+    overflow: hidden;
   }
 
   .base-table td {
@@ -434,16 +435,17 @@ const getNestedValue = (obj: any, path: string) => {
     align-items: flex-start;
     gap: 2px;
     padding: 6px 10px;
-    border-bottom: 1px solid var(--russ-border);
     word-break: break-word;
     font-size: 12px;
   }
 
-  /* визуальное разделение "колонок" внутри карточки */
-  .base-table tr td + td {
-    margin-top: 4px;
-    padding-top: 8px;
-    border-top: 1px dashed var(--russ-border-light);
+  /* аккуратное разделение полей внутри карточки */
+  .base-table td:not(:last-child) {
+    border-bottom: 1px solid var(--russ-border-light);
+  }
+
+  .base-table td:last-child {
+    border-bottom: none;
   }
 
   .base-table td::before {
@@ -455,10 +457,6 @@ const getNestedValue = (obj: any, path: string) => {
     white-space: normal;
     font-size: 11px;
     opacity: 0.9;
-  }
-
-  .base-table tr:last-child td:last-child {
-    border-bottom: none;
   }
 
   .actions-cell {
