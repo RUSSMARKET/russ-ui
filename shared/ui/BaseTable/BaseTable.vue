@@ -448,6 +448,13 @@ const getNestedValue = (obj: any, path: string) => {
     max-width: 100%;
   }
 
+  /* убираем радиусы углов последней строки на мобильных */
+  .base-table tbody tr:last-child td:first-child,
+  .base-table tbody tr:last-child td:last-child {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
   /* аккуратное разделение полей внутри карточки */
   .base-table td:not(:last-child) {
     border-bottom: 1px solid var(--russ-border-light);
