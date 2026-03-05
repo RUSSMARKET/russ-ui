@@ -5,15 +5,15 @@
       <InputPassport :value="form.passport" @update:value="updateField('passport', $event)"
         placeholder="Номер паспорта *" class="form-input" :class="{ 'error': errors.passport }" />
       <div v-if="errors.passport" class="error-message">{{ errors.passport }}</div>
+      <InputCode :value="form.passport_code" @update:value="updateField('passport_code', $event)"
+        placeholder="Код подразделения *" class="form-input" :class="{ 'error': errors.passport_code }" />
+      <div v-if="errors.passport_code" class="error-message">{{ errors.passport_code }}</div>
       <InputText :model-value="form.passport_issued" @update:model-value="updateField('passport_issued', $event)" placeholder="Кем выдан *" class="form-input"
         :class="{ 'error': errors.passport_issued }" />
       <div v-if="errors.passport_issued" class="error-message">{{ errors.passport_issued }}</div>
       <InputDate :model-value="form.passport_date" @update:model-value="updateField('passport_date', $event)"
         placeholder="Дата выдачи *" name="passport_date" :error="!!errors.passport_date" />
       <div v-if="errors.passport_date" class="error-message">{{ errors.passport_date }}</div>
-      <InputCode :value="form.passport_code" @update:value="updateField('passport_code', $event)"
-        placeholder="Код подразделения *" class="form-input" :class="{ 'error': errors.passport_code }" />
-      <div v-if="errors.passport_code" class="error-message">{{ errors.passport_code }}</div>
     </section>
 
     <section class="form-section user-data-block">
