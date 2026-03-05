@@ -9,7 +9,7 @@
       :name="name"
       :placeholder="variant === 'on' ? '' : placeholder"
       :class="['custom-input', { 'input-error': touched && error }]"
-      type="text"
+      type="tel"
       inputmode="numeric"
       pattern="[0-9]*"
       maxlength="7"
