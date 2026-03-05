@@ -703,12 +703,22 @@ const updateField = (fieldId?: number) => {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  min-width: 0;
 }
 
 .support-select-wrapper {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-width: 0;
+}
+
+/* Чтобы BaseSelect в слоте не выходил за колонку */
+.supports-add-column :deep(.base-select-wrapper),
+.supports-add-column :deep(.base-select-container),
+.supports-add-column :deep(.base-select-combo) {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .support-select-label {
@@ -990,8 +1000,6 @@ const updateField = (fieldId?: number) => {
 
   .support-actions {
     gap: 6px;
-    margin-top: 8px;
-    align-self: flex-end;
   }
 
   .product-field-row.ultra-compact-row {
