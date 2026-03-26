@@ -427,7 +427,7 @@ watch(() => props.options, () => {
   max-width: 100%;
   overflow: hidden;
   isolation: isolate;
-  padding-right: 2px;
+  padding: 2px;
 }
 
 .status-select-trigger {
