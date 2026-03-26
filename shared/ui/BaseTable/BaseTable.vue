@@ -286,6 +286,7 @@ const getNestedValue = (obj: any, path: string) => {
   display: flex;
   gap: 8px;
   align-items: center;
+  height: 40px;
 }
 
 .actions-header {
