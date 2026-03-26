@@ -1428,7 +1428,7 @@ watch(() => props.canManage, (canManage) => {
 .ruchnik-input:focus {
   outline: none;
   border-color: var(--russ-input-border-focus);
-  box-shadow: 0 0 0 3px var(--russ-shadow-secondary);
+  box-shadow: inset 0 0 0 3px var(--russ-shadow-secondary);
 }
 
 /* Унификация BaseSelect с input в форме добавления/редактирования */
@@ -1455,7 +1455,7 @@ watch(() => props.canManage, (canManage) => {
 .ruchnik-edit-mode .ruchnik-select :deep(.base-select-container:focus-within .base-select-combo) {
   outline: none;
   border-color: var(--russ-input-border-focus);
-  box-shadow: 0 0 0 3px var(--russ-shadow-secondary);
+  box-shadow: inset 0 0 0 3px var(--russ-shadow-secondary);
 }
 
 .ruchnik-input-error {
@@ -1634,7 +1634,7 @@ watch(() => props.canManage, (canManage) => {
 .ruchnik-search-input-compact:focus {
   outline: none;
   border-color: var(--russ-input-border-focus);
-  box-shadow: 0 0 0 3px var(--russ-shadow-secondary);
+  box-shadow: inset 0 0 0 3px var(--russ-shadow-secondary);
   background: var(--russ-bg);
 }
 

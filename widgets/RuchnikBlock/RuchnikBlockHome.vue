@@ -567,7 +567,7 @@ watch(() => props.resetKey, () => {
 .ruchnik-input:focus {
   outline: none;
   border-color: var(--russ-input-border-focus);
-  box-shadow: 0 0 0 3px var(--russ-shadow-secondary);
+  box-shadow: inset 0 0 0 3px var(--russ-shadow-secondary);
 }
 
 .ruchnik-input-error {

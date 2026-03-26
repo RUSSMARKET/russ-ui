@@ -306,7 +306,7 @@ onBeforeUnmount(() => {
 
 .date-picker-input.is-focused {
   border-color: var(--russ-secondary);
-  box-shadow: 0 0 0 3px var(--russ-shadow-secondary);
+  box-shadow: inset 0 0 0 3px var(--russ-shadow-secondary);
   background: var(--russ-input-bg);
 }
 

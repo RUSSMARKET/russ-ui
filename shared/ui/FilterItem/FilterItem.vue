@@ -149,7 +149,7 @@ const handleSearchEnter = () => {
 
 .filter-search-wrapper:focus-within {
   border-color: var(--russ-secondary);
-  box-shadow: 0 0 0 3px var(--russ-shadow-secondary);
+  box-shadow: inset 0 0 0 3px var(--russ-shadow-secondary);
   background: var(--russ-input-bg);
 }
 
@@ -211,7 +211,7 @@ const handleSearchEnter = () => {
 
 .filter-item-wrapper :deep(.base-select-combo:focus) {
   border-color: var(--russ-secondary);
-  box-shadow: 0 0 0 3px var(--russ-shadow-secondary);
+  box-shadow: inset 0 0 0 3px var(--russ-shadow-secondary);
   background: var(--russ-input-bg);
 }
 

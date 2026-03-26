@@ -124,7 +124,8 @@ watch(
 
 .input-error {
   border: 1px solid var(--russ-input-error) !important;
-  box-shadow: 0 0 0 2px var(--russ-input-error-bg);
+  /* Внутренняя обводка, чтобы ring не выходил за границы поля */
+  box-shadow: inset 0 0 0 2px var(--russ-input-error-bg);
 }
 
 .input-label {
