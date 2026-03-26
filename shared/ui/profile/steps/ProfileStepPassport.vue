@@ -8,8 +8,13 @@
       <InputCode :value="form.passport_code" @update:value="updateField('passport_code', $event)"
         placeholder="Код подразделения *" class="form-input" :class="{ 'error': errors.passport_code }" />
       <div v-if="errors.passport_code" class="error-message">{{ errors.passport_code }}</div>
-      <InputText :model-value="form.passport_issued" @update:model-value="updateField('passport_issued', $event)" placeholder="Кем выдан *" class="form-input"
-        :class="{ 'error': errors.passport_issued }" />
+      <div class="passport-issued-options">
+        <BaseSelect class="form-input" :model-value="form.passport_issued" :options="passportIssuedOptions"
+          label="Кем выдан *"
+          :placeholder="passportIssuedOptions.length ? 'Выберите вариант' : 'Сначала введите код подразделения'"
+          :searchable="false" :disabled="!passportIssuedOptions.length"
+          @update:modelValue="updateField('passport_issued', $event)" />
+      </div>
       <div v-if="errors.passport_issued" class="error-message">{{ errors.passport_issued }}</div>
       <InputDate :model-value="form.passport_date" @update:model-value="updateField('passport_date', $event)"
         placeholder="Дата выдачи *" name="passport_date" :error="!!errors.passport_date" />
@@ -49,7 +54,8 @@
 </template>
 
 <script setup lang="ts">
-import { InputPassport, InputCode, InputText, InputDate, Button } from '@/shared/ui';
+import { computed } from 'vue';
+import { InputPassport, InputCode, InputText, InputDate, Button, BaseSelect } from '@/shared/ui';
 
 interface FormData {
   passport: string;
@@ -67,6 +73,7 @@ interface FormData {
 
 interface Props {
   form: FormData;
+  passportIssuedOptions?: string[];
   errors: {
     passport: string;
     passport_issued: string;
@@ -93,6 +100,9 @@ const emit = defineEmits<{
 const updateField = (field: keyof FormData, value: any) => {
   emit('update:form', { [field]: value });
 };
+
+const passportIssuedOptions = computed(() => props.passportIssuedOptions || []);
+
 </script>
 
 <style scoped>
@@ -140,6 +150,11 @@ const updateField = (field: keyof FormData, value: any) => {
 .error-message {
   color: var(--russ-error);
   font-size: clamp(0.75rem, calc(0.75rem + (0.85 - 0.75) * ((100vw - 320px) / (960 - 320))), 0.85rem);
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.passport-issued-options {
   margin-top: -0.5rem;
   margin-bottom: 0.5rem;
 }

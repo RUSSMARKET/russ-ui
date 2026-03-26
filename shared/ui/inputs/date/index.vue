@@ -120,7 +120,6 @@ watch(
 .custom-input:focus {
   outline: none;
   border-color: var(--russ-input-border-focus);
-  box-shadow: 0 0 0 2px var(--russ-focus-ring);
 }
 
 .input-error {
