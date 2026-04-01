@@ -29,7 +29,7 @@
         </thead>
         <tbody>
           <tr v-if="loading">
-            <td class="table-loader-cell" :colspan="columns.length + (showActions ? 1 : 0)">
+            <td class="table-loader-cell" :colspan="tableColspan">
               <span class="loader"></span>
               <span>{{ loadingText }}</span>
             </td>
@@ -49,7 +49,7 @@
             </td>
           </tr>
           <tr v-if="!loading && sortedItems.length === 0">
-            <td :colspan="columns.length + (showActions ? 1 : 0)" class="no-results">
+            <td :colspan="tableColspan" class="no-results">
               {{ noResultsText }}
             </td>
           </tr>
@@ -103,6 +103,11 @@ const columnFilters = ref<Record<string, string>>({})
 
 const filterableColumns = computed(() => {
   return props.columns.filter(col => col.filterable !== false)
+})
+
+const tableColspan = computed(() => {
+  const columnsCount = props.columns.length + (props.showActions ? 1 : 0)
+  return Math.max(1, columnsCount)
 })
 
 const filteredItems = computed(() => {
