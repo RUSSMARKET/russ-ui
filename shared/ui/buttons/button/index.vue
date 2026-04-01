@@ -95,7 +95,6 @@ const handleClick = (event) => {
   transition: all 0.2s ease;
   background-color: var(--russ-primary);
   color: var(--russ-text-inverse);
-  min-height: 2.5rem;
 }
 
 .custom-button:hover:not(:disabled):not(.custom-button-disabled) {
