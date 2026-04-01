@@ -75,7 +75,8 @@ const handleClick = (event) => {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 0.25rem 0.75rem;
+  min-height: var(--ui-control-height, var(--filter-control-height, var(--filter-control-height-md, 40px)));
+  padding: 0 0.75rem;
   font-family: 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
   font-size: clamp(
     14px,
@@ -83,7 +84,7 @@ const handleClick = (event) => {
     18px
   );
   font-weight: 500;
-  line-height: 1.5;
+  line-height: 1;
   text-align: center;
   text-decoration: none;
   white-space: nowrap;

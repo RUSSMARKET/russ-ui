@@ -200,13 +200,31 @@ onMounted(() => {
 
 <style scoped>
 .filters-bar-wrapper {
-  --filter-control-height: 40px;
+  /* Единая «компактная» высота контролов внутри панели фильтров.
+     Глобальный :root --ui-control-height (48px) иначе переопределяет BaseSelect/InputText до первого var(). */
+  --filters-bar-inner-height: var(--filters-bar-control-height, var(--filter-control-height-md, 40px));
+  --filter-control-height-sm: 36px;
+  --filter-control-height-md: 40px;
+  --filter-control-height-lg: 48px;
+  --filter-control-height: var(--filters-bar-inner-height);
+  --ui-control-height: var(--filters-bar-inner-height);
+  --base-select-height: var(--filters-bar-inner-height);
   --filter-control-radius: 10px;
   --filter-control-gap: 12px;
+  --filter-control-padding-x: 12px;
+  --filter-control-font-family: 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --filter-control-font-size-sm: 13px;
+  --filter-control-font-size-md: 14px;
+  --filter-control-font-size-lg: 16px;
+  --filter-control-font-size: var(--filter-control-font-size-md);
+  --filter-control-font-weight: 500;
+  --filter-control-line-height: 1.2;
+  --filter-control-placeholder-color: var(--russ-text-quaternary);
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 10px;
 }
 
 .mobile-filters-btn-wrapper {
@@ -282,7 +300,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  min-height: 70px;
+  min-height: auto;
 }
 
 .filter-item--reset {
@@ -300,17 +318,20 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0 14px;
+  padding: 0 var(--filter-control-padding-x);
   background: #f3f4f6;
   border: 1px solid #d1d5db;
   border-radius: var(--filter-control-radius);
   color: #6b7280;
-  font-size: 15px;
-  font-weight: 500;
+  font-family: var(--filter-control-font-family);
+  font-size: var(--filter-control-font-size);
+  font-weight: var(--filter-control-font-weight);
+  line-height: var(--filter-control-line-height);
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
   height: var(--filter-control-height);
+  min-height: var(--filter-control-height);
   justify-content: center;
 }
 

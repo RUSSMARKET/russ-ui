@@ -708,58 +708,72 @@ const updateField = (fieldId?: number) => {
 
 .support-select-wrapper {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
   min-width: 0;
 }
 
 .support-select-label {
+  width: 100%;
   font-size: 14px;
   font-weight: 600;
-  color: #374151;
+  color: var(--russ-text-primary);
+  margin-bottom: 6px;
 }
 
 .support-select {
-  padding: 12px 16px;
-  border: 2px solid #e5e7eb;
-  border-radius: 10px;
-  font-size: 15px;
-  background: #fff;
+  flex: 1;
+  min-width: 260px;
+  height: var(--filter-control-height, var(--filter-control-height-md, 40px));
+  min-height: var(--filter-control-height, var(--filter-control-height-md, 40px));
+  padding: 0 var(--filter-control-padding-x, 12px);
+  border: 1.5px solid var(--russ-border);
+  border-radius: var(--filter-control-radius, 10px);
+  font-size: var(--filter-control-font-size, var(--filter-control-font-size-md, 14px));
+  font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+  font-weight: var(--filter-control-font-weight, 500);
+  line-height: var(--filter-control-line-height, 1.2);
+  background: var(--russ-bg-quaternary);
   transition: all 0.2s ease;
   color: var(--russ-text-primary);
+  box-sizing: border-box;
 }
 
 .support-select:focus {
   outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  border-color: var(--russ-secondary-dark);
+  background: var(--russ-bg);
 }
 
 .support-add-btn {
-  background: #6b9eff;
-  color: #fff;
+  background: var(--russ-accent);
+  color: var(--russ-text-inverse);
   border: none;
-  border-radius: 12px;
-  padding: 14px 20px;
-  font-size: 15px;
+  border-radius: 10px;
+  padding: 0 20px;
+  height: var(--filter-control-height, var(--filter-control-height-md, 40px));
+  min-height: var(--filter-control-height, var(--filter-control-height-md, 40px));
+  font-size: var(--filter-control-font-size, var(--filter-control-font-size-md, 14px));
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s ease;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  box-sizing: border-box;
 }
 
 .support-add-btn:hover:not([disabled]) {
-  background: #6b9eff;
+  background: var(--russ-accent-dark);
 }
 
 .support-add-btn[disabled] {
-  background: #9ca3af;
-  color: #6b7280;
+  background: var(--russ-text-quaternary);
+  color: var(--russ-text-tertiary);
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: 0.85;
 }
 
 .support-add-btn .loader {

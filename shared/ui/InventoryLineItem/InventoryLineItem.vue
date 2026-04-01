@@ -1,5 +1,5 @@
 <template>
-  <div class="inventory-line-item">
+  <div class="inventory-line-item" :style="{ '--filter-control-height': LINE_CONTROL_HEIGHT }">
     <BaseSelect
       v-model="line.sku_id"
       :options="skuOptions"
@@ -7,6 +7,7 @@
       option-label="name"
       option-value="id"
       :searchable="true"
+      :height="LINE_CONTROL_HEIGHT"
       class="line-select"
       @update:model-value="handleSkuChange"
     />
@@ -45,6 +46,9 @@ const emit = defineEmits<{
   remove: []
   skuChanged: []
 }>()
+
+/** Единая высота строки: берём общий размер контролов из темы */
+const LINE_CONTROL_HEIGHT = 'var(--ui-control-height, var(--filter-control-height, var(--filter-control-height-md, 40px)))'
 
 function handleSkuChange() {
   emit('skuChanged')
@@ -91,8 +95,9 @@ const qtyValue = computed({
 }
 
 .line-remove-btn {
-  height: 50px;
-  min-width: 50px;
+  height: var(--ui-control-height, var(--filter-control-height, var(--filter-control-height-md, 40px)));
+  min-height: var(--ui-control-height, var(--filter-control-height, var(--filter-control-height-md, 40px)));
+  min-width: var(--ui-control-height, var(--filter-control-height, var(--filter-control-height-md, 40px)));
   padding: 0 12px;
   border-radius: 8px;
   border: 1px solid var(--russ-border);

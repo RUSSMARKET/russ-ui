@@ -1264,11 +1264,12 @@ watch(() => props.canManage, (canManage) => {
   width: 100%;
   position: relative;
   z-index: 1000;
-  --base-select-min-height: 48px;
-  --base-select-padding: 12px 16px;
+  --base-select-height: 40px;
+  --base-select-min-height: 40px;
+  --base-select-padding: 0 14px;
   --base-select-border: 2px solid var(--russ-input-border);
   --base-select-radius: 10px;
-  --base-select-font-size: 15px;
+  --base-select-font-size: 14px;
   --base-select-bg: var(--russ-bg);
   --base-select-focus-border: var(--russ-input-border-focus);
   --base-select-focus-shadow: inset 0 0 0 3px var(--russ-shadow-secondary);
@@ -1421,15 +1422,15 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .ruchnik-input {
-  padding: 12px 16px;
+  padding: 0 14px;
   border: 2px solid var(--russ-input-border);
   border-radius: 10px;
-  font-size: 15px;
+  font-size: 14px;
   background: var(--russ-bg);
   transition: all 0.2s ease;
   color: var(--russ-text-primary);
-  min-height: 48px;
-  height: 48px;
+  min-height: 40px;
+  height: 40px;
   box-sizing: border-box;
 }
 
@@ -1455,8 +1456,8 @@ watch(() => props.canManage, (canManage) => {
   color: var(--russ-text-inverse);
   border: none;
   border-radius: 12px;
-  padding: 14px 20px;
-  font-size: 15px;
+  padding: 0 16px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s ease;
@@ -1464,6 +1465,8 @@ watch(() => props.canManage, (canManage) => {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  min-height: 40px;
+  height: 40px;
 }
 
 .ruchnik-add-btn:hover:not([disabled]) {

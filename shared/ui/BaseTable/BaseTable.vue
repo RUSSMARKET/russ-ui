@@ -191,6 +191,8 @@ const getNestedValue = (obj: any, path: string) => {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  margin-top: 10px;
+  border-radius: 12px;
 }
 
 .table-filters {
@@ -292,7 +294,7 @@ const getNestedValue = (obj: any, path: string) => {
   display: flex;
   gap: 8px;
   align-items: center;
-  height: 40px;
+  height: 46px;
 }
 
 .actions-header {

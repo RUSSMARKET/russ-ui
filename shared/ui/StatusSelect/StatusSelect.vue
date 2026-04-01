@@ -3,7 +3,7 @@
     <label v-if="label" :for="id" class="status-select-label">{{ label }}</label>
 
     <div class="status-select-container" :class="{ 'has-error': error, 'disabled': disabled, 'multiple': multiple }">
-      <div class="status-select-trigger" :class="{ 'open': dropdownOpen, 'has-value': hasValue }"
+      <div class="status-select-trigger" :class="{ 'open': dropdownOpen, 'has-value': hasValue, 'disabled': disabled }"
         @click="toggleDropdown">
         <div class="status-select-content">
           <!-- Мультивыбор: показываем теги -->
@@ -50,7 +50,7 @@
                   stroke-linecap="round" stroke-linejoin="round" />
               </svg>
             </div>
-            <input ref="searchInput" v-model="searchQuery" type="text" placeholder="Поиск статуса..." class="search-input"
+            <input ref="searchInput" v-model="searchQuery" type="text" placeholder="Поиск..." class="search-input"
               @focus="onSearchFocus" @input="onSearchInput" />
           </div>
 
@@ -72,7 +72,7 @@
 
             <div v-if="filteredOptions.length === 0" class="no-options">
               <div class="no-options-icon">🔍</div>
-              <span>Статусы не найдены</span>
+              <span>Ничего не найдено</span>
             </div>
           </div>
         </div>
@@ -186,15 +186,19 @@ function getOptionLabel(option) {
 
 function getOptionValue(option) {
   if (!option) return '';
-  return typeof option === 'object' ? String(option[props.optionValue]) : String(option);
+  return typeof option === 'object' ? option[props.optionValue] : option;
+}
+
+function isSameValue(a, b) {
+  return String(a) === String(b);
 }
 
 function isOptionSelected(option) {
   const value = getOptionValue(option);
   if (props.multiple) {
-    return selectedValues.value.includes(value);
+    return selectedValues.value.some(selected => isSameValue(selected, value));
   }
-  return value == props.modelValue;
+  return isSameValue(value, props.modelValue);
 }
 
 const DROPDOWN_MIN_WIDTH = 180
@@ -299,7 +303,7 @@ function selectOption(option) {
 
   if (props.multiple) {
     const currentValues = Array.isArray(props.modelValue) ? [...props.modelValue] : [];
-    const index = currentValues.indexOf(value);
+    const index = currentValues.findIndex(selected => isSameValue(selected, value));
 
     if (index > -1) {
       currentValues.splice(index, 1);
@@ -322,7 +326,7 @@ function removeOption(option) {
 
   const value = getOptionValue(option);
   const currentValues = Array.isArray(props.modelValue) ? [...props.modelValue] : [];
-  const index = currentValues.indexOf(value);
+  const index = currentValues.findIndex(selected => isSameValue(selected, value));
 
   if (index > -1) {
     currentValues.splice(index, 1);
@@ -414,10 +418,10 @@ watch(() => props.options, () => {
 .status-select-label {
   display: block;
   margin-bottom: 8px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--status-select-label-font-size, 14px);
+  font-weight: var(--status-select-label-font-weight, 600);
   color: var(--russ-text-secondary);
-  line-height: 1.4;
+  line-height: var(--status-select-label-line-height, 1.4);
 }
 
 .status-select-container {
@@ -425,9 +429,6 @@ watch(() => props.options, () => {
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  overflow: hidden;
-  isolation: isolate;
-  padding: 2px;
 }
 
 .status-select-trigger {
@@ -438,19 +439,21 @@ watch(() => props.options, () => {
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  min-height: 48px;
-  padding: 6px 12px;
+  min-height: var(--status-select-height, var(--ui-control-height, var(--filter-control-height, var(--filter-control-height-md, 40px))));
+  padding: var(--status-select-padding, 6px var(--filter-control-padding-x, 12px));
   background: var(--russ-bg);
   border: 1px solid var(--russ-border);
-  border-radius: 8px;
+  border-radius: var(--status-select-radius, var(--filter-control-radius, 10px));
+  font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+  font-size: var(--status-select-font-size, var(--filter-control-font-size, var(--filter-control-font-size-md, 14px)));
+  font-weight: var(--filter-control-font-weight, 500);
+  line-height: var(--filter-control-line-height, 1.2);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 2px var(--russ-shadow-color);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .status-select-trigger:hover:not(.disabled) {
   border-color: var(--russ-accent);
-  box-shadow: 0 4px 12px var(--russ-shadow-accent-light);
 }
 
 .status-select-trigger.open {
@@ -459,7 +462,7 @@ watch(() => props.options, () => {
 }
 
 .status-select-trigger.has-value {
-  border-color: var(--russ-accent);
+  border-color: var(--russ-border);
 }
 
 .status-select-trigger.disabled {
@@ -765,8 +768,8 @@ watch(() => props.options, () => {
 /* Адаптивность */
 @media (max-width: 768px) {
   .status-select-trigger {
-    min-height: 36px;
-    padding: 6px 12px;
+    min-height: var(--status-select-height-mobile, var(--status-select-height, var(--ui-control-height, var(--filter-control-height, var(--filter-control-height-sm, 36px)))));
+    padding: var(--status-select-padding-mobile, var(--status-select-padding, 6px var(--filter-control-padding-x, 12px)));
   }
 
   .status-select-dropdown {

@@ -1,6 +1,7 @@
 <template>
   <BaseModal
     :model-value="visible"
+    class="edit-shifts-base-modal"
     title="Редактирование запланированных смен"
     :width="1400"
     :maxWidth="1400"
@@ -397,6 +398,11 @@ const handleIntervalSelect = (value: number | string | undefined) => {
 </script>
 
 <style scoped>
+:deep(.edit-shifts-base-modal) {
+  --ui-control-height: 40px;
+  --filter-control-height: var(--ui-control-height);
+}
+
 .modal-section-modern.filters-section {
   padding: 20px;
   background: var(--russ-bg-secondary);

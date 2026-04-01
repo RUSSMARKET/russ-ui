@@ -68,7 +68,7 @@ const props = defineProps({
   },
   height: {
     type: String,
-    default: '40px',
+    default: 'var(--base-select-height, var(--ui-control-height, var(--filter-control-height, var(--filter-control-height-md, 40px))))',
   },
   searchable: {
     type: Boolean,
@@ -532,7 +532,7 @@ watch(() => props.loading, (isLoading) => {
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  min-height: var(--base-select-min-height, 40px);
+  min-height: var(--base-select-min-height, var(--base-select-height, var(--ui-control-height, var(--filter-control-height, var(--filter-control-height-md, 40px)))));
   overflow: hidden;
   isolation: isolate;
 }
@@ -541,12 +541,13 @@ watch(() => props.loading, (isLoading) => {
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  padding: var(--base-select-padding, 0 44px 0 14px);
+  padding: var(--base-select-padding, 0 44px 0 var(--filter-control-padding-x, 14px));
   border: var(--base-select-border, 1.5px solid var(--russ-border));
-  border-radius: var(--base-select-radius, 10px);
-  font-size: var(--base-select-font-size, clamp(13px,
-      calc(13px + (15 - 13) * ((100vw - 320px) / (1920 - 320))),
-      15px));
+  border-radius: var(--base-select-radius, var(--filter-control-radius, 10px));
+  font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+  font-size: var(--base-select-font-size, var(--filter-control-font-size, var(--filter-control-font-size-md, 14px)));
+  font-weight: var(--filter-control-font-weight, 500);
+  line-height: var(--filter-control-line-height, 1.2);
   background: var(--base-select-bg, var(--russ-bg-quaternary));
   transition: border-color 0.2s, box-shadow 0.2s;
   box-shadow: 0 1px 4px var(--russ-shadow-accent-light);
@@ -661,13 +662,14 @@ watch(() => props.loading, (isLoading) => {
   position: relative;
   background: var(--base-select-bg, var(--russ-bg-quaternary));
   border: var(--base-select-border, 1.5px solid var(--russ-border));
-  border-radius: var(--base-select-radius, 10px);
-  font-size: var(--base-select-font-size, clamp(13px,
-      calc(13px + (15 - 13) * ((100vw - 320px) / (1920 - 320))),
-      15px));
+  border-radius: var(--base-select-radius, var(--filter-control-radius, 10px));
+  font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+  font-size: var(--base-select-font-size, var(--filter-control-font-size, var(--filter-control-font-size-md, 14px)));
+  font-weight: var(--filter-control-font-weight, 500);
+  line-height: var(--filter-control-line-height, 1.2);
   color: var(--russ-text-primary);
-  padding: var(--base-select-padding, 0 44px 0 14px);
-  min-height: 20px;
+  padding: var(--base-select-padding, 0 44px 0 var(--filter-control-padding-x, 14px));
+  min-height: var(--base-select-min-height, var(--base-select-height, var(--ui-control-height, var(--filter-control-height, var(--filter-control-height-md, 40px)))));
   display: flex;
   align-items: center;
   transition: border-color 0.2s, box-shadow 0.2s;

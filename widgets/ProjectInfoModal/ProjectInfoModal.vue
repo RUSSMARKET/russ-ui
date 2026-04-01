@@ -198,22 +198,34 @@ const handleSubmit = async () => {
 
 .project-info-block-form .form-row label {
   display: block;
-  font-size: clamp(14px, calc(14px + (16 - 14) * ((100vw - 320px) / (1920 - 320))), 16px);
-  color: var(--russ-text-secondary);
+  font-size: clamp(12px, calc(12px + (14 - 12) * ((100vw - 320px) / (1920 - 320))), 14px);
+  color: var(--russ-input-text, var(--russ-text-secondary));
   font-weight: 500;
   margin-bottom: 2px;
 }
 
+/* Одна высота для поля названия, BaseSelect и StatusSelect (по умолчанию у селектов ~40px, инпут без height — выше) */
+.project-info-block-form .form-row .base-select-container,
+.project-info-block-form .form-row .status-select-wrapper {
+  --base-select-height: 42px;
+  --base-select-min-height: 42px;
+  --status-select-height: 42px;
+  --status-select-height-mobile: 42px;
+}
+
 .project-info-block-form .form-row input {
   width: 100%;
-  padding: 12px;
+  height: 42px;
+  min-height: 42px;
+  padding: 10px 12px;
   border: 1px solid var(--russ-border);
   border-radius: 8px;
-  font-size: clamp(14px, calc(14px + (16 - 14) * ((100vw - 320px) / (1920 - 320))), 16px);
+  font-size: clamp(13px, calc(13px + (16 - 13) * ((100vw - 320px) / (1920 - 320))), 16px);
   color: var(--russ-text-primary);
   transition: all 0.2s ease;
   background: var(--russ-bg);
   box-sizing: border-box;
+  line-height: 1.4;
 }
 
 .project-info-block-form .form-row input:focus {

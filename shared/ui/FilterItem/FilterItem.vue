@@ -120,8 +120,25 @@ const handleSearchEnter = () => {
   width: 100%;
 }
 
+.filter-item-wrapper :deep(.input-wrapper) {
+  min-height: var(--filter-control-height, var(--ui-control-height, 40px));
+  height: var(--filter-control-height, var(--ui-control-height, 40px));
+}
+
+.filter-item-wrapper :deep(.custom-input) {
+  min-height: var(--filter-control-height, var(--ui-control-height, 40px));
+  height: var(--filter-control-height, var(--ui-control-height, 40px));
+  padding: 0 var(--filter-control-padding-x, 12px);
+  border-radius: var(--filter-control-radius, 10px);
+  font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+  font-size: var(--filter-control-font-size, 14px);
+  font-weight: var(--filter-control-font-weight, 500);
+  line-height: var(--filter-control-line-height, 1.2);
+}
+
 .filter-label {
-  font-size: 14px;
+  font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+  font-size: 13px;
   font-weight: 600;
   color: #64748b;
   text-transform: uppercase;
@@ -139,13 +156,13 @@ const handleSearchEnter = () => {
   display: flex;
   align-items: center;
   border: 1.5px solid var(--russ-border);
-  border-radius: 10px;
+  border-radius: var(--filter-control-radius, 10px);
   background: var(--russ-bg-quaternary);
   transition: border-color 0.2s, box-shadow 0.2s;
   overflow: hidden;
   box-shadow: 0 1px 4px var(--russ-shadow-accent-light);
-  min-height: 40px;
-  height: 40px;
+  min-height: var(--filter-control-height, var(--ui-control-height, 40px));
+  height: var(--filter-control-height, var(--ui-control-height, 40px));
 }
 
 .filter-search-wrapper:focus-within {
@@ -156,11 +173,13 @@ const handleSearchEnter = () => {
 
 .search-input-modern {
   flex: 1;
-  padding: 0 0 0 12px;
+  padding: 0 0 0 var(--filter-control-padding-x, 12px);
   border: none;
   border-radius: 0;
-  font-size: 14px;
-  line-height: 1.3;
+  font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+  font-size: var(--filter-control-font-size, 14px);
+  font-weight: var(--filter-control-font-weight, 500);
+  line-height: var(--filter-control-line-height, 1.2);
   background: transparent;
   color: var(--russ-text-primary);
   transition: all 0.2s ease;
@@ -174,14 +193,14 @@ const handleSearchEnter = () => {
 }
 
 .search-input-modern::placeholder {
-  color: var(--russ-text-quaternary);
+  color: var(--filter-control-placeholder-color, var(--russ-text-quaternary));
 }
 
 .search-submit-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
+  width: var(--filter-control-height, var(--ui-control-height, 40px));
   padding: 0;
   border: none;
   border-left: 1px solid var(--russ-border-light);

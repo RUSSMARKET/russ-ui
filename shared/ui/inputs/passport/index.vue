@@ -80,15 +80,15 @@ watch(() => props.value, (newValue) => {
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
-  padding: 0.75rem;
+  min-height: var(--filter-control-height, var(--filter-control-height-md, 40px));
+  height: var(--filter-control-height, var(--filter-control-height-md, 40px));
+  padding: 0 var(--filter-control-padding-x, 12px);
   border: 1px solid var(--russ-input-border);
-  border-radius: 0.5rem;
-  font-size: clamp(
-    14px,
-    calc(14px + (16 - 14) * ((100vw - 320px) / (1920 - 320))),
-    16px
-  );
-  font-family: 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  border-radius: var(--filter-control-radius, 10px);
+  font-size: var(--filter-control-font-size, var(--filter-control-font-size-md, 14px));
+  font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+  font-weight: var(--filter-control-font-weight, 500);
+  line-height: var(--filter-control-line-height, 1.2);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   background: var(--russ-input-bg);
   color: var(--russ-input-text);
@@ -108,7 +108,7 @@ watch(() => props.value, (newValue) => {
 .input-label {
   position: absolute;
   left: 0.75rem;
-  top: 1rem;
+  top: 50%;
   z-index: 2;
   font-size: clamp(
     12px,
@@ -121,12 +121,14 @@ watch(() => props.value, (newValue) => {
   background: var(--russ-input-bg);
   padding: 0 0.25rem;
   line-height: 1.2;
+  transform: translateY(-50%);
 }
 
 .custom-input:focus ~ .input-label,
 .label-active {
   top: -0.625rem;
   left: 0.5rem;
+  transform: none;
   font-size: clamp(
     10px,
     calc(10px + (12 - 10) * ((100vw - 320px) / (1920 - 320))),
