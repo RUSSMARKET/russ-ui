@@ -144,7 +144,8 @@ const handleSearchEnter = () => {
   transition: border-color 0.2s, box-shadow 0.2s;
   overflow: hidden;
   box-shadow: 0 1px 4px var(--russ-shadow-accent-light);
-  height: 36px;
+  min-height: 40px;
+  height: 40px;
 }
 
 .filter-search-wrapper:focus-within {
@@ -155,10 +156,11 @@ const handleSearchEnter = () => {
 
 .search-input-modern {
   flex: 1;
-  padding: 8px 0px 8px 12px;
+  padding: 0 0 0 12px;
   border: none;
   border-radius: 0;
-  font-size: 15px;
+  font-size: 14px;
+  line-height: 1.3;
   background: transparent;
   color: var(--russ-text-primary);
   transition: all 0.2s ease;
@@ -179,8 +181,10 @@ const handleSearchEnter = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 12px;
+  width: 40px;
+  padding: 0;
   border: none;
+  border-left: 1px solid var(--russ-border-light);
   background: transparent;
   color: var(--russ-text-tertiary);
   cursor: pointer;
@@ -191,74 +195,6 @@ const handleSearchEnter = () => {
 
 .search-submit-btn:hover {
   color: var(--russ-secondary);
-}
-
-.filter-item-wrapper :deep(.base-select-wrapper) {
-  width: 100%;
-}
-
-.filter-item-wrapper :deep(.base-select-combo) {
-  padding: 8px 16px 8px 12px;
-  font-size: 15px;
-  height: 36px;
-  min-height: 36px;
-  border: 1.5px solid var(--russ-border);
-  border-radius: 10px;
-  background: var(--russ-bg-quaternary);
-  box-shadow: 0 1px 4px var(--russ-shadow-accent-light);
-  color: var(--russ-text-primary);
-}
-
-.filter-item-wrapper :deep(.base-select-combo:focus) {
-  border-color: var(--russ-secondary);
-  box-shadow: inset 0 0 0 3px var(--russ-shadow-secondary);
-  background: var(--russ-input-bg);
-}
-
-.filter-item-wrapper :deep(.base-select-combo--readonly) {
-  border: 1.5px solid #e5e7eb;
-  border-radius: 10px;
-  background: #f9fafb;
-  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.04);
-  padding: 8px 16px 8px 12px;
-  font-size: 15px;
-  height: 36px;
-  min-height: 36px;
-  color: #1e293b;
-}
-
-.filter-item-wrapper :deep(.base-select-arrow) {
-  right: 8px;
-  width: 18px;
-  height: 18px;
-  background-size: 18px;
-}
-
-.filter-item-wrapper :deep(.input-wrapper) {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-  align-self: flex-end;
-}
-
-.filter-item-wrapper :deep(.custom-input) {
-  height: 36px;
-  min-height: 36px;
-  box-sizing: border-box;
-  font-size: 15px;
-}
-
-.filter-item-wrapper :deep(.date-picker-input) {
-  font-size: 15px;
-}
-
-.filter-item-wrapper :deep(.date-display) {
-  font-size: 15px;
-}
-
-.filter-item-wrapper :deep(.date-range-picker-input) {
-  font-size: 15px;
 }
 
 .filter-item--disabled {

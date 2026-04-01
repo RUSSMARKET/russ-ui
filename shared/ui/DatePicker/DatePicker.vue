@@ -282,12 +282,12 @@ onBeforeUnmount(() => {
 
 .date-picker-input {
   width: 100%;
-  padding: 8px 16px 8px 12px;
+  padding: 0 12px;
   border: 1.5px solid var(--russ-border);
   border-radius: 10px;
   font-size: 13px;
-  height: 36px;
-  min-height: 36px;
+  height: 40px;
+  min-height: 40px;
   background: var(--russ-bg-quaternary);
   box-shadow: 0 1px 4px var(--russ-shadow-accent-light);
   color: var(--russ-text-primary);

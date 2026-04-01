@@ -1264,6 +1264,14 @@ watch(() => props.canManage, (canManage) => {
   width: 100%;
   position: relative;
   z-index: 1000;
+  --base-select-min-height: 48px;
+  --base-select-padding: 12px 16px;
+  --base-select-border: 2px solid var(--russ-input-border);
+  --base-select-radius: 10px;
+  --base-select-font-size: 15px;
+  --base-select-bg: var(--russ-bg);
+  --base-select-focus-border: var(--russ-input-border-focus);
+  --base-select-focus-shadow: inset 0 0 0 3px var(--russ-shadow-secondary);
 }
 
 
@@ -1431,33 +1439,6 @@ watch(() => props.canManage, (canManage) => {
   box-shadow: inset 0 0 0 3px var(--russ-shadow-secondary);
 }
 
-/* Унификация BaseSelect с input в форме добавления/редактирования */
-.ruchnik-add-column .ruchnik-select :deep(.base-select-container),
-.ruchnik-edit-mode .ruchnik-select :deep(.base-select-container) {
-  min-height: 48px;
-}
-
-.ruchnik-add-column .ruchnik-select :deep(.base-select-combo),
-.ruchnik-edit-mode .ruchnik-select :deep(.base-select-combo) {
-  padding: 12px 16px;
-  border: 2px solid var(--russ-input-border);
-  border-radius: 10px;
-  font-size: 15px;
-  background: var(--russ-bg);
-  color: var(--russ-text-primary);
-  min-height: 48px;
-  height: 48px;
-  box-sizing: border-box;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.ruchnik-add-column .ruchnik-select :deep(.base-select-container:focus-within .base-select-combo),
-.ruchnik-edit-mode .ruchnik-select :deep(.base-select-container:focus-within .base-select-combo) {
-  outline: none;
-  border-color: var(--russ-input-border-focus);
-  box-shadow: inset 0 0 0 3px var(--russ-shadow-secondary);
-}
-
 .ruchnik-input-error {
   border-color: var(--russ-input-border-error);
   box-shadow: 0 0 0 3px var(--russ-shadow-error);
@@ -1550,17 +1531,12 @@ watch(() => props.canManage, (canManage) => {
 
 .ruchnik-filter-select {
   width: 100%;
-}
-
-.ruchnik-filters-container .ruchnik-filter-select :deep(.base-select-combo) {
-  padding: 10px 12px 10px 36px;
-  border: 2px solid var(--russ-input-border);
-  border-radius: 8px;
-  font-size: 14px;
-  background: var(--russ-bg);
-  min-height: 42px;
-  height: 42px;
-  box-sizing: border-box;
+  --base-select-min-height: 42px;
+  --base-select-padding: 10px 12px 10px 36px;
+  --base-select-border: 2px solid var(--russ-input-border);
+  --base-select-radius: 8px;
+  --base-select-font-size: 14px;
+  --base-select-bg: var(--russ-bg);
 }
 
 .ruchnik-reset-btn {

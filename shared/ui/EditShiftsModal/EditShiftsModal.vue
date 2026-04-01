@@ -492,34 +492,6 @@ const handleIntervalSelect = (value: number | string | undefined) => {
   position: relative;
 }
 
-.interval-select-group :deep(.base-select-wrapper) {
-  flex: 1;
-}
-
-.interval-select-group :deep(.base-select-combo) {
-  height: 36px;
-  min-height: 36px;
-  padding: 8px 14px;
-  font-size: 13px;
-  border: none;
-  background: var(--russ-bg-secondary);
-  border-radius: 6px;
-  transition: all 0.2s;
-}
-
-.interval-select-group :deep(.base-select-combo:hover) {
-  background: var(--russ-bg-tertiary);
-}
-
-.interval-select-group :deep(.base-select-combo:focus) {
-  background: white;
-  box-shadow: 0 0 0 2px rgba(33, 62, 137, 0.1);
-}
-
-.interval-select-group :deep(.base-select-arrow) {
-  right: 12px;
-}
-
 .interval-settings-btn {
   display: flex;
   align-items: center;

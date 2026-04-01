@@ -90,10 +90,6 @@ const qtyValue = computed({
   width: 100%;
 }
 
-.line-input :deep(input) {
-  width: 100%;
-}
-
 .line-remove-btn {
   height: 50px;
   min-width: 50px;

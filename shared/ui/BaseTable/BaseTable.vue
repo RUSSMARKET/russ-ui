@@ -182,6 +182,7 @@ const getNestedValue = (obj: any, path: string) => {
 .table-container {
   width: 100%;
   min-width: 0;
+  min-inline-size: 100%;
   max-width: 100%;
   overflow: hidden;
   display: flex;
@@ -206,6 +207,7 @@ const getNestedValue = (obj: any, path: string) => {
 .table-scroll {
   height: 100%;
   width: 100%;
+  min-inline-size: 100%;
   min-width: 0;
   overflow-x: auto;
   overflow-y: auto;
@@ -213,7 +215,7 @@ const getNestedValue = (obj: any, path: string) => {
 
 .base-table {
   width: 100%;
-  min-width: 800px;
+  min-width: max(100%, 800px);
   border-collapse: separate;
   border-spacing: 0;
   border-radius: 0 0 14px 14px;

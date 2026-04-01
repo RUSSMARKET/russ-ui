@@ -157,7 +157,7 @@ const onHide = () => {
 </script>
 
 <style scoped>
-.product-modal :deep(.base-modal-content) {
+.product-modal .base-modal-content {
   min-width: 0;
   max-width: 100%;
   overflow-x: hidden;
@@ -180,8 +180,8 @@ const onHide = () => {
   max-width: 100%;
 }
 
-.product-form :deep(.input-wrapper),
-.product-form :deep(.custom-input) {
+.product-form .input-wrapper,
+.product-form .custom-input {
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
@@ -201,7 +201,7 @@ const onHide = () => {
   max-width: 100%;
 }
 
-.product-form :deep(.file-upload) {
+.product-form .file-upload {
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
@@ -263,7 +263,7 @@ const onHide = () => {
   fill: var(--russ-error);
 }
 
-.product-form :deep(.base-select-wrapper) {
+.product-form .base-select-wrapper {
   min-width: 0;
   max-width: 100%;
   width: 100%;

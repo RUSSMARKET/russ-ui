@@ -540,59 +540,6 @@ onMounted(() => {
     gap: 16px;
 }
 
-.filters-section :deep(.filters-grid) {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px 16px;
-}
-
-@media (max-width: 500px) {
-    .filters-section :deep(.filters-grid) {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-}
-
-.filters-section :deep(.base-select-wrapper) {
-    width: 100%;
-}
-
-.filters-section :deep(.base-select-combo) {
-    padding: 8px 16px 8px 12px;
-    font-size: 13px;
-    height: 36px;
-    min-height: 36px;
-    border: 1.5px solid var(--russ-border);
-    border-radius: 10px;
-    background: var(--russ-bg-quaternary);
-    box-shadow: 0 1px 4px var(--russ-shadow-accent-light);
-    color: var(--russ-text-primary);
-}
-
-.filters-section :deep(.base-select-combo:focus) {
-    border-color: var(--russ-secondary);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
-    background: #fff;
-}
-
-.filters-section :deep(.base-select-combo--readonly) {
-    border: 1.5px solid #e5e7eb;
-    border-radius: 10px;
-    background: #f9fafb;
-    box-shadow: 0 1px 4px rgba(37, 99, 235, 0.04);
-    padding: 8px 16px 8px 12px;
-    font-size: 13px;
-    height: 36px;
-    min-height: 36px;
-    color: #1e293b;
-}
-
-.filters-section :deep(.base-select-arrow) {
-    right: 8px;
-    width: 18px;
-    height: 18px;
-    background-size: 18px;
-}
 
 .loader {
     width: 16px;

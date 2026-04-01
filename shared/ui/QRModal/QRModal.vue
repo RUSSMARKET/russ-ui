@@ -181,7 +181,7 @@ const onHide = () => {
 }
 
 /* Yandex QR Modal - Full Screen Yellow - точно как было */
-:deep(.qr-modal-yandex) .base-modal-overlay {
+.qr-modal-yandex .base-modal-overlay {
   background-color: #fed521 !important;
   padding: 0 !important;
   position: fixed !important;
@@ -189,7 +189,7 @@ const onHide = () => {
   top: 0 !important;
 }
 
-:deep(.qr-modal-yandex) .base-modal {
+.qr-modal-yandex .base-modal {
   height: 100vh !important;
   max-height: 100vh !important;
   width: 100vw !important;
@@ -207,11 +207,11 @@ const onHide = () => {
   align-items: center !important;
 }
 
-:deep(.qr-modal-yandex) .base-modal-header {
+.qr-modal-yandex .base-modal-header {
   display: none !important;
 }
 
-:deep(.qr-modal-yandex) .base-modal-content {
+.qr-modal-yandex .base-modal-content {
   height: 100% !important;
   display: flex !important;
   align-items: center !important;
@@ -219,7 +219,7 @@ const onHide = () => {
   background-color: transparent !important;
 }
 
-:deep(.qr-modal-yandex) .qr-content {
+.qr-modal-yandex .qr-content {
   padding: 0 !important;
   width: 100% !important;
   height: 100% !important;
@@ -230,14 +230,14 @@ const onHide = () => {
   gap: 0 !important;
 }
 
-:deep(.qr-modal-yandex) .qr-info {
+.qr-modal-yandex .qr-info {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   gap: 30px !important;
 }
 
-:deep(.qr-modal-yandex) .qr-info p {
+.qr-modal-yandex .qr-info p {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
@@ -247,14 +247,14 @@ const onHide = () => {
   margin: 0 !important;
 }
 
-:deep(.qr-modal-yandex) .product-logo-yandex {
+.qr-modal-yandex .product-logo-yandex {
   width: 65% !important;
   max-width: none !important;
   max-height: none !important;
   margin-bottom: 0 !important;
 }
 
-:deep(.qr-modal-yandex) .qr-image-container {
+.qr-modal-yandex .qr-image-container {
   border: 0 !important;
   background-color: white !important;
   padding: 0 !important;
@@ -263,7 +263,7 @@ const onHide = () => {
 }
 
 /* Yandex White QR Modal - Full Screen White - точно как было */
-:deep(.qr-modal-yandex-white) .base-modal-overlay {
+.qr-modal-yandex-white .base-modal-overlay {
   background-color: #ffffff !important;
   padding: 0 !important;
   position: fixed !important;
@@ -271,7 +271,7 @@ const onHide = () => {
   top: 0 !important;
 }
 
-:deep(.qr-modal-yandex-white) .base-modal {
+.qr-modal-yandex-white .base-modal {
   height: 100vh !important;
   max-height: 100vh !important;
   width: 100vw !important;
@@ -289,11 +289,11 @@ const onHide = () => {
   align-items: center !important;
 }
 
-:deep(.qr-modal-yandex-white) .base-modal-header {
+.qr-modal-yandex-white .base-modal-header {
   display: none !important;
 }
 
-:deep(.qr-modal-yandex-white) .base-modal-content {
+.qr-modal-yandex-white .base-modal-content {
   height: 100% !important;
   display: flex !important;
   align-items: center !important;
@@ -301,7 +301,7 @@ const onHide = () => {
   background-color: transparent !important;
 }
 
-:deep(.qr-modal-yandex-white) .qr-content {
+.qr-modal-yandex-white .qr-content {
   padding: 0 !important;
   width: 100% !important;
   height: 100% !important;
@@ -312,7 +312,7 @@ const onHide = () => {
   gap: 0 !important;
 }
 
-:deep(.qr-modal-yandex-white) .qr-image-container {
+.qr-modal-yandex-white .qr-image-container {
   border: 0 !important;
   background-color: white !important;
   padding: 0 !important;
@@ -346,8 +346,8 @@ const onHide = () => {
   transform: scale(1.05);
 }
 
-:deep(.qr-modal-yandex) .qr-content,
-:deep(.qr-modal-yandex-white) .qr-content {
+.qr-modal-yandex .qr-content,
+.qr-modal-yandex-white .qr-content {
   position: relative;
 }
 </style>

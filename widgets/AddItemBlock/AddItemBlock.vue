@@ -713,14 +713,6 @@ const updateField = (fieldId?: number) => {
   min-width: 0;
 }
 
-/* Чтобы BaseSelect в слоте не выходил за колонку */
-.supports-add-column :deep(.base-select-wrapper),
-.supports-add-column :deep(.base-select-container),
-.supports-add-column :deep(.base-select-combo) {
-  min-width: 0;
-  max-width: 100%;
-}
-
 .support-select-label {
   font-size: 14px;
   font-weight: 600;

@@ -200,6 +200,9 @@ onMounted(() => {
 
 <style scoped>
 .filters-bar-wrapper {
+  --filter-control-height: 40px;
+  --filter-control-radius: 10px;
+  --filter-control-gap: 12px;
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -262,8 +265,8 @@ onMounted(() => {
 
 .filters-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 16px 20px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--filter-control-gap);
   flex: 1 1 auto;
   align-items: end;
   width: 100%;
@@ -297,17 +300,17 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 0 14px;
   background: #f3f4f6;
   border: 1px solid #d1d5db;
-  border-radius: 8px;
+  border-radius: var(--filter-control-radius);
   color: #6b7280;
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
-  height: 36px;
+  height: var(--filter-control-height);
   justify-content: center;
 }
 

@@ -68,7 +68,7 @@ const props = defineProps({
   },
   height: {
     type: String,
-    default: '',
+    default: '40px',
   },
   searchable: {
     type: Boolean,
@@ -532,6 +532,7 @@ watch(() => props.loading, (isLoading) => {
   width: 100%;
   min-width: 0;
   max-width: 100%;
+  min-height: var(--base-select-min-height, 40px);
   overflow: hidden;
   isolation: isolate;
 }
@@ -540,13 +541,13 @@ watch(() => props.loading, (isLoading) => {
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  padding: 14px 50px 14px 16px;
-  border: 1.5px solid var(--russ-border);
-  border-radius: 10px;
-  font-size: clamp(13px,
+  padding: var(--base-select-padding, 0 44px 0 14px);
+  border: var(--base-select-border, 1.5px solid var(--russ-border));
+  border-radius: var(--base-select-radius, 10px);
+  font-size: var(--base-select-font-size, clamp(13px,
       calc(13px + (15 - 13) * ((100vw - 320px) / (1920 - 320))),
-      15px);
-  background: var(--russ-bg-quaternary);
+      15px));
+  background: var(--base-select-bg, var(--russ-bg-quaternary));
   transition: border-color 0.2s, box-shadow 0.2s;
   box-shadow: 0 1px 4px var(--russ-shadow-accent-light);
   color: var(--russ-text-primary);
@@ -558,10 +559,9 @@ watch(() => props.loading, (isLoading) => {
 
 .base-select-combo:focus {
   outline: none;
-  border-color: var(--russ-secondary);
-  /* Внутренняя обводка, чтобы кольцо фокуса не "вылезало" */
-  box-shadow: inset 0 0 0 3px var(--russ-shadow-secondary);
-  background: var(--russ-input-bg);
+  border-color: var(--base-select-focus-border, var(--russ-secondary));
+  box-shadow: var(--base-select-focus-shadow, inset 0 0 0 1.5px var(--russ-shadow-secondary));
+  background: var(--base-select-focus-bg, var(--russ-input-bg));
 }
 
 .base-select-combo:disabled {
@@ -659,14 +659,14 @@ watch(() => props.loading, (isLoading) => {
 
 .base-select-combo--readonly {
   position: relative;
-  background: var(--russ-bg-quaternary);
-  border: 1.5px solid var(--russ-border);
-  border-radius: 10px;
-  font-size: clamp(13px,
+  background: var(--base-select-bg, var(--russ-bg-quaternary));
+  border: var(--base-select-border, 1.5px solid var(--russ-border));
+  border-radius: var(--base-select-radius, 10px);
+  font-size: var(--base-select-font-size, clamp(13px,
       calc(13px + (15 - 13) * ((100vw - 320px) / (1920 - 320))),
-      15px);
+      15px));
   color: var(--russ-text-primary);
-  padding: 14px 50px 14px 16px;
+  padding: var(--base-select-padding, 0 44px 0 14px);
   min-height: 20px;
   display: flex;
   align-items: center;

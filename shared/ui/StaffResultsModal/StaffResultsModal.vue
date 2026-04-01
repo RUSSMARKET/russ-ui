@@ -630,55 +630,12 @@ onUnmounted(() => {
     gap: 24px;
 }
 
-
-
-.filters-section :deep(.base-select-wrapper) {
-    width: 100%;
-}
-
-.filters-section :deep(.base-select-combo) {
-    padding: 8px 16px 8px 12px;
-    font-size: 13px;
-    height: 36px;
-    min-height: 36px;
-    border: 1.5px solid var(--russ-border);
-    border-radius: 10px;
-    background: var(--russ-bg-quaternary);
-    box-shadow: 0 1px 4px var(--russ-shadow-accent-light);
-    color: var(--russ-text-primary);
-}
-
-.filters-section :deep(.base-select-combo:focus) {
-    border-color: var(--russ-secondary);
-    box-shadow: inset 0 0 0 3px var(--russ-shadow-secondary);
-    background: var(--russ-input-bg);
-}
-
-.filters-section :deep(.base-select-combo--readonly) {
-    border: 1.5px solid var(--russ-border);
-    border-radius: 10px;
-    background: var(--russ-bg-quaternary);
-    box-shadow: 0 1px 4px var(--russ-shadow-accent-light);
-    padding: 8px 16px 8px 12px;
-    font-size: 13px;
-    height: 36px;
-    min-height: 36px;
-    color: var(--russ-text-primary);
-}
-
-.filters-section :deep(.base-select-arrow) {
-    right: 12px;
-    width: 18px;
-    height: 18px;
-    background-size: 18px;
-}
-
 .apply-filters-btn {
     background: var(--russ-primary);
     color: var(--russ-text-inverse);
     border: 1px solid var(--russ-primary);
     border-radius: 10px;
-    padding: 8px 16px;
+    padding: 0 16px;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
@@ -687,8 +644,8 @@ onUnmounted(() => {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    height: 36px;
-    min-height: 36px;
+    height: 40px;
+    min-height: 40px;
     width: 100%;
     white-space: nowrap;
 }

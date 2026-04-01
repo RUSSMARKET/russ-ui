@@ -221,7 +221,7 @@ defineExpose({
   justify-content: center;
 }
 
-.navigation-items :deep(a) {
+.navigation-items a {
   display: flex;
   align-items: center;
   gap: 15px;
@@ -231,11 +231,11 @@ defineExpose({
   border-radius: 5px;
 }
 
-.navigation-items :deep(a.router-link-active) {
+.navigation-items a.router-link-active {
   background-color: var(--russ-bg-blue-lighter);
 }
 
-.navigation-items :deep(a i) {
+.navigation-items a i {
   color: var(--russ-primary);
 }
 
