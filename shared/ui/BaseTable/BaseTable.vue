@@ -44,7 +44,6 @@
             </td>
             <td v-if="showActions" class="actions-cell" data-label="Действия">
               <slot name="actions" :item="item">
-                <!-- Default actions slot -->
               </slot>
             </td>
           </tr>
