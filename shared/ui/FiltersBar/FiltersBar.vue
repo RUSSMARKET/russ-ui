@@ -224,7 +224,6 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 10px;
 }
 
 .mobile-filters-btn-wrapper {
