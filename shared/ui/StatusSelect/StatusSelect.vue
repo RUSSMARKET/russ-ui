@@ -479,7 +479,6 @@ watch(() => props.options, () => {
   min-width: 0;
   flex-wrap: wrap;
   height: 100%;
-  padding-left: 10px;
 }
 
 .status-select-container.multiple .status-select-content {
@@ -549,6 +548,7 @@ watch(() => props.options, () => {
   min-width: 0;
   flex: 1;
   overflow: hidden;
+  padding-left: 5px;
 }
 
 .status-text {
