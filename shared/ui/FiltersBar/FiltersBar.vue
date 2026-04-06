@@ -17,7 +17,7 @@
         </div>
         <div class="mobile-filters-content">
           <div class="filters-grid-mobile">
-            <FilterItem v-for="(filter, index) in filters" :key="index" :filter="filter"
+            <FilterItem v-for="(filter, index) in filters" :key="filterItemKey(filter, index)" :filter="filter"
               :model-value="getFilterValue(filter.key)" @update:model-value="handleFilterChange(filter.key, $event)" />
             <slot name="actions"></slot>
             <div v-if="showResetButton" class="filter-item filter-item--reset">
@@ -44,7 +44,7 @@
     <div class="filters-container desktop-filters" :class="{ 'always-visible': !showMobileButton && isInsideModal }"
       ref="wrapperRef">
       <div class="filters-grid">
-        <FilterItem v-for="(filter, index) in filters" :key="index" :filter="filter"
+        <FilterItem v-for="(filter, index) in filters" :key="filterItemKey(filter, index)" :filter="filter"
           :model-value="getFilterValue(filter.key)" @update:model-value="handleFilterChange(filter.key, $event)" />
         <slot name="actions"></slot>
         <div v-if="showResetButton" class="filter-item filter-item--reset">
@@ -127,6 +127,13 @@ const checkIfInsideModal = () => {
 const getFilterValue = (key: string) => {
   return props.modelValue[key];
 };
+
+/** Стабильный ключ: при подгрузке options у select пересоздаём строку, чтобы BaseSelect подхватил новый список. */
+function filterItemKey(filter: FilterConfig, index: number) {
+  const optLen =
+    filter.type === 'select' && Array.isArray(filter.options) ? filter.options.length : 0;
+  return `${filter.key}-${index}-${optLen}`;
+}
 
 const handleFilterChange = (key: string, value: any) => {
   const newValue = { ...props.modelValue, [key]: value };
