@@ -64,41 +64,92 @@
         <h4 class="ruchnik-section-title">
           Внесенные ID
           <span v-if="items.length > 0" class="ruchnik-counter">
-            ({{ items.length }} {{ items.length === 1 ? 'заявка' : items.length < 5 ? 'заявки' : 'заявок' }}) </span>
+            ({{
+              searchActive
+                ? `${displayedItems.length} из ${items.length}`
+                : items.length
+            }}
+            {{
+              searchActive
+                ? displayedItems.length === 1
+                  ? 'заявка'
+                  : displayedItems.length < 5
+                    ? 'заявки'
+                    : 'заявок'
+                : items.length === 1
+                  ? 'заявка'
+                  : items.length < 5
+                    ? 'заявки'
+                    : 'заявок'
+            }})
+          </span>
         </h4>
 
+        <div class="ruchnik-list-area">
+          <div v-if="loading" class="ruchnik-loading">
+            <span class="loader"></span>
+            <span>Загрузка заявок...</span>
+          </div>
 
-        <div v-if="loading" class="ruchnik-loading">
-          <span class="loader"></span>
-          <span>Загрузка заявок...</span>
-        </div>
-
-        <div v-else-if="items.length > 0" class="ruchnik-list">
-          <div v-for="item in sortedItems" :key="item.id" class="ruchnik-card">
-            <div class="ruchnik-card-content">
-              <div class="ruchnik-avatar">
-                <i class="pi pi-book"></i>
+          <template v-else-if="items.length > 0">
+            <div class="ruchnik-search-compact">
+              <div class="ruchnik-search-input-wrapper">
+                <i class="pi pi-search ruchnik-search-icon" aria-hidden="true"></i>
+                <input
+                  v-model="localSearchQuery"
+                  type="search"
+                  autocomplete="off"
+                  class="ruchnik-search-input-compact"
+                  placeholder="Код, ФИО или часть номера…"
+                  @input="onSearchInput"
+                />
+                <button
+                  v-if="localSearchQuery.trim()"
+                  type="button"
+                  class="ruchnik-search-clear"
+                  title="Очистить"
+                  aria-label="Очистить поиск"
+                  @click="clearSearch"
+                >
+                  <i class="pi pi-times"></i>
+                </button>
               </div>
-              <div class="ruchnik-info">
-                <div class="ruchnik-code">{{ item.code }}</div>
-                <div v-if="item.user" class="ruchnik-user">
-                  {{ item.user.surname }} {{ item.user.name }} {{ item.user.patronymic }}
+              <div v-if="searchActive" class="ruchnik-search-count">
+                Найдено: {{ displayedItems.length }} из {{ items.length }}
+              </div>
+            </div>
+            <div v-if="displayedItems.length === 0" class="ruchnik-empty ruchnik-empty-filter">
+              <div class="ruchnik-empty-text">Ничего не найдено</div>
+              <div class="ruchnik-empty-subtext">Измените запрос или сбросьте поиск</div>
+            </div>
+            <div v-else class="ruchnik-list">
+            <div v-for="item in displayedItems" :key="item.id" class="ruchnik-card">
+              <div class="ruchnik-card-content">
+                <div class="ruchnik-avatar">
+                  <i class="pi pi-book"></i>
+                </div>
+                <div class="ruchnik-info">
+                  <div class="ruchnik-code">{{ item.code }}</div>
+                  <div v-if="item.user" class="ruchnik-user">
+                    {{ item.user.surname }} {{ item.user.name }} {{ item.user.patronymic }}
+                  </div>
                 </div>
               </div>
+              <div v-if="canManage" class="ruchnik-actions">
+                <button class="ruchnik-edit-btn" title="Редактировать" @click="handleEdit(item)">
+                  <i class="pi pi-pencil"></i>
+                </button>
+                <button class="ruchnik-remove-btn" title="Удалить id" @click="handleRemove(item)">
+                  <i class="pi pi-trash"></i>
+                </button>
+              </div>
             </div>
-            <div v-if="canManage" class="ruchnik-actions">
-              <button class="ruchnik-edit-btn" title="Редактировать" @click="handleEdit(item)">
-                <i class="pi pi-pencil"></i>
-              </button>
-              <button class="ruchnik-remove-btn" title="Удалить id" @click="handleRemove(item)">
-                <i class="pi pi-trash"></i>
-              </button>
             </div>
-          </div>
-        </div>
+          </template>
 
-        <div v-else class="ruchnik-empty">
-          <div class="ruchnik-empty-text">Нет ID</div>
+          <div v-else class="ruchnik-empty">
+            <div class="ruchnik-empty-text">Нет ID</div>
+          </div>
         </div>
       </div>
     </div>
@@ -107,6 +158,7 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
+import { matchFioQuery } from "../../shared/utils/levenshtein";
 
 interface Ruchnik {
   id: number;
@@ -120,6 +172,7 @@ interface Ruchnik {
     name: string;
     surname: string;
     patronymic: string;
+    phone?: string;
   };
 }
 
@@ -163,6 +216,40 @@ const sortedItems = computed(() => {
     const dateA = new Date(a.created_at);
     const dateB = new Date(b.created_at);
     return dateB.getTime() - dateA.getTime();
+  });
+});
+
+function phoneMatchesLoose(phone: string | undefined, query: string): boolean {
+  const q = query.replace(/\D/g, "");
+  if (!q) return false;
+  const p = (phone || "").replace(/\D/g, "");
+  if (!p) return false;
+  return p.includes(q) || q.includes(p);
+}
+
+const searchActive = computed(() => !!localSearchQuery.value.trim());
+
+const displayedItems = computed(() => {
+  const sorted = sortedItems.value;
+  const q = localSearchQuery.value.trim();
+  if (!q) return sorted;
+
+  const qLower = q.toLowerCase();
+  const qDigits = sanitizeDigits(q);
+
+  return sorted.filter((item) => {
+    const code = item.code || "";
+    const codeLower = code.toLowerCase();
+    if (codeLower.includes(qLower)) return true;
+    if (qDigits && sanitizeDigits(code).includes(qDigits)) return true;
+
+    if (item.user) {
+      const u = item.user;
+      const fio = [u.surname, u.name, u.patronymic].filter(Boolean).join(" ");
+      if (matchFioQuery(fio, q, 0.3)) return true;
+      if (u.phone && phoneMatchesLoose(u.phone, q)) return true;
+    }
+    return false;
   });
 });
 
@@ -303,6 +390,15 @@ const cancelEdit = () => {
   newRuchnikCode.value = "";
 };
 
+const onSearchInput = () => {
+  emit("search", localSearchQuery.value);
+};
+
+const clearSearch = () => {
+  localSearchQuery.value = "";
+  emit("search", "");
+};
+
 watch(() => props.searchQuery, (newValue) => {
   localSearchQuery.value = newValue || "";
 });
@@ -311,11 +407,13 @@ watch(() => props.resetKey, () => {
   newRuchnikCode.value = "";
   editingRuchnik.value = null;
   localSearchQuery.value = "";
+  emit("search", "");
 });
 </script>
 
 <style scoped>
 .ruchnik-block {
+  --ruchnik-list-viewport-min: 365px;
   width: 100%;
   height: 100%;
   display: flex;
@@ -332,19 +430,31 @@ watch(() => props.resetKey, () => {
   overflow: hidden;
 }
 
-.ruchnik-list-column,
+.ruchnik-list-column {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.ruchnik-list-area {
+  position: relative;
+  flex: 1 1 0%;
+  min-height: var(--ruchnik-list-viewport-min);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .ruchnik-add-column {
   background: var(--russ-bg);
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 2px 8px var(--russ-shadow-default);
-  border: 1px solid var(--russ-border);
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
 .ruchnik-section-title {
+  flex-shrink: 0;
   font-size: clamp(16px, calc(16px + (20 - 16) * ((100vw - 320px) / (1920 - 320))), 20px);
   font-weight: 700;
   color: var(--russ-text-primary);
@@ -371,15 +481,22 @@ watch(() => props.resetKey, () => {
   background: var(--russ-bg-secondary);
   border-radius: 12px;
   border: 1px dashed var(--russ-border-light);
+  flex: 1 1 0%;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .ruchnik-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  flex: 1;
+  flex: 1 1 0%;
   overflow-y: auto;
   min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
+
 }
 
 .ruchnik-card {
@@ -489,6 +606,14 @@ watch(() => props.resetKey, () => {
   text-align: center;
   padding: 40px 20px;
   color: var(--russ-text-muted);
+  flex: 1 1 0%;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .ruchnik-empty-text {
@@ -719,15 +844,15 @@ watch(() => props.resetKey, () => {
 }
 
 @media (max-width: 700px) {
+  .ruchnik-block {
+    --ruchnik-list-viewport-min: 280px;
+  }
+
   .ruchnik-container {
     grid-template-columns: 1fr;
     gap: 10px;
   }
 
-  .ruchnik-list-column,
-  .ruchnik-add-column {
-    padding: 10px;
-  }
 
 
   .ruchnik-card {

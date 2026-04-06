@@ -240,7 +240,62 @@ export function fuzzyMatch(
 
   // Используем n-gram поиск (как в Elasticsearch) для лучших результатов
   const sim = ngramSimilarity(normalizedText, normalizedQuery, 2);
-  return sim >= threshold;
+  if (sim >= threshold) {
+    return true;
+  }
+  // Запасной критерий: комбинация n-gram и Левенштейна (короткие опечатки)
+  return similarity(normalizedText, normalizedQuery) >= threshold;
+}
+
+/** Нормализация ФИО для сравнения: регистр, ё, схлопывание пробелов. */
+function normalizeFioForMatch(str: string): string {
+  return normalizeString(str).replace(/\s+/g, " ");
+}
+
+function tokenMatchesFioPart(
+  token: string,
+  parts: string[],
+  fullText: string,
+  threshold: number
+): boolean {
+  if (token.length <= 2) {
+    return parts.some((p) => p.startsWith(token));
+  }
+  if (fullText.includes(token)) return true;
+  return parts.some(
+    (part) => part.includes(token) || fuzzyMatch(part, token, threshold)
+  );
+}
+
+/**
+ * Поиск по ФИО с учётом нескольких слов (логическое И по токенам).
+ * Снижает ложные срабатывания n-gram при запросах вида «Фамилия Имя».
+ *
+ * @param text Полное ФИО или строка для сравнения
+ * @param query Поисковый запрос
+ * @param threshold Порог для fuzzyMatch на одном токене / части (по умолчанию 0.3)
+ */
+export function matchFioQuery(
+  text: string,
+  query: string,
+  threshold: number = 0.3
+): boolean {
+  const normalizedQuery = normalizeFioForMatch(query);
+  if (!normalizedQuery) return true;
+  const normalizedText = normalizeFioForMatch(text);
+  if (!normalizedText) return false;
+
+  if (normalizedText.includes(normalizedQuery)) return true;
+
+  const tokens = normalizedQuery.split(" ").filter(Boolean);
+  const parts = normalizedText.split(" ").filter(Boolean);
+  if (tokens.length === 1) {
+    return tokenMatchesFioPart(tokens[0], parts, normalizedText, threshold);
+  }
+
+  return tokens.every((token) =>
+    tokenMatchesFioPart(token, parts, normalizedText, threshold)
+  );
 }
 
 /**

@@ -37,8 +37,7 @@
 
             <template v-else>
           <div v-if="items.length > 0" class="ruchnik-list">
-            <div v-for="(item, index) in items" :key="item.id" class="ruchnik-card"
-              :style="{ animationDelay: `${index * 0.1}s` }">
+            <div v-for="item in items" :key="item.id" class="ruchnik-card">
               <div class="ruchnik-card-content">
                 <div class="ruchnik-info">
                   <div>
@@ -131,183 +130,111 @@
               </div>
             </template>
           </div>
-        </div>
 
-        <!-- Пагинация -->
-        <div v-if="showPagination" class="ruchnik-pagination">
-          <div class="pagination-compact">
-            <div class="pagination-info-compact">
-              <span class="page-info-text">{{ currentPage }} / {{ totalPages }}</span>
-              <span class="total-info-text">{{ total }} шт.</span>
-            </div>
-            <div class="pagination-controls-compact">
-              <select
-                v-model.number="localPerPage"
-                class="pagination-select-compact"
-                :disabled="loading"
-                @change="handlePerPageChange"
-              >
-                <option :value="5">5</option>
-                <option :value="10">10</option>
-                <option :value="20">20</option>
-                <option :value="50">50</option>
-              </select>
-              <button
-                type="button"
-                class="page-btn-compact"
-                :disabled="loading || currentPage <= 1"
-                @click="handlePageChange(currentPage - 1)"
-              >
-                ←
-              </button>
-              <button
-                type="button"
-                class="page-btn-compact"
-                :disabled="loading || currentPage >= totalPages"
-                @click="handlePageChange(currentPage + 1)"
-              >
-                →
-              </button>
+          <!-- Пагинация: внутри .ruchnik-content, чтобы flex оставлял её внизу, список скроллился выше -->
+          <div v-if="showPagination" class="ruchnik-pagination">
+            <div class="pagination-compact">
+              <div class="pagination-info-compact">
+                <span class="page-info-text">{{ currentPage }} / {{ totalPages }}</span>
+                <span class="total-info-text">{{ total }} шт.</span>
+              </div>
+              <div class="pagination-controls-compact">
+                <select
+                  v-model.number="localPerPage"
+                  class="pagination-select-compact"
+                  :disabled="loading"
+                  @change="handlePerPageChange"
+                >
+                  <option :value="5">5</option>
+                  <option :value="10">10</option>
+                  <option :value="20">20</option>
+                  <option :value="50">50</option>
+                </select>
+                <button
+                  type="button"
+                  class="page-btn-compact"
+                  :disabled="loading || currentPage <= 1"
+                  aria-label="Предыдущая страница"
+                  @click="handlePageChange(currentPage - 1)"
+                >
+                  <i class="pi pi-angle-left" aria-hidden="true"></i>
+                </button>
+                <button
+                  type="button"
+                  class="page-btn-compact"
+                  :disabled="loading || currentPage >= totalPages"
+                  aria-label="Следующая страница"
+                  @click="handlePageChange(currentPage + 1)"
+                >
+                  <i class="pi pi-angle-right" aria-hidden="true"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
       <div v-if="canManage" class="ruchnik-add-column">
-        <h4 class="ruchnik-section-title">
-          {{ isEditing ? 'Редактирование ручника' : 'Добавить ручник' }}
-        </h4>
+        <h4 v-if="!isEditing" class="ruchnik-section-title">Добавить ручник</h4>
 
         <div class="ruchnik-add-form">
           <div v-if="isEditing" class="ruchnik-edit-mode">
             <div class="edit-header">
-              <i class="pi pi-pencil"></i>
-              <span>Редактирование ручника: {{ editingRuchnik?.code }}</span>
-            </div>
-
-            <div class="edit-form">
-              <div class="edit-field">
-                <label class="edit-label">
-                  <i class="pi pi-hashtag"></i>
-                  Код ручника
-                </label>
-                <input
-                  ref="editCodeInputRef"
-                  v-model="editCode"
-                  type="text"
-                  inputmode="tel"
-                  pattern="[0-9-]*"
-                  enterkeyhint="done"
-                  class="ruchnik-input"
-                  :class="{ 'ruchnik-input--needs-type': !editCodeInputAllowed }"
-                  :readonly="!editCodeInputAllowed"
-                  :placeholder="editCodeInputAllowed ? 'Введите код ручника...' : 'Сначала выберите тип ручника'"
-                  @input="handleEditCodeInput"
-                  @paste="handleEditPaste"
-                  @focus="onEditCodeFocus"
-                />
+              <div class="edit-header-main">
+                <div class="edit-header-icon" aria-hidden="true">
+                  <i class="pi pi-pencil"></i>
+                </div>
+                <div class="edit-header-text">
+                  <span class="edit-header-title">Редактирование</span>
+                  <span class="edit-header-code">{{ editingRuchnik?.code }}</span>
+                </div>
               </div>
-
-              <div class="edit-field">
-                <label class="edit-label">
-                  <i class="pi pi-user"></i>
-                  Назначить агенту
-                </label>
-                <BaseSelect
-                  :options="agentOptions"
-                  optionLabel="name"
-                  optionValue="id"
-                  placeholder="Выберите агента..."
-                  :searchable="true"
-                  class="ruchnik-select"
-                  :model-value="editUserId ?? undefined"
-                  @update:model-value="(value: number | null) => editUserId = value ?? null"
-                />
-              </div>
-
-              <div class="edit-field">
-                <label class="edit-label">
-                  <i class="pi pi-tags"></i>
-                  Тип ручника
-                </label>
-                <BaseSelect
-                  ref="editRuchnikTypeSelectRef"
-                  :options="typeOptions"
-                  optionLabel="name"
-                  optionValue="slug"
-                  placeholder="Выберите тип..."
-                  :searchable="true"
-                  :disabled="typesLoading || !typeOptions.length"
-                  :model-value="editRuchnikTypeSlug ?? undefined"
-                  @update:model-value="(value: string | null) => editRuchnikTypeSlug = value || null"
-                  class="ruchnik-select"
-                />
-              </div>
-
-              <div class="edit-actions">
-                <button @click="cancelEdit" class="ruchnik-cancel-btn" :disabled="editLoading">
+              <div class="edit-header-actions">
+                <button type="button" class="ruchnik-cancel-btn ruchnik-cancel-btn--toolbar" :disabled="editLoading" @click="cancelEdit">
                   Отмена
                 </button>
-                <button @click="saveEdit" class="ruchnik-save-btn" :disabled="!editCode.trim() || editLoading">
+                <button
+                  type="button"
+                  class="ruchnik-save-btn ruchnik-save-btn--toolbar"
+                  :disabled="!editCode.trim() || editLoading"
+                  @click="saveEdit"
+                >
                   <span v-if="editLoading" class="loader"></span>
                   <i v-else class="pi pi-check"></i>
                   {{ editLoading ? 'Сохранение...' : 'Сохранить' }}
                 </button>
               </div>
             </div>
+
+            <div ref="editFormFiltersContainerRef" class="ruchnik-filters-container ruchnik-edit-filters">
+              <div v-if="singleRuchnikType" class="ruchnik-filter-type-chip-row">
+                <span class="ruchnik-filter-type-label">Тип ручника</span>
+                <span class="ruchnik-chip-static">
+                  <Chip :label="singleRuchnikTypeDisplay" selected />
+                </span>
+              </div>
+              <FiltersBar
+                :filters="editRuchnikFilters"
+                :model-value="editFormModelSnapshot"
+                :show-reset-button="false"
+                :show-mobile-button="false"
+                @update:model-value="applyEditFormModel"
+              />
+            </div>
           </div>
 
-          <div v-if="!isEditing" class="ruchnik-input-group">
-            <label class="ruchnik-label">
-              <i class="pi pi-tags"></i>
-              Тип ручника
-            </label>
-            <BaseSelect
-              ref="newRuchnikTypeSelectRef"
-              :options="typeOptions"
-              optionLabel="name"
-              optionValue="slug"
-              placeholder="Выберите тип..."
-              :searchable="true"
-              :disabled="typesLoading || !typeOptions.length"
-              :model-value="newRuchnikTypeSlug ?? undefined"
-              @update:model-value="(value: string | null) => newRuchnikTypeSlug = value || null"
-              class="ruchnik-select"
-            />
-          </div>
-
-          <div v-if="!isEditing" class="ruchnik-input-group">
-            <label class="ruchnik-label">Код ручника (цифры и «-»)</label>
-            <input
-              ref="newCodeInputRef"
-              v-model="newRuchnikCode"
-              type="text"
-              inputmode="tel"
-              pattern="[0-9-]*"
-              enterkeyhint="done"
-              class="ruchnik-input"
-              :class="{ 'ruchnik-input--needs-type': !newCodeInputAllowed }"
-              :readonly="!newCodeInputAllowed"
-              :placeholder="newCodeInputAllowed ? 'Введите ID заявки...' : 'Сначала выберите тип ручника'"
-              @input="handleInput"
-              @paste="handlePaste"
-              @focus="onNewCodeFocus"
-            />
-          </div>
-
-          <div v-if="!isEditing" class="ruchnik-input-group">
-            <label class="ruchnik-label">
-              <i class="pi pi-user"></i>
-              Назначить агенту
-            </label>
-            <BaseSelect
-              :options="agentOptions"
-              optionLabel="name"
-              optionValue="id"
-              placeholder="Выберите агента..."
-              :searchable="true"
-              class="ruchnik-select"
-              :model-value="newUserId ?? undefined"
-              @update:model-value="(value: number | null) => newUserId = value ?? null"
+          <div v-if="!isEditing" ref="addFormFiltersContainerRef" class="ruchnik-filters-container">
+            <div v-if="singleRuchnikType" class="ruchnik-filter-type-chip-row">
+              <span class="ruchnik-filter-type-label">Тип ручника</span>
+              <span class="ruchnik-chip-static">
+                <Chip :label="singleRuchnikTypeDisplay" selected />
+              </span>
+            </div>
+            <FiltersBar
+              :filters="addRuchnikFilters"
+              :model-value="addFormModelSnapshot"
+              :show-reset-button="false"
+              :show-mobile-button="false"
+              @update:model-value="applyAddFormModel"
             />
           </div>
 
@@ -331,7 +258,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { useToast } from "bibli/shared/ui";
-import { BaseSelect, FiltersBar, Chip, type FilterConfig } from "@/shared/ui";
+import { FiltersBar, Chip, type FilterConfig } from "@/shared/ui";
 
 /** Тип ручника (передаётся со страницы или из shared api). */
 export interface RuchnikType {
@@ -488,11 +415,9 @@ const editCodeInputAllowed = computed(() => {
   return !!editRuchnikTypeSlug.value;
 });
 
-const newCodeInputRef = ref<HTMLInputElement | null>(null);
-const editCodeInputRef = ref<HTMLInputElement | null>(null);
 const filtersContainerRef = ref<HTMLElement | null>(null);
-const newRuchnikTypeSelectRef = ref<{ $el?: HTMLElement } | null>(null);
-const editRuchnikTypeSelectRef = ref<{ $el?: HTMLElement } | null>(null);
+const addFormFiltersContainerRef = ref<HTMLElement | null>(null);
+const editFormFiltersContainerRef = ref<HTMLElement | null>(null);
 
 /** Только цифры, макс. 11 для OTP. */
 const sanitizeRuchnikDigits = (value: string, maxLen = 11) =>
@@ -536,21 +461,28 @@ function focusFilterTypeSelect() {
   });
 }
 
-function clickBaseSelectByRef(el: { $el?: HTMLElement } | null | undefined) {
+function focusNewRuchnikTypeSelect() {
+  if (!showTypeFilterSelect.value) return;
   nextTick(() => {
-    const root = el?.$el as HTMLElement | undefined;
-    const combo = root?.querySelector?.(".base-select-combo") as HTMLElement | undefined;
+    const root = addFormFiltersContainerRef.value;
+    const combo = root?.querySelector(
+      ".filters-grid .filter-item-wrapper:first-child .base-select-combo"
+    ) as HTMLElement | undefined;
     combo?.focus?.();
     combo?.click?.();
   });
 }
 
-function focusNewRuchnikTypeSelect() {
-  clickBaseSelectByRef(newRuchnikTypeSelectRef.value as { $el?: HTMLElement } | null);
-}
-
 function focusEditRuchnikTypeSelect() {
-  clickBaseSelectByRef(editRuchnikTypeSelectRef.value as { $el?: HTMLElement } | null);
+  if (!showTypeFilterSelect.value) return;
+  nextTick(() => {
+    const root = editFormFiltersContainerRef.value;
+    const combo = root?.querySelector(
+      ".filters-grid .filter-item-wrapper:first-child .base-select-combo"
+    ) as HTMLElement | undefined;
+    combo?.focus?.();
+    combo?.click?.();
+  });
 }
 
 function onSearchFilterInputFocus(e: FocusEvent) {
@@ -614,52 +546,6 @@ const formatUser = (user: { surname: string; name: string; patronymic?: string |
   const nameInitial = user.name ? user.name.charAt(0) + '.' : '';
   const patronymicInitial = user.patronymic ? user.patronymic.charAt(0) + '.' : '';
   return `${surname} ${nameInitial}${patronymicInitial}`.trim();
-};
-
-const handleInput = (event: Event) => {
-  if (!newCodeInputAllowed.value) {
-    event.preventDefault();
-    return;
-  }
-  const target = event.target as HTMLInputElement;
-  const typeSlug = newRuchnikTypeSlug.value || props.selectedType || null;
-  const formatted = formatCodeByType(target.value, typeSlug);
-  if (target.value !== formatted) {
-    newRuchnikCode.value = formatted;
-  }
-};
-
-const handlePaste = (event: ClipboardEvent) => {
-  if (!newCodeInputAllowed.value) {
-    event.preventDefault();
-    return;
-  }
-  event.preventDefault();
-  const pastedText = event.clipboardData?.getData("text") || "";
-  const typeSlug = newRuchnikTypeSlug.value || props.selectedType || null;
-  newRuchnikCode.value = formatCodeByType(pastedText, typeSlug);
-};
-
-const handleEditCodeInput = (event: Event) => {
-  if (!editCodeInputAllowed.value) {
-    event.preventDefault();
-    return;
-  }
-  const target = event.target as HTMLInputElement;
-  const formatted = formatCodeByType(target.value, editRuchnikTypeSlug.value);
-  if (target.value !== formatted) {
-    editCode.value = formatted;
-  }
-};
-
-const handleEditPaste = (event: ClipboardEvent) => {
-  if (!editCodeInputAllowed.value) {
-    event.preventDefault();
-    return;
-  }
-  event.preventDefault();
-  const pastedText = event.clipboardData?.getData("text") || "";
-  editCode.value = formatCodeByType(pastedText, editRuchnikTypeSlug.value);
 };
 
 const agentOptions = computed(() => {
@@ -779,6 +665,198 @@ function applyFilterModel(v: Record<string, unknown>) {
       emit("user-change", aidNorm);
       emit("page-change", 1);
     }
+  }
+}
+
+const addRuchnikFilters = computed<FilterConfig[]>(() => {
+  const items: FilterConfig[] = [];
+  if (showTypeFilterSelect.value) {
+    items.push({
+      key: "typeSlug",
+      type: "select",
+      label: "Тип ручника",
+      placeholder: "Все типы",
+      options: typeOptions.value.map((t) => ({
+        id: t.slug,
+        name: (t.name && String(t.name).trim()) || String(t.slug ?? ""),
+      })),
+      optionLabel: "name",
+      optionValue: "id",
+      searchable: true,
+      disabled: props.typesLoading,
+    });
+  }
+  items.push({
+    key: "code",
+    type: "input",
+    label: "Поиск по коду",
+    placeholder: !newCodeInputAllowed.value
+      ? "Сначала выберите тип ручника"
+      : "Введите код ручника...",
+    readonly: !newCodeInputAllowed.value,
+    onInputFocus: onNewCodeFocus,
+  });
+  items.push({
+    key: "agentId",
+    type: "select",
+    label: "Агент",
+    placeholder: "Все агенты",
+    options: agentOptions.value.map((a) => ({
+      id: a.id,
+      name: a.name,
+    })),
+    optionLabel: "name",
+    optionValue: "id",
+    searchable: true,
+    disabled: agentsLoading.value,
+    loading: agentsLoading.value,
+  });
+  return items;
+});
+
+const addFormModelSnapshot = computed(() => {
+  const m: Record<string, unknown> = {
+    code: newRuchnikCode.value,
+    agentId: newUserId.value ?? undefined,
+  };
+  if (showTypeFilterSelect.value) {
+    m.typeSlug = newRuchnikTypeSlug.value ?? undefined;
+  }
+  return m;
+});
+
+function applyAddFormModel(v: Record<string, unknown>) {
+  let slugForFormat: string | null = null;
+
+  if (showTypeFilterSelect.value) {
+    const raw = v.typeSlug;
+    const normalized =
+      raw === undefined || raw === null || raw === ""
+        ? null
+        : String(raw);
+    if (normalized !== newRuchnikTypeSlug.value) {
+      newRuchnikTypeSlug.value = normalized;
+    }
+    slugForFormat = newRuchnikTypeSlug.value || props.selectedType || null;
+  } else if (singleRuchnikType.value?.slug) {
+    slugForFormat = String(singleRuchnikType.value.slug);
+  } else {
+    slugForFormat = props.selectedType ? String(props.selectedType) : null;
+  }
+
+  const rawCode = String(v.code ?? "");
+  const formattedCode = slugForFormat
+    ? formatCodeByType(rawCode, slugForFormat)
+    : sanitizeRuchnikValue(rawCode);
+
+  if (formattedCode !== newRuchnikCode.value) {
+    newRuchnikCode.value = formattedCode;
+  }
+
+  const rawAgent = v.agentId;
+  const aid =
+    rawAgent === undefined || rawAgent === null || rawAgent === ""
+      ? null
+      : Number(rawAgent);
+  const aidNorm = aid === null || Number.isNaN(aid) ? null : aid;
+  if (aidNorm !== newUserId.value) {
+    newUserId.value = aidNorm;
+  }
+}
+
+const editRuchnikFilters = computed<FilterConfig[]>(() => {
+  const items: FilterConfig[] = [];
+  if (showTypeFilterSelect.value) {
+    items.push({
+      key: "typeSlug",
+      type: "select",
+      label: "Тип ручника",
+      placeholder: "Все типы",
+      options: typeOptions.value.map((t) => ({
+        id: t.slug,
+        name: (t.name && String(t.name).trim()) || String(t.slug ?? ""),
+      })),
+      optionLabel: "name",
+      optionValue: "id",
+      searchable: true,
+      disabled: props.typesLoading,
+    });
+  }
+  items.push({
+    key: "code",
+    type: "input",
+    label: "Поиск по коду",
+    placeholder: !editCodeInputAllowed.value
+      ? "Сначала выберите тип ручника"
+      : "Введите код ручника...",
+    readonly: !editCodeInputAllowed.value,
+    onInputFocus: onEditCodeFocus,
+  });
+  items.push({
+    key: "agentId",
+    type: "select",
+    label: "Агент",
+    placeholder: "Все агенты",
+    options: agentOptions.value.map((a) => ({
+      id: a.id,
+      name: a.name,
+    })),
+    optionLabel: "name",
+    optionValue: "id",
+    searchable: true,
+    disabled: agentsLoading.value,
+    loading: agentsLoading.value,
+  });
+  return items;
+});
+
+const editFormModelSnapshot = computed(() => {
+  const m: Record<string, unknown> = {
+    code: editCode.value,
+    agentId: editUserId.value ?? undefined,
+  };
+  if (showTypeFilterSelect.value) {
+    m.typeSlug = editRuchnikTypeSlug.value ?? undefined;
+  }
+  return m;
+});
+
+function applyEditFormModel(v: Record<string, unknown>) {
+  let slugForFormat: string | null = null;
+
+  if (showTypeFilterSelect.value) {
+    const raw = v.typeSlug;
+    const normalized =
+      raw === undefined || raw === null || raw === ""
+        ? null
+        : String(raw);
+    if (normalized !== editRuchnikTypeSlug.value) {
+      editRuchnikTypeSlug.value = normalized;
+    }
+    slugForFormat = editRuchnikTypeSlug.value || props.selectedType || null;
+  } else if (singleRuchnikType.value?.slug) {
+    slugForFormat = String(singleRuchnikType.value.slug);
+  } else {
+    slugForFormat = props.selectedType ? String(props.selectedType) : null;
+  }
+
+  const rawCode = String(v.code ?? "");
+  const formattedCode = slugForFormat
+    ? formatCodeByType(rawCode, slugForFormat)
+    : sanitizeRuchnikValue(rawCode);
+
+  if (formattedCode !== editCode.value) {
+    editCode.value = formattedCode;
+  }
+
+  const rawAgent = v.agentId;
+  const aid =
+    rawAgent === undefined || rawAgent === null || rawAgent === ""
+      ? null
+      : Number(rawAgent);
+  const aidNorm = aid === null || Number.isNaN(aid) ? null : aid;
+  if (aidNorm !== editUserId.value) {
+    editUserId.value = aidNorm;
   }
 }
 
@@ -946,6 +1024,25 @@ watch(localSelectedType, (slug) => {
   }
 });
 
+watch(newRuchnikTypeSlug, (slug) => {
+  const q = newRuchnikCode.value;
+  if (!q) return;
+  const next = slug ? formatCodeByType(q, slug) : sanitizeRuchnikValue(q);
+  if (next !== q) {
+    newRuchnikCode.value = next;
+  }
+});
+
+watch(editRuchnikTypeSlug, (slug) => {
+  if (!isEditing.value) return;
+  const q = editCode.value;
+  if (!q) return;
+  const next = slug ? formatCodeByType(q, slug) : sanitizeRuchnikValue(q);
+  if (next !== q) {
+    editCode.value = next;
+  }
+});
+
 onMounted(() => {
   if (props.canManage) {
     loadAgents();
@@ -962,51 +1059,57 @@ watch(() => props.canManage, (canManage) => {
 
 <style scoped>
 .ruchnik-block {
+  --ruchnik-list-viewport-min: 365px;
   width: 100%;
   max-height: 650px;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
 .ruchnik-block--modal-embed {
-  /* flex-basis: 0 — иначе блок растёт по контенту и скроллится весь .base-modal-content */
+  /* flex-basis: 0 - fill modal, scroll inside list */
   flex: 1 1 0%;
   min-height: 0;
-  max-height: 100%;
+  max-height: none;
   overflow: hidden;
+}
+
+.ruchnik-block--modal-embed .ruchnik-add-form {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .ruchnik-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: minmax(0, 1fr);
+  align-content: stretch;
   gap: 32px;
-  flex: 1;
+  flex: 1 1 0%;
   min-height: 0;
   overflow: hidden;
 }
 
 .ruchnik-container-client {
   grid-template-columns: 1fr;
+  grid-template-rows: minmax(0, 1fr);
 }
 
 .ruchnik-list-column {
-  background: var(--russ-bg);
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 2px 8px var(--russ-shadow-default);
-  border: 1px solid var(--russ-border);
   display: flex;
   flex-direction: column;
   min-height: 0;
+  max-height: 100%;
+  flex: 1 1 0%;
   overflow: hidden;
 }
 
-.ruchnik-list-column-full {
-  width: 100%;
-}
-
 .ruchnik-section-title {
+  flex-shrink: 0;
   font-size: 18px;
   font-weight: 700;
   color: var(--russ-text-primary);
@@ -1016,19 +1119,21 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .ruchnik-content {
-  flex: 1;
+  flex: 1 1 0%;
   display: flex;
   flex-direction: column;
+  gap: 12px;
   min-height: 0;
   overflow: hidden;
 }
 
 .ruchnik-list-area {
   position: relative;
-  flex: 1;
-  min-height: 0;
+  flex: 1 1 0%;
+  min-height: var(--ruchnik-list-viewport-min);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .ruchnik-list-area--busy .ruchnik-list {
@@ -1048,8 +1153,7 @@ watch(() => props.canManage, (canManage) => {
   font-size: 13px;
   font-weight: 600;
   color: var(--russ-text-secondary);
-  background: color-mix(in srgb, var(--russ-bg) 88%, transparent);
-  backdrop-filter: blur(2px);
+  background: color-mix(in srgb, var(--russ-bg) 92%, transparent);
   pointer-events: none;
 }
 
@@ -1063,30 +1167,43 @@ watch(() => props.canManage, (canManage) => {
   background: var(--russ-bg-secondary);
   border-radius: 12px;
   border: 1px dashed var(--russ-border-dark);
-  flex: 1;
-  min-height: 200px;
-  animation: fadeIn 0.3s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+  flex: 1 1 0%;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .ruchnik-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  flex: 1;
+  flex: 1 1 0%;
   overflow-y: auto;
   min-height: 0;
   -webkit-overflow-scrolling: touch;
-  max-height: 365px;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--russ-text-muted) 42%, transparent) transparent;
+  max-height: 530px;
+}
+
+.ruchnik-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.ruchnik-list::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 999px;
+}
+
+.ruchnik-list::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--russ-text-muted) 38%, transparent);
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+.ruchnik-list::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--russ-text-muted) 58%, transparent);
 }
 
 .ruchnik-card {
@@ -1097,16 +1214,12 @@ watch(() => props.canManage, (canManage) => {
   border-radius: 12px;
   padding: 16px;
   border: 1px solid var(--russ-border-light);
-  transition: all 0.3s ease;
   gap: 10px;
-  opacity: 1;
-  transform: translateY(0);
 }
 
 .ruchnik-card:hover {
   background: var(--russ-bg-tertiary);
   border-color: var(--russ-border-dark);
-  box-shadow: 0 4px 12px var(--russ-shadow-hover);
 }
 
 .ruchnik-card-content {
@@ -1127,7 +1240,6 @@ watch(() => props.canManage, (canManage) => {
   justify-content: center;
   font-size: 16px;
   font-weight: 700;
-  box-shadow: 0 2px 8px var(--russ-shadow-gray);
 }
 
 .ruchnik-info {
@@ -1201,7 +1313,6 @@ watch(() => props.canManage, (canManage) => {
   border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
-  transition: all 0.2s ease;
 }
 
 .status-confirmed {
@@ -1224,12 +1335,11 @@ watch(() => props.canManage, (canManage) => {
 
 .ruchnik-edit-btn {
   background: var(--russ-info-light);
-  border: none;
+  border: 1px solid var(--russ-info-border);
   border-radius: 8px;
   padding: 8px 12px;
-  color: var(--russ-accent);
+  color: var(--russ-info-dark);
   cursor: pointer;
-  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1237,28 +1347,25 @@ watch(() => props.canManage, (canManage) => {
   height: 40px;
 }
 
-.ruchnik-edit-btn:hover {
+.ruchnik-edit-btn:hover:not(:disabled) {
   background: var(--russ-info-border);
   color: var(--russ-accent-dark);
-  transform: scale(1.05);
 }
 
 .ruchnik-edit-btn:disabled,
 .ruchnik-remove-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
-  transform: none;
   pointer-events: none;
 }
 
 .ruchnik-remove-btn {
   background: var(--russ-error-light);
-  border: none;
+  border: 1px solid var(--russ-error-light);
   border-radius: 8px;
   padding: 8px 12px;
-  color: var(--russ-error);
+  color: var(--russ-error-dark);
   cursor: pointer;
-  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1266,23 +1373,24 @@ watch(() => props.canManage, (canManage) => {
   height: 40px;
 }
 
-.ruchnik-remove-btn:hover {
+.ruchnik-remove-btn:hover:not(:disabled) {
   background: var(--russ-error-light);
+  border-color: var(--russ-error);
   color: var(--russ-error-dark);
-  transform: scale(1.05);
 }
 
 .ruchnik-empty {
   text-align: center;
   padding: 40px 20px;
   color: var(--russ-text-muted);
-  flex: 1;
+  flex: 1 1 0%;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 200px;
-  animation: fadeIn 0.3s ease-out;
 }
 
 .ruchnik-empty-text {
@@ -1299,13 +1407,12 @@ watch(() => props.canManage, (canManage) => {
 
 .ruchnik-add-column {
   background: var(--russ-bg);
-  border-radius: 14px;
-  padding: 24px;
-  box-shadow: 0 2px 8px var(--russ-shadow-default);
-  border: 1px solid var(--russ-border);
   display: flex;
   flex-direction: column;
-  overflow: visible;
+  min-height: 0;
+  max-height: 100%;
+  flex: 1 1 0%;
+  overflow: hidden;
   position: relative;
   z-index: 1;
 }
@@ -1319,125 +1426,108 @@ watch(() => props.canManage, (canManage) => {
   min-height: 0;
 }
 
+.ruchnik-add-form .ruchnik-filters-container {
+  margin-bottom: 0;
+}
+
 .ruchnik-edit-mode {
-  background: var(--russ-bg-light);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   border-radius: 16px;
-  padding: 0;
-  margin-bottom: 20px;
-  border: 1px solid var(--russ-border);
+  border: 1px solid var(--russ-border-light);
+  background: var(--russ-bg-secondary);
+  overflow: visible;
+  margin-bottom: 0;
 }
 
 .edit-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 14px;
+  background: var(--russ-bg-secondary);
+  border-bottom: 1px solid var(--russ-border-light);    
+  border-radius: 20px 20px 0 0;
 }
 
-.edit-header-content {
+.edit-header-main {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  min-width: 0;
+  flex: 1 1 200px;
 }
 
-.edit-icon {
-  width: 48px;
-  height: 48px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
+.edit-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.edit-header-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--russ-text-inverse);
-  font-size: 20px;
-  backdrop-filter: blur(10px);
-}
-
-.edit-title h5 {
-  margin: 0;
-  color: var(--russ-text-inverse);
+  background: var(--russ-bg-blue-lighter);
+  border: 1px solid var(--russ-info-border);
+  color: var(--russ-accent);
   font-size: 18px;
-  font-weight: 700;
-  line-height: 1.2;
 }
 
-.edit-code {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 14px;
-  font-weight: 500;
-  margin-top: 2px;
-  display: block;
+.edit-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.edit-header-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--russ-text-secondary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.edit-header-code {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--russ-text-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.35;
+  word-break: break-all;
+}
+
+.ruchnik-edit-filters {
+  margin-bottom: 0;
+  padding: 12px;
+  box-sizing: border-box;
 }
 
 .ruchnik-cancel-edit-btn {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: var(--russ-text-inverse);
+  background: var(--russ-bg);
+  border: 1px solid var(--russ-border-dark);
+  color: var(--russ-text-secondary);
   cursor: pointer;
   padding: 12px;
   border-radius: 10px;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 44px;
   height: 44px;
-  backdrop-filter: blur(10px);
 }
 
 .ruchnik-cancel-edit-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: scale(1.05);
-}
-
-.edit-form {
-  padding: 12px;
-  background: white;
-}
-
-.edit-section {
-  margin-bottom: 24px;
-}
-
-.edit-section:last-of-type {
-  margin-bottom: 0;
-}
-
-.edit-section-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--russ-bg-tertiary);
-  color: var(--russ-text-secondary);
-  font-weight: 600;
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.edit-section-header i {
-  color: var(--russ-secondary);
-  font-size: 16px;
-}
-
-.edit-field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 5px;
-}
-
-.edit-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--russ-text-secondary);
-  margin-bottom: 4px;
+  background: var(--russ-bg-tertiary);
 }
 
 .required {
@@ -1480,23 +1570,8 @@ watch(() => props.canManage, (canManage) => {
   --base-select-radius: 10px;
   --base-select-font-size: 14px;
   --base-select-bg: var(--russ-bg);
-  --base-select-focus-border: var(--russ-input-border-focus);
-  --base-select-focus-shadow: inset 0 0 0 3px var(--russ-shadow-secondary);
-}
-
-
-
-/* Убеждаемся, что контейнер редактирования не обрезает выпадающий список */
-.ruchnik-edit-mode {
-  overflow: visible !important;
-}
-
-.edit-form {
-  overflow: visible !important;
-}
-
-.edit-section {
-  overflow: visible !important;
+  --base-select-focus-border: var(--russ-border-dark);
+  --base-select-focus-shadow: none;
 }
 
 .edit-hint {
@@ -1510,93 +1585,85 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .edit-hint i {
-  color: #3b82f6;
+  color: var(--russ-accent);
   font-size: 12px;
-}
-
-.edit-actions {
-  display: flex;
-  gap: 16px;
-  justify-content: flex-end;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid var(--russ-border);
 }
 
 .ruchnik-cancel-btn {
   padding: 12px 24px;
   background: var(--russ-bg-secondary);
-  border: 2px solid var(--russ-border-light);
-  border-radius: 12px;
+  border: 1px solid var(--russ-border-light);
+  border-radius: 8px;
   color: var(--russ-text-tertiary);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   font-size: 14px;
+}
+
+.ruchnik-cancel-btn--toolbar {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--russ-bg-secondary);
 }
 
 .ruchnik-cancel-btn:hover:not([disabled]) {
   background: var(--russ-bg-tertiary);
   border-color: var(--russ-border-dark);
   color: var(--russ-text-secondary);
-  box-shadow: 0 4px 12px var(--russ-shadow-hover);
 }
 
 .ruchnik-cancel-btn[disabled] {
   opacity: 0.5;
   cursor: not-allowed;
-  transform: none;
 }
 
 .ruchnik-save-btn {
   padding: 12px 24px;
-  background: linear-gradient(135deg, var(--russ-success) 0%, var(--russ-success-dark) 100%);
-  border: none;
-  border-radius: 12px;
+  background: var(--russ-success);
+  border: 1px solid var(--russ-success-dark);
   color: var(--russ-text-inverse);
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   font-size: 14px;
-  box-shadow: 0 4px 12px var(--russ-shadow-success);
 }
 
-.ruchnik-save-btn:hover:not([disabled]) {
-  background: linear-gradient(135deg, var(--russ-success-dark) 0%, var(--russ-success-dark) 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px var(--russ-shadow-success-light);
+.ruchnik-save-btn--toolbar {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .ruchnik-save-btn[disabled] {
   background: var(--russ-neutral-light);
+  border-color: var(--russ-border-dark);
+  color: var(--russ-text-tertiary);
   cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
+  opacity: 0.7;
 }
 
 .loader {
   width: 14px;
   height: 14px;
-  border: 2px solid #ffffff;
-  border-top: 2px solid transparent;
+  border: 2px solid var(--russ-text-muted);
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  opacity: 0.75;
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
+.ruchnik-save-btn .loader,
+.ruchnik-add-btn .loader {
+  border-color: color-mix(in srgb, var(--russ-text-inverse) 70%, transparent);
+  opacity: 0.95;
 }
 
 .error-message {
@@ -1632,11 +1699,10 @@ watch(() => props.canManage, (canManage) => {
 
 .ruchnik-input {
   padding: 0 14px;
-  border: 2px solid var(--russ-input-border);
-  border-radius: 10px;
+  border: 1px solid var(--russ-border-dark);
+  border-radius: 8px;
   font-size: 14px;
   background: var(--russ-bg);
-  transition: all 0.2s ease;
   color: var(--russ-text-primary);
   min-height: 40px;
   height: 40px;
@@ -1645,8 +1711,7 @@ watch(() => props.canManage, (canManage) => {
 
 .ruchnik-input:focus {
   outline: none;
-  border-color: var(--russ-input-border-focus);
-  box-shadow: inset 0 0 0 3px var(--russ-shadow-secondary);
+  border-color: var(--russ-text-secondary);
 }
 
 .ruchnik-input--needs-type,
@@ -1659,13 +1724,11 @@ watch(() => props.canManage, (canManage) => {
 
 .ruchnik-input--needs-type:focus,
 .ruchnik-input[readonly]:focus {
-  border-color: var(--russ-input-border);
-  box-shadow: none;
+  border-color: var(--russ-border-dark);
 }
 
 .ruchnik-input-error {
-  border-color: var(--russ-input-border-error);
-  box-shadow: 0 0 0 3px var(--russ-shadow-error);
+  border-color: var(--russ-error);
 }
 
 .ruchnik-error-message {
@@ -1675,15 +1738,14 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .ruchnik-add-btn {
-  background: #6b9eff;
+  background: var(--russ-accent);
   color: var(--russ-text-inverse);
-  border: none;
-  border-radius: 12px;
+  border: 1px solid var(--russ-accent-dark);
+  border-radius: 8px;
   padding: 0 16px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1693,14 +1755,16 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .ruchnik-add-btn:hover:not([disabled]) {
-  background: var(--russ-accent);
+  background: var(--russ-accent-dark);
+  border-color: var(--russ-accent-dark);
 }
 
 .ruchnik-add-btn[disabled] {
   background: var(--russ-neutral-light);
+  border-color: var(--russ-border-dark);
   color: var(--russ-text-tertiary);
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: 0.65;
 }
 
 .ruchnik-add-btn .loader {
@@ -1710,11 +1774,15 @@ watch(() => props.canManage, (canManage) => {
   margin: 0;
 }
 
-/* Фильтры: FiltersBar + Chip */
 .ruchnik-filters-container {
   margin-bottom: 16px;
   width: 100%;
   box-sizing: border-box;
+}
+
+/* Только колонка списка: резерв под чип + FiltersBar + сброс */
+.ruchnik-list-column > .ruchnik-filters-container {
+  flex-shrink: 0;
 }
 
 .ruchnik-filters-container :deep(.filters-bar-wrapper) {
@@ -1741,7 +1809,7 @@ watch(() => props.canManage, (canManage) => {
 
 /* Стили для пагинации */
 .ruchnik-pagination {
-  margin-top: 16px;
+  margin-top: 0;
   padding: 12px 16px;
   background: var(--russ-bg-secondary);
   border-radius: 8px;
@@ -1793,7 +1861,6 @@ watch(() => props.canManage, (canManage) => {
   color: var(--russ-text-secondary);
   font-size: 12px;
   font-weight: 500;
-  transition: border-color 0.2s;
   outline: none;
   min-width: 50px;
   height: 28px;
@@ -1811,7 +1878,6 @@ watch(() => props.canManage, (canManage) => {
   color: var(--russ-text-secondary);
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
   min-width: 28px;
   height: 28px;
   display: flex;
@@ -1821,9 +1887,9 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .page-btn-compact:hover:not([disabled]) {
-  background: var(--russ-bg-light);
-  border-color: var(--russ-text-muted);
-  color: var(--russ-text-dark);
+  background: var(--russ-bg-blue-light);
+  border-color: var(--russ-accent);
+  color: var(--russ-accent);
 }
 
 .page-btn-compact[disabled] {
@@ -1835,6 +1901,7 @@ watch(() => props.canManage, (canManage) => {
 
 @media (max-width: 700px) {
   .ruchnik-block {
+    --ruchnik-list-viewport-min: 280px;
     height: auto;
     min-height: 0;
     overflow: visible;
@@ -1855,13 +1922,12 @@ watch(() => props.canManage, (canManage) => {
   .ruchnik-block--modal-embed .ruchnik-container {
     overflow: hidden;
     min-height: 0;
+    grid-template-rows: minmax(0, 1fr) auto;
   }
 
-  .ruchnik-list-column,
-  .ruchnik-add-column {
-    padding: 10px;
-    min-height: auto;
-    overflow: visible;
+  .ruchnik-block--modal-embed .ruchnik-add-column {
+    min-height: 0;
+    overflow: hidden;
   }
 
   .ruchnik-block--modal-embed .ruchnik-list-column {
@@ -1877,14 +1943,8 @@ watch(() => props.canManage, (canManage) => {
     overflow: hidden;
   }
 
-
-  .ruchnik-block--modal-embed .ruchnik-list {
-    overflow-y: auto;
-    min-height: 0;
-  }
-
-  .ruchnik-block--modal-embed .ruchnik-list-area {
-    min-height: 0;
+  .ruchnik-list-column > .ruchnik-filters-container {
+    min-height: 160px;
   }
 
   .ruchnik-section-title {
@@ -1943,7 +2003,7 @@ watch(() => props.canManage, (canManage) => {
   }
 
   .ruchnik-pagination {
-    margin-top: 12px;
+    margin-top: 0;
     padding: 10px 12px;
   }
 
@@ -1985,30 +2045,44 @@ watch(() => props.canManage, (canManage) => {
   }
 
   .edit-header {
-    padding: 8px 12px;
-    background: var(--russ-bg-light);
-    border-radius: 12px 12px 0 0;
+    padding: 10px 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
   }
 
-  .edit-header-content {
-    gap: 8px;
+  .edit-header-main {
+    gap: 10px;
   }
 
-  .edit-icon {
-    width: 32px;
-    height: 32px;
+  .edit-header-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  .edit-header-title {
+    font-size: 11px;
+  }
+
+  .edit-header-code {
     font-size: 14px;
-    background: var(--russ-text-tertiary);
   }
 
-  .edit-title h5 {
-    font-size: 14px;
-    font-weight: 600;
+  .ruchnik-edit-filters {
+    padding: 10px;
   }
 
-  .edit-code {
-    font-size: 12px;
-    color: var(--russ-text-tertiary);
+  .edit-header-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .edit-header-actions .ruchnik-cancel-btn--toolbar,
+  .edit-header-actions .ruchnik-save-btn--toolbar {
+    flex: 1;
+    padding: 10px 12px;
+    font-size: 13px;
   }
 
   .ruchnik-cancel-edit-btn {
@@ -2018,54 +2092,9 @@ watch(() => props.canManage, (canManage) => {
     font-size: 12px;
   }
 
-  .edit-form {
-    padding: 12px;
-  }
-
-  .edit-section {
-    margin-bottom: 12px;
-  }
-
-  .edit-section:last-of-type {
-    margin-bottom: 8px;
-  }
-
-  .edit-section-header {
-    font-size: 11px;
-    margin-bottom: 8px;
-    padding-bottom: 4px;
-    text-transform: none;
-    letter-spacing: 0;
-  }
-
-  .edit-field {
-    margin-bottom: 8px;
-  }
-
-  .edit-label {
-    font-size: 12px;
-    margin-bottom: 4px;
-  }
-
   .ruchnik-input {
     padding: 8px 12px;
     font-size: 14px;
-    border-radius: 8px;
-  }
-
-  .edit-actions {
-    flex-direction: row;
-    gap: 8px;
-    margin-top: 12px;
-    padding-top: 8px;
-    border-top: 1px solid var(--russ-border-light);
-  }
-
-  .ruchnik-cancel-btn,
-  .ruchnik-save-btn {
-    flex: 1;
-    padding: 10px 12px;
-    font-size: 13px;
     border-radius: 8px;
   }
 
@@ -2088,26 +2117,35 @@ watch(() => props.canManage, (canManage) => {
   }
 
   .edit-header {
-    padding: 6px 10px;
-    border-radius: 8px 8px 0 0;
+    padding: 8px 10px;
   }
 
-  .edit-header-content {
-    gap: 6px;
+  .edit-header-main {
+    gap: 8px;
   }
 
-  .edit-icon {
-    width: 28px;
-    height: 28px;
-    font-size: 12px;
+  .edit-header-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
   }
 
-  .edit-title h5 {
+  .edit-header-title {
+    font-size: 10px;
+  }
+
+  .edit-header-code {
     font-size: 13px;
   }
 
-  .edit-code {
-    font-size: 11px;
+  .ruchnik-edit-filters {
+    padding: 8px;
+  }
+
+  .edit-header-actions .ruchnik-cancel-btn--toolbar,
+  .edit-header-actions .ruchnik-save-btn--toolbar {
+    padding: 8px 10px;
+    font-size: 12px;
   }
 
   .ruchnik-cancel-edit-btn {
@@ -2116,46 +2154,9 @@ watch(() => props.canManage, (canManage) => {
     padding: 4px;
   }
 
-  .edit-form {
-    padding: 10px;
-  }
-
-  .edit-section {
-    margin-bottom: 10px;
-  }
-
-  .edit-section:last-of-type {
-    margin-bottom: 6px;
-  }
-
-  .edit-section-header {
-    font-size: 10px;
-    margin-bottom: 6px;
-  }
-
-  .edit-field {
-    margin-bottom: 6px;
-  }
-
-  .edit-label {
-    font-size: 11px;
-  }
-
   .ruchnik-input {
     padding: 6px 10px;
     font-size: 13px;
-  }
-
-  .edit-actions {
-    margin-top: 10px;
-    padding-top: 6px;
-    gap: 6px;
-  }
-
-  .ruchnik-cancel-btn,
-  .ruchnik-save-btn {
-    padding: 8px 10px;
-    font-size: 12px;
   }
 
   .input-counter {

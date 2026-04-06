@@ -3,6 +3,7 @@
     <div
       v-if="modelValue"
       class="base-modal-overlay"
+      :style="{ zIndex: overlayZIndex }"
       @mousedown.self="onOverlayMouseDownSelf"
       @mouseup.self="onOverlayMouseUpSelf"
       @click.self="shouldCloseOnOverlayClick() && handleOverlayClick()"
@@ -56,6 +57,8 @@ import { ref, computed, watch, nextTick, onMounted, onUnmounted, normalizeClass 
 
 interface Props {
   modelValue: boolean;
+  /** Поверх остальных слоёв (по умолчанию 10000). */
+  overlayZIndex?: number;
   title?: string;
   subtitle?: string;
   closable?: boolean;
@@ -72,6 +75,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  overlayZIndex: 10000,
   closable: true,
   closeOnEscape: true,
   closeOnOverlayClick: true,
@@ -240,7 +244,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  isolation: isolate;
   animation: fadeIn 0.2s ease;
   touch-action: auto;
   overflow-y: auto;

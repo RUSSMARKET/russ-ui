@@ -587,25 +587,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-:deep(.staff-results-base-modal) {
-    --ui-control-height: 40px;
-    --filter-control-height: var(--ui-control-height);
-    --filter-control-font-size: 13px;
-}
-
-:deep(.staff-results-base-modal .filters-container) {
-    padding: 12px 14px;
-}
-
-:deep(.staff-results-base-modal .filters-grid) {
-    align-items: start;
-}
-
-:deep(.staff-results-base-modal .filter-item),
-:deep(.staff-results-base-modal .filter-item-wrapper) {
-    min-height: auto;
-}
-
 .modal-overlay {
     position: fixed;
     z-index: 999;

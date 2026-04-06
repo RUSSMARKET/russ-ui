@@ -33,6 +33,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
 const props = defineProps({
   id: { type: String, default: '' },
@@ -44,6 +45,7 @@ const props = defineProps({
 const visible = ref(false)
 const panelRef = ref(null)
 const panelStyle = ref({})
+const route = useRoute()
 
 function toggle(event) {
   if (visible.value) {
@@ -86,11 +88,14 @@ function close() {
   visible.value = false
 }
 
-function onItemClick(item) {
-  if (item.command && typeof item.command === 'function') {
-    item.command()
+async function onItemClick(item) {
+  try {
+    if (item.command && typeof item.command === 'function') {
+      await Promise.resolve(item.command())
+    }
+  } finally {
+    close()
   }
-  close()
 }
 
 // Закрытие по Escape
@@ -106,6 +111,13 @@ watch(visible, (isVisible) => {
   }
 })
 
+watch(
+  () => route.fullPath,
+  () => {
+    if (visible.value) close()
+  },
+)
+
 defineExpose({
   toggle,
   close,
@@ -117,11 +129,13 @@ defineExpose({
 .menu-backdrop {
   position: fixed;
   inset: 0;
+  /* Ниже .app-navigation (1150): левая колонка навигации остаётся кликабельной */
   z-index: 1099;
 }
 
 .menu-panel {
-  z-index: 1100;
+  /* Выше сайдбара, чтобы выпадающее меню не уходило под него при узком окне */
+  z-index: 1200;
   background: var(--russ-bg);
   border: 1px solid var(--russ-border);
   border-radius: 8px;

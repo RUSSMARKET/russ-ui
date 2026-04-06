@@ -141,7 +141,8 @@ defineExpose({
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 900;
+  /* Выше menu-backdrop (1099), чтобы подложка popup-меню не блокировала ссылки сайдбара */
+  z-index: 1150;
   transition: transform 0.3s ease;
   overflow-y: auto;
 }

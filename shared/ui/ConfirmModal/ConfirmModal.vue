@@ -4,6 +4,8 @@
     @update:model-value="onCancel"
     :close-on-overlay-click="!loading"
     :closable="!loading"
+    :title="title"
+    :overlay-z-index="99999"
     size="sm"
     class="confirm-modal-base"
   >
@@ -21,10 +23,13 @@
 
 <script setup lang="ts">
 import { BaseModal } from '@/shared/ui';
+import { withDefaults } from 'vue';
 
 interface Props {
   visible: boolean;
   message: string;
+  /** Заголовок окна (шапка не остаётся пустой). */
+  title?: string;
   error?: string;
   loading?: boolean;
 }
@@ -34,7 +39,9 @@ interface Emits {
   (e: 'cancel'): void;
 }
 
-const props = defineProps<Props>();
+withDefaults(defineProps<Props>(), {
+  title: 'Подтверждение',
+});
 const emit = defineEmits<Emits>();
 
 const onConfirm = () => {
@@ -47,6 +54,19 @@ const onCancel = () => {
 </script>
 
 <style scoped>
+.confirm-modal-base :deep(.base-modal-header) {
+  align-items: center;
+  min-height: unset;
+  padding: 1.25rem 1.5rem 0.75rem;
+}
+
+.confirm-modal-base :deep(.base-modal-title) {
+  margin: 0;
+  color: var(--russ-text-primary);
+  font-size: clamp(16px, calc(16px + (17 - 16) * ((100vw - 320px) / (1920 - 320))), 17px);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
 
 .confirm-message {
   font-size: clamp(16px,
@@ -55,6 +75,7 @@ const onCancel = () => {
   font-weight: 600;
   color: var(--russ-text-primary);
   margin-bottom: 1.5rem;
+  margin-top: 0;
   line-height: 1.5;
 }
 
