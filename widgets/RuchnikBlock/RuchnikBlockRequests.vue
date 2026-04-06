@@ -1183,7 +1183,7 @@ watch(() => props.canManage, (canManage) => {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--russ-text-muted) 42%, transparent) transparent;
-  max-height: 530px;
+  max-height: 475px;
 }
 
 .ruchnik-list::-webkit-scrollbar {
