@@ -81,6 +81,10 @@ export interface FilterConfig {
   optionValue?: string;
   searchable?: boolean;
   disabled?: boolean;
+  /** Только для type: input — поле только для чтения (например, пока не выбран соседний фильтр). */
+  readonly?: boolean;
+  /** Только для type: input — нативный focus на поле ввода. */
+  onInputFocus?: (e: FocusEvent) => void;
   loading?: boolean;
   width?: string;
   component?: any; // For custom components

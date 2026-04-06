@@ -13,11 +13,11 @@
           autocomplete="off"
           :inputmode="isMobile ? 'none' : undefined"
           :readonly="isMobile && !dropdownOpen"
-          :style="{ width: props.width, height: props.height, minHeight: props.height }" />
+          :style="comboStyle" />
       </template>
       <template v-else>
         <div class="base-select-combo base-select-combo--readonly"
-          :style="{ width: props.width, height: props.height, minHeight: props.height, cursor: (disabled || loading) ? 'not-allowed' : 'pointer' }"
+          :style="comboReadonlyStyle"
           @click="!(disabled || loading) && toggleDropdown()">
           <span class="base-select-text">{{ inputValue || placeholder || 'Выберите...' }}</span>
         </div>
@@ -88,6 +88,22 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update:modelValue']);
+
+const comboStyle = computed(() => {
+  const s = {};
+  if (props.width) s.width = props.width;
+  if (props.height) {
+    s.height = props.height;
+    s.minHeight = props.height;
+  }
+  return s;
+});
+
+const comboReadonlyStyle = computed(() => ({
+  ...comboStyle.value,
+  cursor: (props.disabled || props.loading) ? 'not-allowed' : 'pointer',
+}));
+
 const inputValue = ref('');
 const dropdownOpen = ref(false);
 const highlightedIndex = ref(-1);
@@ -446,8 +462,6 @@ function handleResize() {
 
 function handleVisualViewportResize() {
   if (dropdownOpen.value) {
-    // Небольшая задержка для корректного расчета после изменения viewport
-    // Используем requestAnimationFrame для более плавного обновления
     requestAnimationFrame(() => {
       setTimeout(() => {
         calculateDropdownPosition();
@@ -458,11 +472,8 @@ function handleVisualViewportResize() {
 
 onMounted(() => {
   document.addEventListener('mousedown', handleClickOutside);
-  document.addEventListener('mouseup', handleClickOutside);
-  document.addEventListener('focusin', handleClickOutside);
   window.addEventListener('resize', handleResize);
   window.addEventListener('scroll', handleResize, true);
-  // Обработчик для виртуальной клавиатуры на мобильных устройствах
   if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', handleVisualViewportResize);
     window.visualViewport.addEventListener('scroll', handleVisualViewportResize);
@@ -475,8 +486,6 @@ onMounted(() => {
 });
 onBeforeUnmount(() => {
   document.removeEventListener('mousedown', handleClickOutside);
-  document.removeEventListener('mouseup', handleClickOutside);
-  document.removeEventListener('focusin', handleClickOutside);
   window.removeEventListener('resize', handleResize);
   window.removeEventListener('scroll', handleResize, true);
   if (window.visualViewport) {

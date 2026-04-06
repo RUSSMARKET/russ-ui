@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue';
+import { ref, computed, watch, nextTick, onMounted, onUnmounted, normalizeClass } from 'vue';
 
 interface Props {
   modelValue: boolean;
@@ -92,16 +92,16 @@ const modalRef = ref<HTMLElement | null>(null);
 const mouseDownTarget = ref<'overlay' | 'modal' | null>(null);
 const mouseUpTarget = ref<'overlay' | 'modal' | null>(null);
 
-const modalClass = computed(() => {
-  return [
+const modalClass = computed(() =>
+  normalizeClass([
     props.class,
     props.size ? `base-modal-size-${props.size}` : '',
     {
       'base-modal-wide': props.maxWidth === '900px' || props.width === '900px',
       'base-modal-large': props.maxWidth === '1000px' || props.width === '1000px',
     },
-  ].filter(Boolean).join(' ');
-});
+  ])
+);
 
 const modalStyle = computed(() => {
   const style: Record<string, string> = {};

@@ -23,8 +23,10 @@
       :model-value="modelValue"
       :placeholder="filter.placeholder"
       :disabled="filter.disabled"
+      :readonly="filter.readonly"
       variant="off"
       @update:model-value="handleChange"
+      @focus="onInputFocusNative"
     />
 
     <!-- Date -->
@@ -99,6 +101,10 @@ const filterItemClass = computed(() => {
 const handleChange = (value: any) => {
   emit('update:modelValue', value);
 };
+
+function onInputFocusNative(e: FocusEvent) {
+  props.filter.onInputFocus?.(e);
+}
 
 const handleSearchInput = (event: Event) => {
   const target = event.target as HTMLInputElement;

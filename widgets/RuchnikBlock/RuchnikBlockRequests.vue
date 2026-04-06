@@ -5,84 +5,38 @@
 -->
 
 <template>
-  <div class="ruchnik-block">
+  <div class="ruchnik-block" :class="{ 'ruchnik-block--modal-embed': embedInModal }">
     <div class="ruchnik-container" :class="{ 'ruchnik-container-client': !canManage }">
       <div class="ruchnik-list-column" :class="{ 'ruchnik-list-column-full': !canManage }">
-        <h4 class="ruchnik-section-title">Заявки агентов</h4>
-        <div class="ruchnik-filters-container">
-          <div class="ruchnik-filters-grid">
-            <div class="ruchnik-filter-item">
-              <label class="ruchnik-filter-label">
-                <i class="pi pi-search"></i>
-                Поиск по коду
-              </label>
-              <div class="ruchnik-search-input-wrapper">
-                <i class="pi pi-search ruchnik-search-icon"></i>
-                <input v-model="localSearchQuery" type="text" inputmode="tel" pattern="[0-9-]*" enterkeyhint="search"
-                  class="ruchnik-search-input-compact" placeholder="Введите код ручника..." @input="handleSearchInput"
-                  @paste="handleSearchPaste" />
-                <div v-if="localSearchQuery" class="ruchnik-search-clear" @click="clearSearch">
-                  <i class="pi pi-times"></i>
-                </div>
-              </div>
-            </div>
-
-            <div class="ruchnik-filter-item" v-if="canManage">
-              <label class="ruchnik-filter-label">
-                <i class="pi pi-user"></i>
-                Агент
-              </label>
-              <BaseSelect
-                :options="agentOptions"
-                optionLabel="name"
-                optionValue="id"
-                placeholder="Все агенты"
-                :searchable="true"
-                :disabled="agentsLoading"
-                :model-value="localSelectedUserId ?? undefined"
-                @update:model-value="handleUserFilterChange"
-                class="ruchnik-filter-select"
-              />
-            </div>
-
-            <div class="ruchnik-filter-item">
-              <label class="ruchnik-filter-label">
-                <i class="pi pi-tags"></i>
-                Тип ручника
-              </label>
-              <BaseSelect
-                :options="typeOptions"
-                optionLabel="name"
-                optionValue="slug"
-                placeholder="Все типы"
-                :searchable="true"
-                :disabled="typesLoading"
-                :model-value="localSelectedType ?? undefined"
-                @update:model-value="handleTypeFilterChange"
-                class="ruchnik-filter-select"
-              />
-            </div>
-
-            <div class="ruchnik-filter-item ruchnik-filter-reset">
-              <button 
-                v-if="hasActiveFilters" 
-                @click="resetAllFilters" 
-                class="ruchnik-reset-btn"
-                title="Сбросить все фильтры">
-                <i class="pi pi-refresh"></i>
-                <span>Сбросить</span>
-              </button>
-            </div>
+        <h4 v-if="!embedInModal" class="ruchnik-section-title">Заявки агентов</h4>
+        <div ref="filtersContainerRef" class="ruchnik-filters-container">
+          <div v-if="singleRuchnikType" class="ruchnik-filter-type-chip-row">
+            <span class="ruchnik-filter-type-label">Тип ручника</span>
+            <span class="ruchnik-chip-static">
+              <Chip :label="singleRuchnikTypeDisplay" selected />
+            </span>
           </div>
+          <FiltersBar
+            :filters="ruchnikFilters"
+            :model-value="filterModelSnapshot"
+            :show-reset-button="hasActiveFilters"
+            :show-mobile-button="false"
+            @update:model-value="applyFilterModel"
+          />
         </div>
 
         <div class="ruchnik-content">
-          <div v-if="loading" class="ruchnik-loading">
-            <span class="loader"></span>
-            <span>Загрузка заявок...</span>
-          </div>
+          <div
+            class="ruchnik-list-area"
+            :class="{ 'ruchnik-list-area--busy': loading && items.length > 0 }"
+          >
+            <div v-if="loading && !items.length" class="ruchnik-loading">
+              <span class="loader"></span>
+              <span>Загрузка заявок...</span>
+            </div>
 
-          <div v-else-if="items.length > 0" class="ruchnik-list">
+            <template v-else>
+          <div v-if="items.length > 0" class="ruchnik-list">
             <div v-for="(item, index) in items" :key="item.id" class="ruchnik-card"
               :style="{ animationDelay: `${index * 0.1}s` }">
               <div class="ruchnik-card-content">
@@ -139,10 +93,22 @@
                 </div>
               </div>
               <div v-if="canManage" class="ruchnik-actions">
-                <button class="ruchnik-edit-btn" title="Редактировать" @click="handleEdit(item)">
+                <button
+                  class="ruchnik-edit-btn"
+                  title="Редактировать"
+                  type="button"
+                  :disabled="loading"
+                  @click="handleEdit(item)"
+                >
                   <i class="pi pi-pencil"></i>
                 </button>
-                <button class="ruchnik-remove-btn" title="Удалить ручник" @click="handleRemove(item)">
+                <button
+                  class="ruchnik-remove-btn"
+                  title="Удалить ручник"
+                  type="button"
+                  :disabled="loading"
+                  @click="handleRemove(item)"
+                >
                   <i class="pi pi-trash"></i>
                 </button>
               </div>
@@ -152,6 +118,18 @@
           <div v-else class="ruchnik-empty">
             <div class="ruchnik-empty-text">Нет заявок</div>
             <div class="ruchnik-empty-subtext">Заявки агентов не найдены</div>
+          </div>
+
+              <div
+                v-if="loading && items.length"
+                class="ruchnik-loading-overlay"
+                role="status"
+                aria-live="polite"
+              >
+                <span class="loader"></span>
+                <span>Обновление списка…</span>
+              </div>
+            </template>
           </div>
         </div>
 
@@ -163,17 +141,31 @@
               <span class="total-info-text">{{ total }} шт.</span>
             </div>
             <div class="pagination-controls-compact">
-              <select v-model.number="localPerPage" @change="handlePerPageChange" class="pagination-select-compact">
+              <select
+                v-model.number="localPerPage"
+                class="pagination-select-compact"
+                :disabled="loading"
+                @change="handlePerPageChange"
+              >
                 <option :value="5">5</option>
                 <option :value="10">10</option>
                 <option :value="20">20</option>
                 <option :value="50">50</option>
               </select>
-              <button @click="handlePageChange(currentPage - 1)" :disabled="currentPage <= 1" class="page-btn-compact">
+              <button
+                type="button"
+                class="page-btn-compact"
+                :disabled="loading || currentPage <= 1"
+                @click="handlePageChange(currentPage - 1)"
+              >
                 ←
               </button>
-              <button @click="handlePageChange(currentPage + 1)" :disabled="currentPage >= totalPages"
-                class="page-btn-compact">
+              <button
+                type="button"
+                class="page-btn-compact"
+                :disabled="loading || currentPage >= totalPages"
+                @click="handlePageChange(currentPage + 1)"
+              >
                 →
               </button>
             </div>
@@ -206,10 +198,12 @@
                   pattern="[0-9-]*"
                   enterkeyhint="done"
                   class="ruchnik-input"
-                  placeholder="Введите код ручника..."
+                  :class="{ 'ruchnik-input--needs-type': !editCodeInputAllowed }"
+                  :readonly="!editCodeInputAllowed"
+                  :placeholder="editCodeInputAllowed ? 'Введите код ручника...' : 'Сначала выберите тип ручника'"
                   @input="handleEditCodeInput"
                   @paste="handleEditPaste"
-                  @focus="onEditCodeInputFocusOrClick"
+                  @focus="onEditCodeFocus"
                 />
               </div>
 
@@ -236,6 +230,7 @@
                   Тип ручника
                 </label>
                 <BaseSelect
+                  ref="editRuchnikTypeSelectRef"
                   :options="typeOptions"
                   optionLabel="name"
                   optionValue="slug"
@@ -267,6 +262,7 @@
               Тип ручника
             </label>
             <BaseSelect
+              ref="newRuchnikTypeSelectRef"
               :options="typeOptions"
               optionLabel="name"
               optionValue="slug"
@@ -289,10 +285,12 @@
               pattern="[0-9-]*"
               enterkeyhint="done"
               class="ruchnik-input"
-              placeholder="Введите ID заявки..."
+              :class="{ 'ruchnik-input--needs-type': !newCodeInputAllowed }"
+              :readonly="!newCodeInputAllowed"
+              :placeholder="newCodeInputAllowed ? 'Введите ID заявки...' : 'Сначала выберите тип ручника'"
               @input="handleInput"
               @paste="handlePaste"
-              @focus="onCodeInputFocusOrClick"
+              @focus="onNewCodeFocus"
             />
           </div>
 
@@ -331,9 +329,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { useToast } from "bibli/shared/ui";
-import { BaseSelect } from "@/shared/ui";
+import { BaseSelect, FiltersBar, Chip, type FilterConfig } from "@/shared/ui";
 
 /** Тип ручника (передаётся со страницы или из shared api). */
 export interface RuchnikType {
@@ -407,6 +405,8 @@ interface Props {
   selectedType?: string | null;
   typesLoading?: boolean;
   selectedUserId?: number | null;
+  /** Заголовок «Заявки агентов» снаружи (например в шапке BaseModal) — не дублировать внутри блока. */
+  embedInModal?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -423,7 +423,8 @@ const props = withDefaults(defineProps<Props>(), {
   ruchnikTypes: () => [],
   selectedType: null,
   typesLoading: false,
-  selectedUserId: null
+  selectedUserId: null,
+  embedInModal: false
 });
 
 const emit = defineEmits([
@@ -456,8 +457,42 @@ const toast = useToast();
 
 const localPerPage = ref(props.perPage);
 const typeOptions = computed(() => props.ruchnikTypes || []);
+/** Несколько типов — показываем выпадающий список; один — только подпись без выбора. */
+const showTypeFilterSelect = computed(() => typeOptions.value.length !== 1);
+const singleRuchnikType = computed(() =>
+  typeOptions.value.length === 1 ? typeOptions.value[0] : null
+);
+const singleRuchnikTypeDisplay = computed(() => {
+  const t = singleRuchnikType.value;
+  if (!t) return "";
+  const name = t.name && String(t.name).trim();
+  return name || String(t.slug ?? "");
+});
+
+/** Пока не выбран тип в фильтре (несколько типов) — поле кода поиска только для чтения. */
+const searchRequiresTypeChoice = computed(
+  () => showTypeFilterSelect.value && !localSelectedType.value
+);
+
+const newCodeInputAllowed = computed(() => {
+  const types = typeOptions.value;
+  if (types.length === 0) return false;
+  if (types.length === 1) return true;
+  return !!newRuchnikTypeSlug.value;
+});
+
+const editCodeInputAllowed = computed(() => {
+  const types = typeOptions.value;
+  if (types.length === 0) return false;
+  if (types.length === 1) return true;
+  return !!editRuchnikTypeSlug.value;
+});
+
 const newCodeInputRef = ref<HTMLInputElement | null>(null);
 const editCodeInputRef = ref<HTMLInputElement | null>(null);
+const filtersContainerRef = ref<HTMLElement | null>(null);
+const newRuchnikTypeSelectRef = ref<{ $el?: HTMLElement } | null>(null);
+const editRuchnikTypeSelectRef = ref<{ $el?: HTMLElement } | null>(null);
 
 /** Только цифры, макс. 11 для OTP. */
 const sanitizeRuchnikDigits = (value: string, maxLen = 11) =>
@@ -489,31 +524,54 @@ const formatCodeByType = (raw: string, typeSlug: string | null): string => {
 
 const sanitizeRuchnikValue = (value: string) => value.replace(/[^0-9-]/g, "");
 
-function onCodeInputFocusOrClick(ev: FocusEvent | MouseEvent) {
-  const typeSlug = newRuchnikTypeSlug.value || props.selectedType || null;
-  if (!typeSlug) {
-    toast.add({
-      severity: "warn",
-      summary: "Тип не выбран",
-      detail: "Сначала выберите тип ручника",
-      life: 3000,
-    });
-    const el = (ev.target as HTMLInputElement);
-    if (el?.blur) el.blur();
-  }
+function focusFilterTypeSelect() {
+  if (!showTypeFilterSelect.value) return;
+  nextTick(() => {
+    const root = filtersContainerRef.value;
+    const combo = root?.querySelector(
+      ".filters-grid .filter-item-wrapper:first-child .base-select-combo"
+    ) as HTMLElement | undefined;
+    combo?.focus?.();
+    combo?.click?.();
+  });
 }
 
-function onEditCodeInputFocusOrClick(ev: FocusEvent | MouseEvent) {
-  if (!editRuchnikTypeSlug.value) {
-    toast.add({
-      severity: "warn",
-      summary: "Тип не выбран",
-      detail: "Сначала выберите тип ручника",
-      life: 3000,
-    });
-    const el = (ev.target as HTMLInputElement);
-    if (el?.blur) el.blur();
-  }
+function clickBaseSelectByRef(el: { $el?: HTMLElement } | null | undefined) {
+  nextTick(() => {
+    const root = el?.$el as HTMLElement | undefined;
+    const combo = root?.querySelector?.(".base-select-combo") as HTMLElement | undefined;
+    combo?.focus?.();
+    combo?.click?.();
+  });
+}
+
+function focusNewRuchnikTypeSelect() {
+  clickBaseSelectByRef(newRuchnikTypeSelectRef.value as { $el?: HTMLElement } | null);
+}
+
+function focusEditRuchnikTypeSelect() {
+  clickBaseSelectByRef(editRuchnikTypeSelectRef.value as { $el?: HTMLElement } | null);
+}
+
+function onSearchFilterInputFocus(e: FocusEvent) {
+  if (!searchRequiresTypeChoice.value) return;
+  e.preventDefault();
+  (e.target as HTMLInputElement).blur();
+  focusFilterTypeSelect();
+}
+
+function onNewCodeFocus(e: FocusEvent) {
+  if (newCodeInputAllowed.value) return;
+  e.preventDefault();
+  (e.target as HTMLInputElement).blur();
+  focusNewRuchnikTypeSelect();
+}
+
+function onEditCodeFocus(e: FocusEvent) {
+  if (editCodeInputAllowed.value) return;
+  e.preventDefault();
+  (e.target as HTMLInputElement).blur();
+  focusEditRuchnikTypeSelect();
 }
 
 const getStatus = (item: Ruchnik): 'confirmed' | 'pending' | 'rejected' => {
@@ -559,6 +617,10 @@ const formatUser = (user: { surname: string; name: string; patronymic?: string |
 };
 
 const handleInput = (event: Event) => {
+  if (!newCodeInputAllowed.value) {
+    event.preventDefault();
+    return;
+  }
   const target = event.target as HTMLInputElement;
   const typeSlug = newRuchnikTypeSlug.value || props.selectedType || null;
   const formatted = formatCodeByType(target.value, typeSlug);
@@ -568,6 +630,10 @@ const handleInput = (event: Event) => {
 };
 
 const handlePaste = (event: ClipboardEvent) => {
+  if (!newCodeInputAllowed.value) {
+    event.preventDefault();
+    return;
+  }
   event.preventDefault();
   const pastedText = event.clipboardData?.getData("text") || "";
   const typeSlug = newRuchnikTypeSlug.value || props.selectedType || null;
@@ -575,6 +641,10 @@ const handlePaste = (event: ClipboardEvent) => {
 };
 
 const handleEditCodeInput = (event: Event) => {
+  if (!editCodeInputAllowed.value) {
+    event.preventDefault();
+    return;
+  }
   const target = event.target as HTMLInputElement;
   const formatted = formatCodeByType(target.value, editRuchnikTypeSlug.value);
   if (target.value !== formatted) {
@@ -583,6 +653,10 @@ const handleEditCodeInput = (event: Event) => {
 };
 
 const handleEditPaste = (event: ClipboardEvent) => {
+  if (!editCodeInputAllowed.value) {
+    event.preventDefault();
+    return;
+  }
   event.preventDefault();
   const pastedText = event.clipboardData?.getData("text") || "";
   editCode.value = formatCodeByType(pastedText, editRuchnikTypeSlug.value);
@@ -603,6 +677,110 @@ const agentOptions = computed(() => {
     };
   });
 });
+
+const ruchnikFilters = computed<FilterConfig[]>(() => {
+  const items: FilterConfig[] = [];
+  if (showTypeFilterSelect.value) {
+    items.push({
+      key: "typeSlug",
+      type: "select",
+      label: "Тип ручника",
+      placeholder: "Все типы",
+      options: typeOptions.value.map((t) => ({
+        id: t.slug,
+        name: (t.name && String(t.name).trim()) || String(t.slug ?? ""),
+      })),
+      optionLabel: "name",
+      optionValue: "id",
+      searchable: true,
+      disabled: props.typesLoading,
+    });
+  }
+  items.push({
+    key: "search",
+    type: "input",
+    label: "Поиск по коду",
+    placeholder: searchRequiresTypeChoice.value
+      ? "Сначала выберите тип ручника"
+      : "Введите код ручника...",
+    readonly: searchRequiresTypeChoice.value,
+    onInputFocus: onSearchFilterInputFocus,
+  });
+  if (props.canManage) {
+    items.push({
+      key: "agentId",
+      type: "select",
+      label: "Агент",
+      placeholder: "Все агенты",
+      options: agentOptions.value.map((a) => ({
+        id: a.id,
+        name: a.name,
+      })),
+      optionLabel: "name",
+      optionValue: "id",
+      searchable: true,
+      disabled: agentsLoading.value,
+      loading: agentsLoading.value,
+    });
+  }
+  return items;
+});
+
+const filterModelSnapshot = computed(() => {
+  const m: Record<string, unknown> = {
+    search: localSearchQuery.value,
+  };
+  if (showTypeFilterSelect.value) {
+    m.typeSlug = localSelectedType.value ?? undefined;
+  }
+  if (props.canManage) {
+    m.agentId = localSelectedUserId.value ?? undefined;
+  }
+  return m;
+});
+
+function applyFilterModel(v: Record<string, unknown>) {
+  const slugForFormat = showTypeFilterSelect.value
+    ? ((v.typeSlug as string | undefined) ?? null)
+    : localSelectedType.value;
+  const rawSearch = String(v.search ?? "");
+  const formattedSearch = slugForFormat
+    ? formatCodeByType(rawSearch, slugForFormat)
+    : sanitizeRuchnikValue(rawSearch);
+
+  if (formattedSearch !== localSearchQuery.value) {
+    localSearchQuery.value = formattedSearch;
+    emit("search", formattedSearch);
+    emit("page-change", 1);
+  }
+
+  if (showTypeFilterSelect.value) {
+    const raw = v.typeSlug;
+    const normalized =
+      raw === undefined || raw === null || raw === ""
+        ? null
+        : String(raw);
+    if (normalized !== localSelectedType.value) {
+      localSelectedType.value = normalized;
+      emit("type-change", normalized);
+      emit("page-change", 1);
+    }
+  }
+
+  if (props.canManage) {
+    const raw = v.agentId;
+    const aid =
+      raw === undefined || raw === null || raw === ""
+        ? null
+        : Number(raw);
+    const aidNorm = aid === null || Number.isNaN(aid) ? null : aid;
+    if (aidNorm !== localSelectedUserId.value) {
+      localSelectedUserId.value = aidNorm;
+      emit("user-change", aidNorm);
+      emit("page-change", 1);
+    }
+  }
+}
 
 const handleAdd = () => {
   if (newRuchnikCode.value.trim()) {
@@ -703,31 +881,6 @@ const cancelEdit = () => {
   editRuchnikTypeSlug.value = null;
 };
 
-const handleSearchInput = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const sanitizedValue = sanitizeRuchnikValue(target.value);
-  if (target.value !== sanitizedValue) {
-    localSearchQuery.value = sanitizedValue;
-  }
-
-  emit("search", localSearchQuery.value);
-  emit("page-change", 1); // Сбрасываем на первую страницу при изменении поиска
-};
-
-const handleSearchPaste = (event: ClipboardEvent) => {
-  event.preventDefault();
-
-  const pastedText = event.clipboardData?.getData('text') || '';
-  localSearchQuery.value = sanitizeRuchnikValue(pastedText);
-
-  emit("search", localSearchQuery.value);
-};
-
-const clearSearch = () => {
-  localSearchQuery.value = "";
-  emit("search", "");
-};
-
 const handlePageChange = (page: number) => {
   if (page >= 1 && page <= props.totalPages) {
     emit("page-change", page);
@@ -738,31 +891,13 @@ const handlePerPageChange = () => {
   emit("per-page-change", localPerPage.value);
 };
 
-const handleTypeFilterChange = (value: string | null) => {
-  localSelectedType.value = value || null;
-  emit("type-change", localSelectedType.value);
-  emit("page-change", 1); // Сбрасываем на первую страницу при изменении типа
-};
-
-const handleUserFilterChange = (value: number | null) => {
-  localSelectedUserId.value = value || null;
-  emit("user-change", localSelectedUserId.value);
-  emit("page-change", 1); // Сбрасываем на первую страницу при изменении пользователя
-};
-
 const hasActiveFilters = computed(() => {
-  return !!(localSearchQuery.value || localSelectedType.value || localSelectedUserId.value);
+  const search = !!localSearchQuery.value;
+  const user = !!localSelectedUserId.value;
+  const multiType = typeOptions.value.length > 1;
+  const typeChosen = multiType && !!localSelectedType.value;
+  return search || user || typeChosen;
 });
-
-const resetAllFilters = () => {
-  localSearchQuery.value = "";
-  localSelectedType.value = null;
-  localSelectedUserId.value = null;
-  emit("search", "");
-  emit("type-change", null);
-  emit("user-change", null);
-  emit("page-change", 1); // Сбрасываем на первую страницу при сбросе фильтров
-};
 
 watch(() => props.searchQuery, (newValue) => {
   localSearchQuery.value = newValue || "";
@@ -772,15 +907,43 @@ watch(() => props.perPage, (newValue) => {
   localPerPage.value = newValue;
 });
 
-watch(() => props.selectedType, (newValue) => {
-  localSelectedType.value = newValue || null;
-  if (!newRuchnikTypeSlug.value) {
-    newRuchnikTypeSlug.value = newValue || null;
-  }
-});
+watch(
+  () => [props.ruchnikTypes, props.selectedType] as const,
+  ([types, selected]) => {
+    const opts = types || [];
+    if (opts.length === 1) {
+      const slug = opts[0]?.slug;
+      if (slug != null && slug !== "") {
+        if (localSelectedType.value !== slug) {
+          localSelectedType.value = slug;
+          emit("type-change", slug);
+        }
+        if (!newRuchnikTypeSlug.value) {
+          newRuchnikTypeSlug.value = slug;
+        }
+      }
+      return;
+    }
+    localSelectedType.value = selected || null;
+    if (!newRuchnikTypeSlug.value) {
+      newRuchnikTypeSlug.value = selected || null;
+    }
+  },
+  { deep: true, immediate: true }
+);
 
 watch(() => props.selectedUserId, (newValue) => {
   localSelectedUserId.value = newValue || null;
+});
+
+watch(localSelectedType, (slug) => {
+  const q = localSearchQuery.value;
+  if (!q) return;
+  const next = slug ? formatCodeByType(q, slug) : sanitizeRuchnikValue(q);
+  if (next !== q) {
+    localSearchQuery.value = next;
+    emit("search", next);
+  }
 });
 
 onMounted(() => {
@@ -806,6 +969,14 @@ watch(() => props.canManage, (canManage) => {
   overflow: hidden;
 }
 
+.ruchnik-block--modal-embed {
+  /* flex-basis: 0 — иначе блок растёт по контенту и скроллится весь .base-modal-content */
+  flex: 1 1 0%;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
+}
+
 .ruchnik-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -827,6 +998,7 @@ watch(() => props.canManage, (canManage) => {
   border: 1px solid var(--russ-border);
   display: flex;
   flex-direction: column;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -848,7 +1020,37 @@ watch(() => props.canManage, (canManage) => {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.ruchnik-list-area {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ruchnik-list-area--busy .ruchnik-list {
+  opacity: 0.55;
+}
+
+.ruchnik-loading-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--russ-text-secondary);
+  background: color-mix(in srgb, var(--russ-bg) 88%, transparent);
+  backdrop-filter: blur(2px);
+  pointer-events: none;
 }
 
 .ruchnik-loading {
@@ -883,8 +1085,8 @@ watch(() => props.canManage, (canManage) => {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
-  transition: all 0.3s ease;
   -webkit-overflow-scrolling: touch;
+  max-height: 365px;
 }
 
 .ruchnik-card {
@@ -1041,6 +1243,14 @@ watch(() => props.canManage, (canManage) => {
   transform: scale(1.05);
 }
 
+.ruchnik-edit-btn:disabled,
+.ruchnik-remove-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  pointer-events: none;
+}
+
 .ruchnik-remove-btn {
   background: var(--russ-error-light);
   border: none;
@@ -1072,7 +1282,6 @@ watch(() => props.canManage, (canManage) => {
   justify-content: center;
   align-items: center;
   min-height: 200px;
-  transition: all 0.3s ease;
   animation: fadeIn 0.3s ease-out;
 }
 
@@ -1440,6 +1649,20 @@ watch(() => props.canManage, (canManage) => {
   box-shadow: inset 0 0 0 3px var(--russ-shadow-secondary);
 }
 
+.ruchnik-input--needs-type,
+.ruchnik-input[readonly] {
+  background: var(--russ-input-bg-disabled, var(--russ-bg-quaternary));
+  color: var(--russ-text-quaternary);
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+.ruchnik-input--needs-type:focus,
+.ruchnik-input[readonly]:focus {
+  border-color: var(--russ-input-border);
+  box-shadow: none;
+}
+
 .ruchnik-input-error {
   border-color: var(--russ-input-border-error);
   box-shadow: 0 0 0 3px var(--russ-shadow-error);
@@ -1487,179 +1710,33 @@ watch(() => props.canManage, (canManage) => {
   margin: 0;
 }
 
-/* Красивые фильтры */
+/* Фильтры: FiltersBar + Chip */
 .ruchnik-filters-container {
-  margin-bottom: 20px;
-  padding: 8px;
-  background: var(--russ-bg-secondary);
-  border: 1px solid var(--russ-border-light);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px var(--russ-shadow-default);
-}
-
-.ruchnik-filters-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 8px;
-  align-items: end;
-}
-
-.ruchnik-filter-item {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-}
-
-.ruchnik-filter-item.ruchnik-filter-reset {
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-}
-
-.ruchnik-filter-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--russ-text-secondary);
-  margin-bottom: 2px;
-}
-
-.ruchnik-filter-label i {
-  color: var(--russ-secondary);
-  font-size: 14px;
-}
-
-.ruchnik-filter-select {
+  margin-bottom: 16px;
   width: 100%;
-  --base-select-min-height: 42px;
-  --base-select-padding: 10px 12px 10px 36px;
-  --base-select-border: 2px solid var(--russ-input-border);
-  --base-select-radius: 8px;
-  --base-select-font-size: 14px;
-  --base-select-bg: var(--russ-bg);
-}
-
-.ruchnik-reset-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  background: var(--russ-bg-light);
-  border: 1px solid var(--russ-border-dark);
-  border-radius: 8px;
-  color: var(--russ-text-tertiary);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.ruchnik-reset-btn:hover {
-  background: var(--russ-border);
-  border-color: var(--russ-text-muted);
-  color: var(--russ-text-secondary);
-  box-shadow: 0 2px 4px var(--russ-shadow-default);
-}
-
-.ruchnik-reset-btn:active {
-  transform: translateY(0);
-}
-
-.ruchnik-reset-btn i {
-  font-size: 14px;
-}
-
-/* Компактный поиск */
-.ruchnik-search-compact {
-  margin-bottom: 0;
-  padding: 0;
-  background: transparent;
-  border: none;
-  flex: 1;
-}
-
-.ruchnik-search-input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.ruchnik-search-icon {
-  position: absolute;
-  left: 12px;
-  color: var(--russ-text-tertiary);
-  font-size: 14px;
-  z-index: 1;
-}
-
-.ruchnik-search-input-compact {
-  width: 100%;
-  padding: 10px 12px 10px 36px !important;
-  border: 2px solid var(--russ-input-border);
-  border-radius: 8px;
-  font-size: 14px;
-  background: var(--russ-bg);
-  transition: all 0.2s ease;
-  color: var(--russ-text-secondary);
-  height: 42px;
   box-sizing: border-box;
 }
 
-.ruchnik-search-input-compact:focus {
-  outline: none;
-  border-color: var(--russ-input-border-focus);
-  box-shadow: inset 0 0 0 3px var(--russ-shadow-secondary);
-  background: var(--russ-bg);
+.ruchnik-filters-container :deep(.filters-bar-wrapper) {
+  width: 100%;
 }
 
-.ruchnik-search-clear {
-  position: absolute;
-  right: 8px;
-  width: 20px;
-  height: 20px;
+.ruchnik-filter-type-chip-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: var(--russ-text-tertiary);
-  cursor: pointer;
-  border-radius: 50%;
-  transition: all 0.2s ease;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
-.ruchnik-search-clear:hover {
-  background: var(--russ-bg-light);
+.ruchnik-filter-type-label {
+  font-size: 12px;
+  font-weight: 500;
   color: var(--russ-text-secondary);
 }
 
-@media (max-width: 700px) {
-  .ruchnik-filters-container {
-    padding: 12px;
-  }
-
-  .ruchnik-filters-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .ruchnik-filter-item.ruchnik-filter-reset {
-    align-items: stretch;
-    justify-content: stretch;
-  }
-
-  .ruchnik-reset-btn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .ruchnik-search-compact {
-    margin-bottom: 0;
-    width: 100%;
-  }
+.ruchnik-chip-static {
+  pointer-events: none;
 }
 
 /* Стили для пагинации */
@@ -1763,10 +1840,21 @@ watch(() => props.canManage, (canManage) => {
     overflow: visible;
   }
 
+  .ruchnik-block--modal-embed {
+    overflow: hidden;
+    flex: 1 1 0%;
+    min-height: 0;
+  }
+
   .ruchnik-container {
     grid-template-columns: 1fr;
     gap: 10px;
     overflow: visible;
+  }
+
+  .ruchnik-block--modal-embed .ruchnik-container {
+    overflow: hidden;
+    min-height: 0;
   }
 
   .ruchnik-list-column,
@@ -1776,13 +1864,27 @@ watch(() => props.canManage, (canManage) => {
     overflow: visible;
   }
 
+  .ruchnik-block--modal-embed .ruchnik-list-column {
+    min-height: 0;
+    overflow: hidden;
+  }
+
   .ruchnik-content {
     overflow: visible;
   }
 
-  .ruchnik-list {
-    overflow-y: visible;
-    max-height: none;
+  .ruchnik-block--modal-embed .ruchnik-content {
+    overflow: hidden;
+  }
+
+
+  .ruchnik-block--modal-embed .ruchnik-list {
+    overflow-y: auto;
+    min-height: 0;
+  }
+
+  .ruchnik-block--modal-embed .ruchnik-list-area {
+    min-height: 0;
   }
 
   .ruchnik-section-title {
@@ -1834,15 +1936,6 @@ watch(() => props.canManage, (canManage) => {
 
   .ruchnik-empty-subtext {
     font-size: 12px;
-  }
-
-  .ruchnik-search-compact {
-    margin-bottom: 12px;
-    padding: 10px;
-  }
-
-  .ruchnik-search-input-compact {
-    font-size: 16px;
   }
 
   .ruchnik-info {

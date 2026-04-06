@@ -12,7 +12,7 @@
       :disabled="disabled"
       :readonly="readonly"
       :maxlength="maxlength"
-      @focus="isFocused = true"
+      @focus="onFocusNative"
       @blur="isFocused = false"
     />
     <label v-if="variant === 'on' && placeholder" :for="name" :class="['input-label', { 'label-active': localValue || isFocused }]">
@@ -71,9 +71,14 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "focus"]);
 
 const isFocused = ref(false);
+
+function onFocusNative(e) {
+  isFocused.value = true;
+  emit("focus", e);
+}
 
 const localValue = computed({
   get: () => props.modelValue,
@@ -119,11 +124,17 @@ const localValue = computed({
   border-color: var(--russ-input-border-focus);
 }
 
-.custom-input:disabled,
-.custom-input[readonly] {
+.custom-input:disabled {
   background-color: var(--russ-input-bg-disabled);
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+.custom-input[readonly] {
+  background-color: var(--russ-input-bg-disabled, var(--russ-bg-quaternary));
+  color: var(--russ-text-quaternary);
+  cursor: pointer;
+  opacity: 0.85;
 }
 
 .input-error {
