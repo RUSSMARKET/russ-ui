@@ -588,7 +588,8 @@ watch(() => props.loading, (isLoading) => {
   transform: translateY(-50%);
   width: 20px;
   height: 20px;
-  background-image: url('/arrow-down.svg');
+  /* data URI: avoids each app shipping public/arrow-down.svg */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23666' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: center;
   background-size: 20px;
