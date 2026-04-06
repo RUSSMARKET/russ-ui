@@ -479,6 +479,7 @@ watch(() => props.options, () => {
   min-width: 0;
   flex-wrap: wrap;
   height: 100%;
+  padding-left: 10px;
 }
 
 .status-select-container.multiple .status-select-content {
