@@ -95,7 +95,7 @@ onUnmounted(() => {
 <style scoped>
 .russ-toast-container {
   position: fixed;
-  z-index: 9999;
+  z-index: 100000000000;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
