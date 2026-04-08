@@ -108,6 +108,11 @@ interface PlanReportResponse {
     data: any[];
 }
 
+interface UserFilterOption {
+    id: number;
+    name: string;
+}
+
 interface Props {
     visible: boolean;
     dateOnly?: boolean;
@@ -173,27 +178,91 @@ const pointOptions = computed(() => {
     ];
 });
 
+const formatPersonName = (person: any): string => {
+    return `${person?.surname || ''} ${person?.name || ''} ${person?.patronymic || ''}`.trim();
+};
+
+const getRgByProjectAndPoint = (projectId?: number, pointId?: number): UserFilterOption[] => {
+    if (!projectId) return [];
+
+    const project = projects.value.find((p: any) => p.id === projectId) as any;
+    if (!project || !Array.isArray(project.points)) return [];
+
+    const selectedPoints = pointId
+        ? project.points.filter((pt: any) => pt.id === pointId)
+        : project.points;
+
+    const rgMap = new Map<number, UserFilterOption>();
+
+    selectedPoints.forEach((pt: any) => {
+        const leader = pt?.leader || pt?.group_leader || null;
+        if (leader?.id && typeof leader.id === 'number') {
+            const leaderName = formatPersonName(leader);
+            if (leaderName) {
+                rgMap.set(leader.id, { id: leader.id, name: leaderName });
+            }
+        }
+    });
+
+    return Array.from(rgMap.values());
+};
+
+const getAllRg = (): UserFilterOption[] => {
+    const rgMap = new Map<number, UserFilterOption>();
+
+    projects.value.forEach((project: any) => {
+        if (!Array.isArray(project?.points)) return;
+
+        project.points.forEach((pt: any) => {
+            const leader = pt?.leader || pt?.group_leader || null;
+            if (leader?.id && typeof leader.id === 'number') {
+                const leaderName = formatPersonName(leader);
+                if (leaderName) {
+                    rgMap.set(leader.id, { id: leader.id, name: leaderName });
+                }
+            }
+        });
+    });
+
+    return Array.from(rgMap.values());
+};
+
 const userOptions = computed(() => {
     // Если выбран проект и точка, показываем агентов только для этой точки
     // Если выбран только проект, показываем агентов для этого проекта
-    // Если ничего не выбрано, показываем всех агентов
+    // Если ничего не выбрано, показываем всех агентов и РГ
     let agentsToShow: Agent[] = [];
+    let rgToShow: UserFilterOption[] = [];
     if (filters.value.project) {
         agentsToShow = getAgentsByProjectAndPoint(
             filters.value.project,
             filters.value.point
         );
+        rgToShow = getRgByProjectAndPoint(filters.value.project, filters.value.point);
     } else {
         // Если проект не выбран, показываем всех агентов (из кэша 'all' или объединенных)
         agentsToShow = agents.value;
+        rgToShow = getAllRg();
     }
 
-    return [
-        { id: undefined, name: 'Все агенты' },
-        ...agentsToShow.map(agent => ({
+    const combinedMap = new Map<number, UserFilterOption>();
+
+    agentsToShow.forEach(agent => {
+        combinedMap.set(agent.id, {
             id: agent.id,
-            name: `${agent.surname} ${agent.name} ${agent.patronymic || ''}`.trim()
-        }))
+            name: formatPersonName(agent),
+        });
+    });
+
+    rgToShow.forEach(rg => {
+        if (!combinedMap.has(rg.id)) {
+            combinedMap.set(rg.id, rg);
+        }
+    });
+
+    return [
+        { id: undefined, name: 'Все агенты и РГ' },
+        ...Array.from(combinedMap.values())
     ];
 });
 
@@ -242,8 +311,8 @@ const filterConfigs = computed((): FilterConfig[] => {
             {
                 key: 'user',
                 type: 'select' as const,
-                label: 'Агент',
-                placeholder: (isLoadingData.value || isLoadingAgents.value) ? 'Загрузка агентов...' : 'Выберите агента',
+                label: 'Агент / РГ',
+                placeholder: (isLoadingData.value || isLoadingAgents.value) ? 'Загрузка списка...' : 'Выберите сотрудника',
                 options: userOptions.value,
                 optionLabel: 'name',
                 optionValue: 'id',
