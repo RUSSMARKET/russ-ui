@@ -596,8 +596,8 @@ const ruchnikFilters = computed<FilterConfig[]>(() => {
     items.push({
       key: "agentId",
       type: "select",
-      label: "Агент",
-      placeholder: "Все агенты",
+      label: "Агент / РГ",
+      placeholder: "Все агенты и РГ",
       options: agentOptions.value.map((a) => ({
         id: a.id,
         name: a.name,
@@ -689,7 +689,7 @@ const addRuchnikFilters = computed<FilterConfig[]>(() => {
   items.push({
     key: "code",
     type: "input",
-    label: "Поиск по коду",
+    label: "Введите код",
     placeholder: !newCodeInputAllowed.value
       ? "Сначала выберите тип ручника"
       : "Введите код ручника...",
@@ -699,8 +699,8 @@ const addRuchnikFilters = computed<FilterConfig[]>(() => {
   items.push({
     key: "agentId",
     type: "select",
-    label: "Агент",
-    placeholder: "Все агенты",
+    label: "Агент / РГ",
+    placeholder: "Все агенты и РГ",
     options: agentOptions.value.map((a) => ({
       id: a.id,
       name: a.name,
@@ -785,7 +785,7 @@ const editRuchnikFilters = computed<FilterConfig[]>(() => {
   items.push({
     key: "code",
     type: "input",
-    label: "Поиск по коду",
+    label: "Введите код",
     placeholder: !editCodeInputAllowed.value
       ? "Сначала выберите тип ручника"
       : "Введите код ручника...",
@@ -795,8 +795,8 @@ const editRuchnikFilters = computed<FilterConfig[]>(() => {
   items.push({
     key: "agentId",
     type: "select",
-    label: "Агент",
-    placeholder: "Все агенты",
+    label: "Агент / РГ",
+    placeholder: "Все агенты и РГ",
     options: agentOptions.value.map((a) => ({
       id: a.id,
       name: a.name,
