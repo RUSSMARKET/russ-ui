@@ -312,8 +312,10 @@ function calculateDropdownPosition() {
     }
   }
 
-  // Используем fixed позиционирование для отображения поверх модалок
-  const baseZIndex = 1001; // Выше модалки (1000)
+  // Используем fixed позиционирование для отображения поверх модалок.
+  // Значение должно быть выше типичных z-index модалок/оверлеев в приложениях-потребителях.
+  const baseZIndex = 10000;
+  const safeMaxHeight = (value) => `${Math.max(120, Math.min(value, 265))}px`;
   
   if (openUpward.value) {
     dropdownStyles.value = {
@@ -324,7 +326,7 @@ function calculateDropdownPosition() {
       right: 'auto',
       width: `${containerRect.width}px`,
       zIndex: baseZIndex,
-      maxHeight: `${Math.min(spaceAbove - 8, 265)}px`
+      maxHeight: safeMaxHeight(spaceAbove - 8)
     };
   } else {
     dropdownStyles.value = {
@@ -335,7 +337,7 @@ function calculateDropdownPosition() {
       right: 'auto',
       width: `${containerRect.width}px`,
       zIndex: baseZIndex,
-      maxHeight: `${Math.min(spaceBelow - 8, 265)}px`
+      maxHeight: safeMaxHeight(spaceBelow - 8)
     };
   }
 }
