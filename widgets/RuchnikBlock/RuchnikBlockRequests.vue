@@ -1458,7 +1458,6 @@ watch(() => props.canManage, (canManage) => {
   align-items: center;
   gap: 12px;
   min-width: 0;
-  flex: 1 1 200px;
 }
 
 .edit-header-actions {
