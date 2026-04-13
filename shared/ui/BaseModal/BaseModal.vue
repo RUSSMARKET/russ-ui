@@ -85,7 +85,7 @@ const props = withDefaults(defineProps<Props>(), {
   closeAriaLabel: 'Закрыть',
   class: '',
   size: 'md',
-  heightMode: 'max',
+  heightMode: 'content',
 });
 
 const emit = defineEmits<{
