@@ -229,7 +229,7 @@ const calculatePosition = () => {
     bottom: openUpward ? `${viewportHeight - rect.top + 8}px` : 'auto',
     left: `${rect.left}px`,
     width: `${rect.width}px`,
-    zIndex: 10001
+    zIndex: 100000
   };
 };
 
