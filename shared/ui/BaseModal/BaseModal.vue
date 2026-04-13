@@ -72,6 +72,7 @@ interface Props {
   closeAriaLabel?: string;
   class?: string;
   size?: 'sm' | 'md' | 'lg';
+  heightMode?: 'content' | 'max';
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -84,6 +85,7 @@ const props = withDefaults(defineProps<Props>(), {
   closeAriaLabel: 'Закрыть',
   class: '',
   size: 'md',
+  heightMode: 'max',
 });
 
 const emit = defineEmits<{
@@ -100,6 +102,7 @@ const modalClass = computed(() =>
   normalizeClass([
     props.class,
     props.size ? `base-modal-size-${props.size}` : '',
+    props.heightMode === 'max' ? 'base-modal-height-max' : 'base-modal-height-content',
     {
       'base-modal-wide': props.maxWidth === '900px' || props.width === '900px',
       'base-modal-large': props.maxWidth === '1000px' || props.width === '1000px',
@@ -269,7 +272,7 @@ onUnmounted(() => {
   border-radius: 25px;
   max-width: 1200px;
   width: min(1200px, calc(100vw - 40px));
-  max-height: calc(min(90vh, 100dvh) - 40px);
+  max-height: calc(min(100vh, 100dvh) - 40px);
   box-shadow: 0 4px 12px var(--russ-shadow-color);
   padding: 0;
   position: relative;
@@ -282,6 +285,14 @@ onUnmounted(() => {
   border: 1px solid #e5e7eb;
   overflow: hidden;
   outline: none;
+}
+
+.base-modal-height-max {
+  height: calc(min(100vh, 100dvh) - 40px);
+}
+
+.base-modal-height-content {
+  height: auto;
 }
 
 .base-modal-wide {
@@ -477,8 +488,12 @@ onUnmounted(() => {
   .base-modal {
     max-width: calc(100vw - 20px);
     width: calc(100vw - 20px);
-    max-height: calc(100vh - 20px);
+    max-height: calc(min(100vh, 100dvh) - 20px);
     border-radius: 8px;
+  }
+
+  .base-modal-height-max {
+    height: calc(min(100vh, 100dvh) - 20px);
   }
 
   .base-modal-wide {
