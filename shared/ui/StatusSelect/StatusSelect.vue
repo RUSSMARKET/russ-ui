@@ -86,7 +86,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { Teleport } from 'vue';
-import { fuzzyMatch } from '../../utils/levenshtein';
+import { strictFuzzyMatch } from '../../utils/levenshtein';
 
 const props = defineProps({
   modelValue: [String, Number, Array],
@@ -175,7 +175,7 @@ const filteredOptions = computed(() => {
   const query = searchQuery.value.trim();
   return props.options.filter(option => {
     const label = getOptionLabel(option);
-    return fuzzyMatch(label, query, 0.3);
+    return strictFuzzyMatch(label, query);
   });
 });
 

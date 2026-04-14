@@ -41,7 +41,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { Teleport } from 'vue';
-import { fuzzyMatch } from '../../../utils/levenshtein';
+import { strictFuzzyMatch } from '../../../utils/levenshtein';
 const props = defineProps({
   modelValue: [String, Number],
   options: {
@@ -114,6 +114,16 @@ const openUpward = ref(false);
 const dropdownStyles = ref({});
 let lastSelectedLabel = '';
 
+function normalizeSearchValue(value) {
+  return String(value ?? '').toLowerCase().replace(/ё/g, 'е').trim();
+}
+
+function exactSearchMatch(value, query) {
+  const normalizedValue = normalizeSearchValue(value);
+  const normalizedQuery = normalizeSearchValue(query);
+  return !!normalizedQuery && normalizedValue.includes(normalizedQuery);
+}
+
 // Определяем мобильное устройство
 const isMobile = computed(() => {
   if (typeof window === 'undefined') return false;
@@ -144,11 +154,11 @@ const filteredOptions = computed(() => {
       // Ищем и по label, и по value (ID) с использованием расстояния Левенштейна
       const filtered = restOptions.filter(opt => {
         const label = String(getOptionLabel(opt));
-        const value = String(getOptionValue(opt));
-        return fuzzyMatch(label, q, 0.3) || fuzzyMatch(value, q, 0.3);
+        const value = getOptionValue(opt);
+        return strictFuzzyMatch(label, q) || exactSearchMatch(value, q);
       });
       // Если есть совпадения с "Все", включаем его в начало
-      const allMatches = allOption && fuzzyMatch(String(getOptionLabel(allOption)), q, 0.3);
+      const allMatches = allOption && strictFuzzyMatch(String(getOptionLabel(allOption)), q);
       return allMatches && allOption ? [allOption, ...filtered] : filtered;
     }
   }
