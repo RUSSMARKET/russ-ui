@@ -308,11 +308,10 @@ const getNestedValue = (obj: any, path: string) => {
 }
 
 :deep(.actions-cell > * button) {
-  width: 36px;
   height: 36px;
   min-width: 36px;
   min-height: 36px;
-  padding: 0;
+  padding: 10px;
   line-height: 1;
   display: inline-flex;
   align-items: center;
