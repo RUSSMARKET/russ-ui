@@ -297,7 +297,7 @@ const getNestedValue = (obj: any, path: string) => {
   padding: 0 !important;
 }
 
-.actions-cell > * {
+:deep(.actions-cell > *) {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -307,11 +307,13 @@ const getNestedValue = (obj: any, path: string) => {
   box-sizing: border-box;
 }
 
-.actions-cell > * button {
+:deep(.actions-cell > * button) {
   width: 36px;
   height: 36px;
   min-width: 36px;
   min-height: 36px;
+  padding: 0;
+  line-height: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -523,11 +525,11 @@ const getNestedValue = (obj: any, path: string) => {
     padding: 0 !important;
   }
 
-  .actions-cell > * {
+  :deep(.actions-cell > *) {
     padding: 6px 10px;
   }
 
-  .actions-cell > * button {
+  :deep(.actions-cell > * button) {
     width: 32px;
     height: 32px;
     min-width: 32px;
