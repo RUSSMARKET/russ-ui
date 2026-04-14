@@ -117,7 +117,7 @@ const passportIssuedOptions = computed(() => props.passportIssuedOptions || []);
   border: 1px solid var(--russ-border);
   border-radius: 12px;
   box-shadow: 0 2px 8px var(--russ-shadow-color);
-  padding: 0rem;
+  padding: 1.25rem;
   margin: 0;
   display: flex;
   flex-direction: column;
