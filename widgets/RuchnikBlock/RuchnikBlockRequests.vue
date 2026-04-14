@@ -1710,7 +1710,7 @@ watch(() => props.canManage, (canManage) => {
 
 .ruchnik-input:focus {
   outline: none;
-  border-color: var(--russ-text-secondary);
+  border-color: var(--russ-input-border-focus);
 }
 
 .ruchnik-input--needs-type,

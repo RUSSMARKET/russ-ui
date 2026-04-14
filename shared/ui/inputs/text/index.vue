@@ -109,7 +109,7 @@ const localValue = computed({
   height: var(--ui-control-height, var(--filter-control-height, var(--filter-control-height-md, 40px)));
   padding: 0 var(--filter-control-padding-x, 0.75rem);
   border: 1px solid var(--russ-input-border);
-  border-radius: var(--filter-control-radius, 0.5rem);
+  border-radius: var(--filter-control-radius, 10px);
   font-size: var(--filter-control-font-size, var(--filter-control-font-size-md, 14px));
   font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
   font-weight: var(--filter-control-font-weight, 500);

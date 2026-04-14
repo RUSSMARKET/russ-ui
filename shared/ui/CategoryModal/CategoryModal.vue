@@ -244,7 +244,7 @@ const onHide = () => {
 }
 
 .category-input:focus {
-  border-color: var(--russ-secondary);
+  border-color: var(--russ-input-border-focus);
   box-shadow: 1px 0px 5px 5px var(--russ-shadow-color);
   outline: none;
   background: white;

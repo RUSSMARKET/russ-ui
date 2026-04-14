@@ -667,7 +667,7 @@ watch(() => props.options, () => {
 
 .search-input:focus {
   outline: none;
-  border-color: var(--russ-accent);
+  border-color: var(--russ-input-border-focus);
   background: var(--russ-bg);
   box-shadow: 0 0 0 3px var(--russ-shadow-accent-light);
 }

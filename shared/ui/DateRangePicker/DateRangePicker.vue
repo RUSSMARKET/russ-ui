@@ -521,8 +521,8 @@ onBeforeUnmount(() => {
 }
 
 .date-range-picker-input.is-focused {
-  border-color: var(--russ-secondary);
-  box-shadow: inset 0 0 0 3px var(--russ-shadow-secondary);
+  border-color: var(--russ-input-border-focus);
+  box-shadow: inset 0 0 0 3px var(--russ-shadow-accent-light);
   background: var(--russ-input-bg);
 }
 
@@ -552,7 +552,7 @@ onBeforeUnmount(() => {
 }
 
 .date-range-picker-input.is-focused .calendar-icon {
-  color: var(--russ-secondary);
+  color: var(--russ-input-border-focus);
 }
 
 .calendar-dropdown {

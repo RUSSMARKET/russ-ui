@@ -411,7 +411,7 @@ watch(() => props.visible, (newVal) => {
 
 .magnet-search-input:focus {
     outline: none;
-    border-color: var(--russ-accent-light);
+    border-color: var(--russ-input-border-focus);
     box-shadow: 0 0 0 4px var(--russ-shadow-accent-light), 0 2px 4px var(--russ-shadow-color);
     background: var(--russ-input-bg);
 }

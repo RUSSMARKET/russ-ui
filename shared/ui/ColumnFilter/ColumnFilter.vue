@@ -117,8 +117,8 @@ const clearFilter = () => {
 
 .filter-input:focus {
     outline: none;
-    border-color: var(--russ-secondary-dark);
-    box-shadow: 0 0 0 2px var(--russ-shadow-secondary);
+    border-color: var(--russ-input-border-focus);
+    box-shadow: 0 0 0 2px var(--russ-shadow-accent-light);
 }
 
 .filter-input::placeholder {

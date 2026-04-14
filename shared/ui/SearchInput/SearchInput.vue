@@ -91,7 +91,7 @@ const handleSearch = () => {
 }
 
 .search-input:focus {
-  border-color: var(--russ-accent-tint-40);
+  border-color: var(--russ-input-border-focus);
   background: var(--russ-accent-tint-18);
 }
 

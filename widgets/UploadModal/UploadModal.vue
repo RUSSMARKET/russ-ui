@@ -513,7 +513,7 @@ watch(() => props.uploadSuccess, (newValue, oldValue) => {
 
 .card-input:focus {
   outline: none;
-  border-color: #1D4CD2;
+  border-color: var(--russ-input-border-focus);
   box-shadow: 0 0 0 3px var(--russ-shadow-accent-light);
 }
 

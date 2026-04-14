@@ -571,8 +571,8 @@ watch(() => props.loading, (isLoading) => {
 
 .base-select-combo:focus {
   outline: none;
-  border-color: var(--base-select-focus-border, var(--russ-secondary));
-  box-shadow: var(--base-select-focus-shadow, inset 0 0 0 1.5px var(--russ-shadow-secondary));
+  border-color: var(--base-select-focus-border, var(--russ-input-border-focus));
+  box-shadow: var(--base-select-focus-shadow, inset 0 0 0 1.5px var(--russ-shadow-accent-light));
   background: var(--base-select-focus-bg, var(--russ-input-bg));
 }
 

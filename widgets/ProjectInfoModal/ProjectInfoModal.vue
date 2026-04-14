@@ -230,8 +230,8 @@ const handleSubmit = async () => {
 
 .project-info-block-form .form-row input:focus {
   outline: none;
-  border-color: var(--russ-secondary-dark);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  border-color: var(--russ-input-border-focus);
+  box-shadow: 0 0 0 3px var(--russ-shadow-accent-light);
 }
 
 .project-info-block-form .form-row input:hover {
