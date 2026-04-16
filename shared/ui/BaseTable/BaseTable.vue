@@ -43,8 +43,10 @@
               </slot>
             </td>
             <td v-if="showActions" class="actions-cell" data-label="Действия">
-              <slot name="actions" :item="item">
-              </slot>
+              <div class="actions-cell-inner">
+                <slot name="actions" :item="item">
+                </slot>
+              </div>
             </td>
           </tr>
           <tr v-if="!loading && sortedItems.length === 0">
@@ -291,23 +293,31 @@ const getNestedValue = (obj: any, path: string) => {
 }
 
 .actions-cell {
-  display: flex;
-  gap: 8px;
-  align-items: stretch;
   padding: 0 !important;
+  height: 1px;
+  vertical-align: middle;
 }
 
-:deep(.actions-cell > *) {
+.actions-cell-inner {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+}
+
+:deep(.actions-cell-inner > *) {
   display: flex;
   align-items: center;
   gap: 8px;
   width: 100%;
+  height: 100%;
   min-height: 100%;
   padding: 16px;
   box-sizing: border-box;
 }
 
-:deep(.actions-cell > * button) {
+:deep(.actions-cell-inner > * button) {
   height: 36px;
   min-width: 36px;
   min-height: 36px;
@@ -522,13 +532,19 @@ const getNestedValue = (obj: any, path: string) => {
   .actions-cell {
     justify-content: flex-start;
     padding: 0 !important;
+    height: auto;
   }
 
-  :deep(.actions-cell > *) {
+  .actions-cell-inner {
+    height: auto;
+    min-height: 0;
+  }
+
+  :deep(.actions-cell-inner > *) {
     padding: 6px 10px;
   }
 
-  :deep(.actions-cell > * button) {
+  :deep(.actions-cell-inner > * button) {
     width: 32px;
     height: 32px;
     min-width: 32px;
