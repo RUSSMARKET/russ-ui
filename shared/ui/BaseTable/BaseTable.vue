@@ -300,33 +300,12 @@ const getNestedValue = (obj: any, path: string) => {
 
 .actions-cell-inner {
   display: flex;
-  align-items: stretch;
-  width: 100%;
-  height: 100%;
-  min-height: 100%;
-}
-
-:deep(.actions-cell-inner > *) {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  height: 100%;
-  min-height: 100%;
-  padding: 16px;
-  box-sizing: border-box;
-}
-
-:deep(.actions-cell-inner > * button) {
-  height: 36px;
-  min-width: 36px;
-  min-height: 36px;
-  padding: 10px;
-  line-height: 1;
-  display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  padding-left: 0;
 }
 
 .actions-header {
@@ -538,17 +517,7 @@ const getNestedValue = (obj: any, path: string) => {
   .actions-cell-inner {
     height: auto;
     min-height: 0;
-  }
-
-  :deep(.actions-cell-inner > *) {
-    padding: 6px 10px;
-  }
-
-  :deep(.actions-cell-inner > * button) {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    min-height: 32px;
+    justify-content: center;
   }
 }
 </style>
