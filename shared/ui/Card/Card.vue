@@ -11,19 +11,4 @@
 </script>
 
 <style scoped>
-.p-card {
-  background: var(--russ-bg);
-  border-radius: 10px;
-  box-shadow: 0 1px 3px var(--russ-shadow-color);
-  padding: 1.25rem;
-}
-.p-card-title {
-  font-weight: 600;
-  font-size: 1.125rem;
-  margin-bottom: 0.75rem;
-  color: var(--russ-text-primary);
-}
-.p-card-content {
-  color: var(--russ-text-secondary);
-}
 </style>
