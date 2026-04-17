@@ -9,9 +9,6 @@
     <template #header>
       <div class="extradition-modal-header">
         <span>{{ title }}</span>
-        <button @click="close" class="close-x" aria-label="Закрыть">
-          ×
-        </button>
       </div>
     </template>
     <slot></slot>
@@ -22,8 +19,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { BaseModal } from '@/shared/ui';
+import { computed } from "vue";
+import { BaseModal } from "@/shared/ui";
 
 interface Props {
   visible: boolean;
@@ -31,8 +28,8 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'update:visible', value: boolean): void;
-  (e: 'close'): void;
+  (e: "update:visible", value: boolean): void;
+  (e: "close"): void;
 }
 
 const props = defineProps<Props>();
@@ -40,16 +37,16 @@ const emit = defineEmits<Emits>();
 
 const modalVisible = computed({
   get: () => props.visible,
-  set: (value: boolean) => emit('update:visible', value)
+  set: (value: boolean) => emit("update:visible", value),
 });
 
 const close = () => {
   modalVisible.value = false;
-  emit('close');
+  emit("close");
 };
 
 const onHide = () => {
-  emit('close');
+  emit("close");
 };
 </script>
 
@@ -59,22 +56,5 @@ const onHide = () => {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-}
-
-.close-x {
-  background: none;
-  border: none;
-  cursor: pointer;
-  margin-left: 1rem;
-  font-size: 24px;
-  color: var(--russ-text-tertiary);
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: all 0.2s;
-}
-
-.close-x:hover {
-  background: var(--russ-bg-disabled);
-  color: var(--russ-text-secondary);
 }
 </style>
