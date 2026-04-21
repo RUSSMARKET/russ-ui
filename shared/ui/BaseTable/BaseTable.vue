@@ -278,11 +278,6 @@ const getNestedValue = (obj: any, path: string) => {
   }
 }
 
-.projects-section tbody tr:last-child td:last-child {
-  display: flex;
-  gap: 10px;
-}
-
 .table-row {
   transition: background-color 0.2s ease;
   cursor: pointer;
@@ -294,7 +289,7 @@ const getNestedValue = (obj: any, path: string) => {
 
 .actions-cell {
   padding: 0 !important;
-  height: 1px;
+  height: auto;
   vertical-align: middle;
 }
 
@@ -303,8 +298,8 @@ const getNestedValue = (obj: any, path: string) => {
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 100%;
-  min-height: 100%;
+  height: auto;
+  min-height: 0;
   padding-left: 0;
 }
 
