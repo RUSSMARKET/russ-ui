@@ -9,80 +9,98 @@
     @hide="onHide"
   >
     <div class="product-form">
-      <div class="form-row">
-        <label for="product-name" class="form-label">Название продукта</label>
-        <InputText
-          id="product-name"
-          :model-value="productForm.name"
-          @update:model-value="updateField('name', $event)"
-          variant="off"
-          class="w-full"
-          placeholder="Введите название продукта"
-        />
+      <div class="form-grid">
+        <div class="form-row form-row-full">
+          <label for="product-name" class="form-label">Название продукта</label>
+          <InputText
+            id="product-name"
+            :model-value="productForm.name"
+            @update:model-value="updateField('name', $event)"
+            variant="off"
+            class="w-full"
+            placeholder="Введите название продукта"
+          />
+        </div>
+
+        <div class="form-row">
+          <label for="product-handler" class="form-label">Тип продукта (handler_id)</label>
+          <InputText
+            id="product-handler"
+            :model-value="productForm.handler_id"
+            @update:model-value="updateField('handler_id', $event)"
+            type="number"
+            variant="off"
+            class="w-full"
+            placeholder="Например: 8"
+          />
+        </div>
+
+        <div class="form-row">
+          <label for="product-category" class="form-label">Категория продукта</label>
+          <BaseSelect
+            id="product-category"
+            :model-value="productForm.category_id != null && productForm.category_id !== '' ? Number(productForm.category_id) : undefined"
+            :options="categories"
+            option-label="name"
+            option-value="id"
+            placeholder="Выберите категорию"
+            required
+            @update:model-value="updateField('category_id', $event != null ? String($event) : '')"
+          />
+        </div>
       </div>
-      <div class="form-row">
-        <label for="product-handler" class="form-label">ID типа продукта (handler_id)</label>
-        <InputText
-          id="product-handler"
-          :model-value="productForm.handler_id"
-          @update:model-value="updateField('handler_id', $event)"
-          type="number"
-          variant="off"
-          class="w-full"
-          placeholder="Введите ID типа продукта"
-        />
-      </div>
-      <div class="form-row">
-        <label for="product-category" class="form-label">Категория продукта</label>
-        <BaseSelect
-          id="product-category"
-          :model-value="productForm.category_id != null && productForm.category_id !== '' ? Number(productForm.category_id) : undefined"
-          :options="categories"
-          option-label="name"
-          option-value="id"
-          placeholder="Выберите категорию"
-          required
-          @update:model-value="updateField('category_id', $event != null ? String($event) : '')"
-        />
-      </div>
-      <div class="form-row">
+
+      <div class="form-row logo-row">
         <label class="form-label">Логотип продукта</label>
         <div class="logo-upload">
-          <div v-if="logoPreview || productForm.logo" class="logo-preview-container">
+          <div class="logo-preview-container">
             <img
+              v-if="logoPreview || productForm.logo"
               :src="logoPreview || productForm.logo"
               :alt="logoPreview ? 'Превью загруженного логотипа' : 'Текущий логотип'"
               class="logo-preview"
             />
-            <div class="logo-preview-overlay">
-              <button
-                type="button"
-                class="remove-logo-btn"
-                @click="handleRemoveLogo"
-                title="Удалить логотип"
-              >
-                <svg viewBox="0 0 24 24" class="remove-icon">
-                  <path
-                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                  />
-                </svg>
-              </button>
+            <div v-else class="logo-placeholder">
+              <i class="pi pi-image"></i>
+              <span>Логотип не загружен</span>
             </div>
           </div>
-          <FileUpload
-            mode="basic"
-            :auto="true"
-            accept="image/*"
-            :maxFileSize="1000000"
-            @select="handleLogoSelect"
-            chooseLabel="Выбрать файл"
-            class="w-full"
-          />
+          <div class="logo-controls">
+            <FileUpload
+              mode="basic"
+              :auto="true"
+              accept="image/*"
+              :maxFileSize="1000000"
+              @select="handleLogoSelect"
+              chooseLabel="Выбрать файл"
+              class="w-full"
+            />
+            <button
+              v-if="logoPreview || productForm.logo"
+              type="button"
+              class="remove-logo-btn-inline"
+              @click="handleRemoveLogo"
+              title="Удалить логотип"
+            >
+              <svg viewBox="0 0 24 24" class="remove-icon">
+                <path
+                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                />
+              </svg>
+              Удалить
+            </button>
+          </div>
         </div>
       </div>
     </div>
     <template #footer>
       <div class="form-actions flex gap-2 mt-4">
+        <Button
+          v-if="showManageMetrics && isEditMode"
+          label="Метрики"
+          @click="emit('manage-metrics')"
+          class="custom-button-text metrics-btn"
+        />
         <Button label="Отмена" @click="close" class="custom-button-text cancel-btn" />
         <Button :label="isEditMode ? 'Сохранить' : 'Создать'" @click="handleSubmit" class="create-btn" />
       </div>
@@ -108,6 +126,7 @@ interface Props {
   productForm: ProductForm;
   logoPreview?: string | null;
   categories: Category[];
+  showManageMetrics?: boolean;
 }
 
 interface Emits {
@@ -116,6 +135,7 @@ interface Emits {
   (e: 'logo-select', event: { files: File[] }): void;
   (e: 'remove-logo'): void;
   (e: 'submit'): void;
+  (e: 'manage-metrics'): void;
   (e: 'close'): void;
 }
 
@@ -166,16 +186,31 @@ const onHide = () => {
 .product-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   min-width: 0;
   max-width: 100%;
   overflow: hidden;
+  padding: 0.25rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+  background: var(--russ-bg-secondary);
+  border: 1px solid var(--russ-border);
+  border-radius: 14px;
+  padding: 0.9rem;
+}
+
+.form-row-full {
+  grid-column: 1 / -1;
 }
 
 .form-row {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.35rem;
   min-width: 0;
   max-width: 100%;
 }
@@ -190,15 +225,34 @@ const onHide = () => {
 .form-label {
   font-weight: 600;
   color: var(--russ-text-secondary);
-  font-size: 14px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+:deep(.product-form .custom-input),
+:deep(.product-form .base-select-combo) {
+  background: #fff !important;
+  border-radius: 10px !important;
+  border: 1px solid var(--russ-border) !important;
+  box-shadow: none !important;
+}
+
+:deep(.product-form .custom-input:focus),
+:deep(.product-form .base-select-combo:focus-within) {
+  border-color: var(--russ-accent) !important;
 }
 
 .logo-upload {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 1rem;
   min-width: 0;
   max-width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--russ-border);
+  border-radius: 14px;
+  background: var(--russ-bg-secondary);
 }
 
 .product-form .file-upload {
@@ -209,11 +263,13 @@ const onHide = () => {
 
 .logo-preview-container {
   position: relative;
-  width: 150px;
-  height: 150px;
-  border-radius: 8px;
+  width: 124px;
+  height: 124px;
+  border-radius: 12px;
   overflow: hidden;
-  border: 2px solid var(--russ-border);
+  border: 1px solid var(--russ-border);
+  background: #fff;
+  flex-shrink: 0;
 }
 
 .logo-preview {
@@ -222,44 +278,51 @@ const onHide = () => {
   object-fit: contain;
 }
 
-.logo-preview-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+.logo-placeholder {
+  width: 100%;
+  height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  opacity: 0;
-  transition: opacity 0.2s;
+  gap: 0.45rem;
+  color: var(--russ-text-tertiary);
+  font-size: 12px;
+  text-align: center;
+  padding: 0.75rem;
 }
 
-.logo-preview-container:hover .logo-preview-overlay {
-  opacity: 1;
-}
-
-.remove-logo-btn {
-  background: white;
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
+.logo-controls {
   display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.remove-logo-btn-inline {
+  border: 1px solid var(--russ-border);
+  background: #fff;
+  color: var(--russ-error);
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.45rem;
   cursor: pointer;
-  transition: transform 0.2s;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
-.remove-logo-btn:hover {
-  transform: scale(1.1);
+.remove-logo-btn-inline:hover {
+  border-color: var(--russ-error);
+  background: #fff5f5;
 }
 
 .remove-icon {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   fill: var(--russ-error);
 }
 
@@ -272,25 +335,25 @@ const onHide = () => {
 .form-actions {
   display: flex;
   gap: 0.75rem;
-  margin-top: 1.5rem;
+  margin-top: 0.25rem;
   width: 100%;
 }
 
 .form-actions .cancel-btn {
-  flex: 1;
-  background: var(--russ-bg-disabled) !important;
-  color: var(--russ-text-tertiary) !important;
+  flex: 0 0 auto;
+  min-width: 110px;
+  background: #fff !important;
+  color: var(--russ-text-secondary) !important;
   border: 1px solid var(--russ-border) !important;
-  border-radius: 10px !important;
-  padding: 0.75rem 1rem !important;
+  border-radius: 8px !important;
+  padding: 0.65rem 0.9rem !important;
   font-weight: 600 !important;
   transition: all 0.2s ease !important;
 }
 
 .form-actions .cancel-btn:hover {
-  background: var(--russ-border) !important;
-  color: var(--russ-text-secondary) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  background: var(--russ-bg-secondary) !important;
+  box-shadow: none !important;
 }
 
 .form-actions .create-btn {
@@ -298,8 +361,8 @@ const onHide = () => {
   background: var(--russ-accent-dark) !important;
   color: var(--russ-text-inverse) !important;
   border: 1px solid var(--russ-accent-dark) !important;
-  border-radius: 10px !important;
-  padding: 0.75rem 1rem !important;
+  border-radius: 8px !important;
+  padding: 0.65rem 0.9rem !important;
   font-weight: 600 !important;
   transition: all 0.2s ease !important;
 }
@@ -307,7 +370,31 @@ const onHide = () => {
 .form-actions .create-btn:hover {
   background: var(--russ-accent-dark) !important;
   border-color: var(--russ-accent-dark) !important;
-  box-shadow: 0 4px 12px rgba(29, 76, 210, 0.3) !important;
+  box-shadow: 0 2px 8px rgba(29, 76, 210, 0.2) !important;
+}
+
+.form-actions .metrics-btn {
+  flex: 0 0 auto;
+  min-width: 110px;
+  border-radius: 8px !important;
+}
+
+@media (max-width: 720px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .logo-upload {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .logo-preview-container {
+    width: 100%;
+    max-width: 220px;
+    height: 120px;
+    margin: 0 auto;
+  }
 }
 
 </style>

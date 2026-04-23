@@ -45,10 +45,22 @@
           <span>{{ computedProps.listLoadingText }}</span>
         </div>
 
-        <div v-else-if="items.length > 0" class="supports-list">
-          <div v-for="item in items" :key="item.id" class="support-card"
+        <div v-else-if="localItems.length > 0" class="supports-list">
+          <div v-for="(item, index) in localItems" :key="item.id" class="support-card"
+            :draggable="enableReorder"
+            @dragstart="onDragStart(index)"
+            @dragover.prevent
+            @drop.prevent="onDrop(index)"
             :class="{ 'support-card-disabled': item.disabled }">
             <div class="support-card-content">
+              <button
+                v-if="enableReorder"
+                class="drag-handle-btn"
+                type="button"
+                title="Перетащите для изменения порядка"
+              >
+                <i class="pi pi-bars"></i>
+              </button>
               <div class="support-avatar category-avatar">
                 <i class="pi pi-tag"></i>
               </div>
@@ -191,6 +203,7 @@ interface Props {
   showRemoveButton?: boolean;
 
   showProductFields?: boolean;
+  enableReorder?: boolean;
   productFields?: Array<{
     id?: number;
     name?: string;
@@ -204,6 +217,7 @@ interface Emits {
   (e: "remove", itemId: string | number): void;
   (e: "edit", item: any): void;
   (e: "update-field", fieldId: number, value: string): void;
+  (e: "reorder", ids: Array<string | number>): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -225,6 +239,7 @@ const props = withDefaults(defineProps<Props>(), {
   showEditButton: false,
   showRemoveButton: true,
   showProductFields: false,
+  enableReorder: false,
   productFields: () => [] as Array<{ id?: number; name?: string; value?: string }>,
 });
 
@@ -285,6 +300,16 @@ const getItemSubtitle = (item: any): string => {
 const emit = defineEmits<Emits>();
 
 const selectedItemId = ref<string | number>("");
+const localItems = ref<any[]>([...props.items]);
+const dragStartIndex = ref<number | null>(null);
+
+watch(
+  () => props.items,
+  (newItems) => {
+    localItems.value = [...newItems];
+  },
+  { deep: true, immediate: true }
+);
 
 const handleAdd = () => {
   if (selectedItemId.value) {
@@ -340,6 +365,30 @@ const updateField = (fieldId?: number) => {
   emit("update-field", fieldId, value);
 };
 
+const onDragStart = (index: number) => {
+  if (!props.enableReorder) return;
+  dragStartIndex.value = index;
+};
+
+const onDrop = (dropIndex: number) => {
+  if (!props.enableReorder || dragStartIndex.value === null) return;
+
+  const startIndex = dragStartIndex.value;
+  if (startIndex === dropIndex) return;
+
+  const cloned = [...localItems.value];
+  const [moved] = cloned.splice(startIndex, 1);
+  cloned.splice(dropIndex, 0, moved);
+  localItems.value = cloned;
+
+  emit(
+    "reorder",
+    cloned.map((item) => item.id)
+  );
+
+  dragStartIndex.value = null;
+};
+
 </script>
 
 <style scoped>
@@ -351,7 +400,6 @@ const updateField = (fieldId?: number) => {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 32px;
-  margin-top: 20px;
 }
 
 .supports-list-column,
@@ -530,6 +578,15 @@ const updateField = (fieldId?: number) => {
   padding: 16px;
   border: 1px solid #e2e8f0;
   transition: all 0.2s ease;
+}
+
+.drag-handle-btn {
+  border: none;
+  background: transparent;
+  cursor: grab;
+  color: var(--russ-text-tertiary);
+  padding: 2px;
+  margin-right: 2px;
 }
 
 .support-card:hover {
