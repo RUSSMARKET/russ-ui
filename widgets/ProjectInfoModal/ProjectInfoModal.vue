@@ -17,12 +17,12 @@
             option-value="id" :loading="staffLoading" />
         </div>
         <div class="form-row">
-          <StatusSelect 
+          <BaseSelect
             label="Региональные руководители (не обязательно, максимум 3)"
-            v-model="form.regional_director_ids" 
+            v-model="form.regional_director_ids"
             :options="regionalDirectors"
-            placeholder="Выберите руководителей" 
-            option-label="fullName" 
+            placeholder="Выберите руководителей"
+            option-label="fullName"
             option-value="id"
             :multiple="true"
             :searchable="true"
@@ -47,7 +47,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { BaseSelect, BaseModal, StatusSelect } from '../../shared/ui';
+import { BaseSelect, BaseModal } from '../../shared/ui';
 
 interface Project {
   id: number;
