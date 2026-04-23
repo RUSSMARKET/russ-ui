@@ -61,9 +61,7 @@
               >
                 <i class="pi pi-bars"></i>
               </button>
-              <div class="support-avatar category-avatar">
-                <i class="pi pi-tag"></i>
-              </div>
+              <div class="support-avatar category-avatar" :style="getItemAvatarStyle(item)"></div>
               <div v-if="item.disabled" class="locked-indicator" title="Заблокировано">
                 <i class="pi pi-lock"></i>
               </div>
@@ -294,6 +292,55 @@ const getItemSubtitle = (item: any): string => {
     return props.getItemSubtitle(item);
   }
   return "";
+};
+
+const DEFAULT_METRIC_COLOR = "#808080";
+
+const hexToRgb = (hex: string) => {
+  const normalized = hex.replace("#", "").trim();
+  if (![3, 6].includes(normalized.length)) return null;
+  const full = normalized.length === 3
+    ? normalized.split("").map((char) => char + char).join("")
+    : normalized;
+  const int = Number.parseInt(full, 16);
+  if (Number.isNaN(int)) return null;
+  return {
+    r: (int >> 16) & 255,
+    g: (int >> 8) & 255,
+    b: int & 255,
+  };
+};
+
+const rgbToHex = (r: number, g: number, b: number) =>
+  `#${[r, g, b].map((value) => value.toString(16).padStart(2, "0")).join("")}`;
+
+const softenTooLightColor = (color: string) => {
+  const rgb = hexToRgb(color);
+  if (!rgb) return color;
+
+  const max = Math.max(rgb.r, rgb.g, rgb.b);
+  const min = Math.min(rgb.r, rgb.g, rgb.b);
+  const isGray = max - min < 8;
+  if (isGray) return color;
+
+  const luminance = 0.2126 * rgb.r + 0.7152 * rgb.g + 0.0722 * rgb.b;
+  if (luminance < 235) return color;
+
+  const factor = 0.82;
+  return rgbToHex(
+    Math.round(rgb.r * factor),
+    Math.round(rgb.g * factor),
+    Math.round(rgb.b * factor)
+  );
+};
+
+const getItemAvatarStyle = (item: any) => {
+  const color = typeof item?.color === "string" && item.color.trim() ? item.color : DEFAULT_METRIC_COLOR;
+  const safeColor = softenTooLightColor(color);
+  return {
+    background: safeColor,
+    borderColor: safeColor,
+  };
 };
 
 
@@ -628,7 +675,8 @@ const onDrop = (dropIndex: number) => {
   aspect-ratio: 1 / 1;
   flex-shrink: 0;
   border-radius: 50%;
-  background: #6b9eff;
+  background: #808080;
+  border: 1px solid transparent;
   color: #fff;
   display: flex;
   align-items: center;

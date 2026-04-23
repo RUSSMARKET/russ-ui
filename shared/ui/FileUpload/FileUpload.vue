@@ -188,7 +188,7 @@ watch(() => props.maxFileSize, () => {
 .file-upload-button:hover:not(:disabled):not(.file-upload-button-disabled) {
   background: white;
   border-color: var(--russ-border-dark);
-  box-shadow: 0 2px 8px var(--russ-shadow-color);
+  box-shadow: none;
 }
 
 .file-upload-button:focus {

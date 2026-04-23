@@ -101,7 +101,6 @@
           @click="emit('manage-metrics')"
           class="custom-button-text metrics-btn"
         />
-        <Button label="Отмена" @click="close" class="custom-button-text cancel-btn" />
         <Button :label="isEditMode ? 'Сохранить' : 'Создать'" @click="handleSubmit" class="create-btn" />
       </div>
     </template>
@@ -164,11 +163,6 @@ const handleRemoveLogo = () => {
 
 const handleSubmit = () => {
   emit('submit');
-};
-
-const close = () => {
-  modalVisible.value = false;
-  emit('close');
 };
 
 const onHide = () => {
@@ -337,27 +331,13 @@ const onHide = () => {
   gap: 0.75rem;
   margin-top: 0.25rem;
   width: 100%;
-}
-
-.form-actions .cancel-btn {
-  flex: 0 0 auto;
-  min-width: 110px;
-  background: #fff !important;
-  color: var(--russ-text-secondary) !important;
-  border: 1px solid var(--russ-border) !important;
-  border-radius: 8px !important;
-  padding: 0.65rem 0.9rem !important;
-  font-weight: 600 !important;
-  transition: all 0.2s ease !important;
-}
-
-.form-actions .cancel-btn:hover {
-  background: var(--russ-bg-secondary) !important;
-  box-shadow: none !important;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .form-actions .create-btn {
-  flex: 1;
+  flex: 0 0 auto;
+  min-width: 180px;
   background: var(--russ-accent-dark) !important;
   color: var(--russ-text-inverse) !important;
   border: 1px solid var(--russ-accent-dark) !important;
@@ -376,7 +356,30 @@ const onHide = () => {
 .form-actions .metrics-btn {
   flex: 0 0 auto;
   min-width: 110px;
+  padding: 0.65rem 0.9rem !important;
+  background: #fff !important;
+  color: var(--russ-text-secondary) !important;
+  border: 1px solid var(--russ-border) !important;
   border-radius: 8px !important;
+  font-weight: 600 !important;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease !important;
+  box-shadow: none !important;
+}
+
+.form-actions .metrics-btn:hover {
+  background: var(--russ-bg-secondary) !important;
+  border-color: var(--russ-accent) !important;
+  color: var(--russ-accent-dark) !important;
+  box-shadow: none !important;
+}
+
+.form-actions .metrics-btn:active,
+.form-actions .metrics-btn:focus,
+.form-actions .metrics-btn:focus-visible {
+  background: var(--russ-bg-secondary) !important;
+  border-color: var(--russ-accent) !important;
+  color: var(--russ-accent-dark) !important;
+  box-shadow: none !important;
 }
 
 @media (max-width: 720px) {
