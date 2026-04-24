@@ -610,9 +610,7 @@ const onDrop = (dropIndex: number) => {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  height: 400px;
-  min-height: 400px;
-  max-height: 400px;
+  min-height: 70vh;
   overflow-y: auto;
 }
 
