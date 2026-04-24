@@ -505,7 +505,7 @@ const getNestedValue = (obj: any, path: string) => {
 
   .actions-cell {
     justify-content: flex-start;
-    padding: 0 !important;
+    padding: 6px 10px !important;
     height: auto;
   }
 

@@ -610,7 +610,8 @@ const onDrop = (dropIndex: number) => {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  min-height: 70vh;
+  height: 65vh;
+  max-height: 65vh;
   overflow-y: auto;
 }
 
@@ -1077,6 +1078,11 @@ const onDrop = (dropIndex: number) => {
   .supports-container {
     grid-template-columns: 1fr;
     gap: 20px;
+  }
+
+  .supports-list {
+    height: 45vh;
+    max-height: 45vh;
   }
 
   .supports-list-column,
