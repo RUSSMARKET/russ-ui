@@ -288,7 +288,7 @@ const getNestedValue = (obj: any, path: string) => {
 }
 
 .actions-cell {
-  padding: 0 !important;
+  padding: 0 10px !important;
   height: auto;
   vertical-align: middle;
 }
