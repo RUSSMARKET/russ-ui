@@ -72,7 +72,6 @@ interface TableColumn {
   cellClass?: string
   sortable?: boolean
   filterable?: boolean
-  /** Ключ для сортировки (например для колонки "#" задать sortKey: 'id') */
   sortKey?: string
 }
 
@@ -114,7 +113,6 @@ const tableColspan = computed(() => {
 const filteredItems = computed(() => {
   let filtered = props.items
 
-  // Apply column filters with Levenshtein distance
   Object.entries(columnFilters.value).forEach(([columnKey, filterValue]) => {
     if (filterValue.trim()) {
       filtered = filtered.filter(item => {
