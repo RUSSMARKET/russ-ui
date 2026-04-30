@@ -17,12 +17,12 @@
             option-value="id" :loading="staffLoading" />
         </div>
         <div class="form-row">
-          <StatusSelect 
+          <BaseSelect
             label="Региональные руководители (не обязательно, максимум 3)"
-            v-model="form.regional_director_ids" 
+            v-model="form.regional_director_ids"
             :options="regionalDirectors"
-            placeholder="Выберите руководителей" 
-            option-label="fullName" 
+            placeholder="Выберите руководителей"
+            option-label="fullName"
             option-value="id"
             :multiple="true"
             :searchable="true"
@@ -47,7 +47,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { BaseSelect, BaseModal, StatusSelect } from '../../shared/ui';
+import { BaseSelect, BaseModal } from '../../shared/ui';
 
 interface Project {
   id: number;
@@ -100,7 +100,7 @@ const form = ref<{
 const loading = ref(false);
 const backendError = ref("");
 
-watch(() => props.project, (newProject) => {
+watch(() => props.project, (newProject: Project | null) => {
   if (newProject) {
     form.value.id = newProject.id;
     form.value.name = newProject.name;
@@ -112,7 +112,7 @@ watch(() => props.project, (newProject) => {
         .map((dir: any) => String(dir.id))
         .filter(Boolean);
     } else if (newProject.regional_director_ids && Array.isArray(newProject.regional_director_ids)) {
-      form.value.regional_director_ids = newProject.regional_director_ids.map(id => String(id));
+      form.value.regional_director_ids = newProject.regional_director_ids.map((id: string | number) => String(id));
     } else if (newProject.regional_director_id) {
       // Обратная совместимость со старым форматом
       form.value.regional_director_ids = [String(newProject.regional_director_id)];
@@ -127,6 +127,16 @@ const closeModal = () => {
   backendError.value = "";
 };
 
+const normalizeDirectorIds = (value: unknown): (string | number)[] => {
+  if (Array.isArray(value)) {
+    return value.filter(id => id !== "" && id !== null && id !== undefined);
+  }
+  if (value === "" || value === null || value === undefined) {
+    return [];
+  }
+  return [value as string | number];
+};
+
 const handleSubmit = async () => {
   if (!form.value.id) return;
   
@@ -135,9 +145,7 @@ const handleSubmit = async () => {
   
   try {
     // Валидация: максимум 3 региональных руководителя
-    const directorIds = Array.isArray(form.value.regional_director_ids) 
-      ? form.value.regional_director_ids.filter(id => id !== "" && id !== null)
-      : [];
+    const directorIds = normalizeDirectorIds(form.value.regional_director_ids);
     
     if (directorIds.length > 3) {
       backendError.value = "Можно выбрать максимум 3 региональных руководителя";

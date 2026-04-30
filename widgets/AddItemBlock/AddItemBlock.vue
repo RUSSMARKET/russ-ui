@@ -45,13 +45,23 @@
           <span>{{ computedProps.listLoadingText }}</span>
         </div>
 
-        <div v-else-if="items.length > 0" class="supports-list">
-          <div v-for="item in items" :key="item.id" class="support-card"
+        <div v-else-if="localItems.length > 0" class="supports-list">
+          <div v-for="(item, index) in localItems" :key="item.id" class="support-card"
+            :draggable="enableReorder"
+            @dragstart="onDragStart(index)"
+            @dragover.prevent
+            @drop.prevent="onDrop(index)"
             :class="{ 'support-card-disabled': item.disabled }">
             <div class="support-card-content">
-              <div class="support-avatar category-avatar">
-                <i class="pi pi-tag"></i>
-              </div>
+              <button
+                v-if="enableReorder"
+                class="drag-handle-btn"
+                type="button"
+                title="Перетащите для изменения порядка"
+              >
+                <i class="pi pi-bars"></i>
+              </button>
+              <div class="support-avatar category-avatar" :style="getItemAvatarStyle(item)"></div>
               <div v-if="item.disabled" class="locked-indicator" title="Заблокировано">
                 <i class="pi pi-lock"></i>
               </div>
@@ -191,6 +201,7 @@ interface Props {
   showRemoveButton?: boolean;
 
   showProductFields?: boolean;
+  enableReorder?: boolean;
   productFields?: Array<{
     id?: number;
     name?: string;
@@ -204,6 +215,7 @@ interface Emits {
   (e: "remove", itemId: string | number): void;
   (e: "edit", item: any): void;
   (e: "update-field", fieldId: number, value: string): void;
+  (e: "reorder", ids: Array<string | number>): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -225,6 +237,7 @@ const props = withDefaults(defineProps<Props>(), {
   showEditButton: false,
   showRemoveButton: true,
   showProductFields: false,
+  enableReorder: false,
   productFields: () => [] as Array<{ id?: number; name?: string; value?: string }>,
 });
 
@@ -281,10 +294,69 @@ const getItemSubtitle = (item: any): string => {
   return "";
 };
 
+const DEFAULT_METRIC_COLOR = "#808080";
+
+const hexToRgb = (hex: string) => {
+  const normalized = hex.replace("#", "").trim();
+  if (![3, 6].includes(normalized.length)) return null;
+  const full = normalized.length === 3
+    ? normalized.split("").map((char) => char + char).join("")
+    : normalized;
+  const int = Number.parseInt(full, 16);
+  if (Number.isNaN(int)) return null;
+  return {
+    r: (int >> 16) & 255,
+    g: (int >> 8) & 255,
+    b: int & 255,
+  };
+};
+
+const rgbToHex = (r: number, g: number, b: number) =>
+  `#${[r, g, b].map((value) => value.toString(16).padStart(2, "0")).join("")}`;
+
+const softenTooLightColor = (color: string) => {
+  const rgb = hexToRgb(color);
+  if (!rgb) return color;
+
+  const max = Math.max(rgb.r, rgb.g, rgb.b);
+  const min = Math.min(rgb.r, rgb.g, rgb.b);
+  const isGray = max - min < 8;
+  if (isGray) return color;
+
+  const luminance = 0.2126 * rgb.r + 0.7152 * rgb.g + 0.0722 * rgb.b;
+  if (luminance < 235) return color;
+
+  const factor = 0.82;
+  return rgbToHex(
+    Math.round(rgb.r * factor),
+    Math.round(rgb.g * factor),
+    Math.round(rgb.b * factor)
+  );
+};
+
+const getItemAvatarStyle = (item: any) => {
+  const color = typeof item?.color === "string" && item.color.trim() ? item.color : DEFAULT_METRIC_COLOR;
+  const safeColor = softenTooLightColor(color);
+  return {
+    background: safeColor,
+    borderColor: safeColor,
+  };
+};
+
 
 const emit = defineEmits<Emits>();
 
 const selectedItemId = ref<string | number>("");
+const localItems = ref<any[]>([...props.items]);
+const dragStartIndex = ref<number | null>(null);
+
+watch(
+  () => props.items,
+  (newItems) => {
+    localItems.value = [...newItems];
+  },
+  { deep: true, immediate: true }
+);
 
 const handleAdd = () => {
   if (selectedItemId.value) {
@@ -340,6 +412,30 @@ const updateField = (fieldId?: number) => {
   emit("update-field", fieldId, value);
 };
 
+const onDragStart = (index: number) => {
+  if (!props.enableReorder) return;
+  dragStartIndex.value = index;
+};
+
+const onDrop = (dropIndex: number) => {
+  if (!props.enableReorder || dragStartIndex.value === null) return;
+
+  const startIndex = dragStartIndex.value;
+  if (startIndex === dropIndex) return;
+
+  const cloned = [...localItems.value];
+  const [moved] = cloned.splice(startIndex, 1);
+  cloned.splice(dropIndex, 0, moved);
+  localItems.value = cloned;
+
+  emit(
+    "reorder",
+    cloned.map((item) => item.id)
+  );
+
+  dragStartIndex.value = null;
+};
+
 </script>
 
 <style scoped>
@@ -351,7 +447,7 @@ const updateField = (fieldId?: number) => {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 32px;
-  margin-top: 20px;
+  height: 76vh;
 }
 
 .supports-list-column,
@@ -514,9 +610,8 @@ const updateField = (fieldId?: number) => {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  height: 400px;
-  min-height: 400px;
-  max-height: 400px;
+  height: 65vh;
+  max-height: 65vh;
   overflow-y: auto;
 }
 
@@ -530,6 +625,15 @@ const updateField = (fieldId?: number) => {
   padding: 16px;
   border: 1px solid #e2e8f0;
   transition: all 0.2s ease;
+}
+
+.drag-handle-btn {
+  border: none;
+  background: transparent;
+  cursor: grab;
+  color: var(--russ-text-tertiary);
+  padding: 2px;
+  margin-right: 2px;
 }
 
 .support-card:hover {
@@ -571,7 +675,8 @@ const updateField = (fieldId?: number) => {
   aspect-ratio: 1 / 1;
   flex-shrink: 0;
   border-radius: 50%;
-  background: #6b9eff;
+  background: #808080;
+  border: 1px solid transparent;
   color: #fff;
   display: flex;
   align-items: center;
@@ -973,6 +1078,11 @@ const updateField = (fieldId?: number) => {
   .supports-container {
     grid-template-columns: 1fr;
     gap: 20px;
+  }
+
+  .supports-list {
+    height: 45vh;
+    max-height: 45vh;
   }
 
   .supports-list-column,
