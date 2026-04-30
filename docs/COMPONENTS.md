@@ -236,6 +236,45 @@ const dateRange = ref({
 
 - `update:modelValue` - обновление диапазона
 
+## TimePicker
+
+Выбор времени.
+
+### Импорт
+
+```typescript
+import { TimePicker } from '@russ-ui/bibli'
+```
+
+### Использование
+
+```vue
+<template>
+  <TimePicker
+    v-model="selectedTime"
+    label="Время встречи"
+  />
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import { TimePicker } from '@russ-ui/bibli'
+
+const selectedTime = ref('09:30')
+</script>
+```
+
+### Props
+
+- `modelValue` (String) - выбранное время в формате `HH:mm` или `HH:mm:ss`
+- `label` (String, optional) - подпись поля
+- `disabled` (Boolean, default: false) - отключен ли компонент
+- `step` (Number, default: 60) - шаг в секундах (например, 60 = шаг 1 минута)
+
+### Events
+
+- `update:modelValue` - обновление времени
+
 ## InputText
 
 Текстовое поле ввода.

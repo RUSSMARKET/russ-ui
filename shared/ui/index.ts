@@ -3,6 +3,7 @@ export * from './buttons'
 export { default as ConfirmModal } from './ConfirmModal'
 export { default as SearchInput } from './SearchInput/SearchInput.vue';
 export { default as BaseTable } from './BaseTable/BaseTable.vue';
+export { default as AppTable } from './table/AppTable.vue';
 export { default as InventoryLineItem } from './InventoryLineItem/InventoryLineItem.vue';
 export { default as TablePagination } from './TablePagination/TablePagination.vue';
 export { default as ColumnFilter } from './ColumnFilter/ColumnFilter.vue';
@@ -16,9 +17,15 @@ export { FiltersBar } from './FiltersBar';
 export type { FilterConfig } from './FiltersBar';
 export { DatePicker } from './DatePicker';
 export { MonthPicker } from './MonthPicker';
+export { TimePicker } from './TimePicker';
+export { DateTimePicker } from './DateTimePicker';
 export { DateRangePicker } from './DateRangePicker';
 export { StatusSelect } from './StatusSelect';
 export { FilterItem } from './FilterItem';
+export { FiltersActions, CompactFiltersActions } from './filters';
+export { UnifiedPageHeader, HeaderTabToolbar, InventoryLinesHeader } from './page';
+export { ProjectSelect } from './project';
+export { default as Pill } from './Pill';
 export { EditShiftsModal } from './EditShiftsModal';
 export { QRModal } from './QRModal';
 export { YandexQRModal } from './YandexQRModal';

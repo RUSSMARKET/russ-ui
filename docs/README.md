@@ -18,6 +18,7 @@
 - [Button](./COMPONENTS.md#button) - кнопка с состояниями
 - [SearchInput](./COMPONENTS.md#searchinput) - поле поиска
 - [DatePicker](./COMPONENTS.md#datepicker) - выбор даты
+- [TimePicker](./COMPONENTS.md#timepicker) - выбор времени
 - [DateRangePicker](./COMPONENTS.md#daterangepicker) - выбор диапазона дат
 - [InputText](./COMPONENTS.md#inputtext) - текстовое поле
 - [InputPhone](./COMPONENTS.md#inputphone) - поле телефона

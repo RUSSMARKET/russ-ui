@@ -7,3 +7,4 @@ export * from './TaskDetailsModal';
 export * from './ArticlesStories';
 export * from './KpiCalendar';
 export * from './Layout'; 
+export * from './Project';
