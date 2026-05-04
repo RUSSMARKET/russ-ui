@@ -12,7 +12,11 @@
         <thead>
           <tr>
             <th v-for="column in columns" :key="column.key"
-              :class="[column.headerClass, { 'sortable': column.sortable !== false }]"
+              :class="[
+                column.headerClass,
+                columnColClass(column),
+                { 'sortable': column.sortable !== false },
+              ]"
               @click="column.sortable !== false ? handleSort(column.key) : null">
               <div class="header-content">
                 <span>{{ column.header }}</span>
@@ -28,7 +32,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-if="loading">
+          <tr v-if="loading" class="table-meta-row">
             <td class="table-loader-cell" :colspan="tableColspan">
               <span class="loader"></span>
               <span>{{ loadingText }}</span>
@@ -36,7 +40,9 @@
           </tr>
           <tr v-for="(item, index) in sortedItems" :key="item.id || index" class="table-row" :class="rowClass"
             @click="handleRowClick ? handleRowClick(item) : null">
-            <td v-for="column in columns" :key="column.key" :class="column.cellClass" :data-label="column.header">
+            <td v-for="column in columns" :key="column.key"
+              :class="[column.cellClass, columnColClass(column), { 'td--mobile-title': column.mobileTitle }]"
+              :data-label="column.header">
               <slot :name="`cell-${column.key}`" :item="item" :column="column"
                 :value="getNestedValue(item, column.key)">
                 {{ getNestedValue(item, column.key) }}
@@ -49,7 +55,7 @@
               </div>
             </td>
           </tr>
-          <tr v-if="!loading && sortedItems.length === 0">
+          <tr v-if="!loading && sortedItems.length === 0" class="table-meta-row">
             <td :colspan="tableColspan" class="no-results">
               {{ noResultsText }}
             </td>
@@ -73,6 +79,12 @@ interface TableColumn {
   sortable?: boolean
   filterable?: boolean
   sortKey?: string
+  /** Скрыть колонку на экранах уже 900px (планшет в портрете). */
+  hideBelowTablet?: boolean
+  /** Скрыть колонку только в карточном режиме (экран уже 640px). */
+  hideOnMobile?: boolean
+  /** В карточном режиме — строка заголовка карточки на всю ширину (обычно имя / ID). */
+  mobileTitle?: boolean
 }
 
 interface Props {
@@ -180,6 +192,13 @@ const getNestedValue = (obj: any, path: string) => {
     return current && current[key] !== undefined ? current[key] : ''
   }, obj)
 }
+
+const columnColClass = (column: TableColumn) => {
+  return {
+    'col--hide-tablet': column.hideBelowTablet === true,
+    'col--hide-mobile': column.hideOnMobile === true,
+  }
+}
 </script>
 
 <style scoped>
@@ -217,11 +236,14 @@ const getNestedValue = (obj: any, path: string) => {
   min-width: 0;
   overflow-x: auto;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable;
 }
 
 .base-table {
   width: 100%;
-  min-width: max(100%, 800px);
+  min-width: 0;
+  table-layout: auto;
   border-collapse: separate;
   border-spacing: 0;
   border-radius: 0 0 14px 14px;
@@ -239,6 +261,7 @@ const getNestedValue = (obj: any, path: string) => {
   font-size: clamp(14px, calc(14px + (18 - 14) * ((100vw - 320px) / (1920 - 320))), 18px);
   color: var(--russ-text-secondary);
   background: var(--russ-bg);
+  vertical-align: top;
 }
 
 .table-loader-cell {
@@ -369,8 +392,8 @@ const getNestedValue = (obj: any, path: string) => {
   }
 }
 
-/* Responsive styles */
-@media (max-width: 768px) {
+/* Планшет: компактнее, без принудительной ширины; скрываем второстепенные колонки */
+@media (max-width: 1024px) and (min-width: 641px) {
   .table-filters {
     padding: 12px;
   }
@@ -379,39 +402,38 @@ const getNestedValue = (obj: any, path: string) => {
     gap: 12px;
   }
 
-  .base-table {
-    min-width: 600px;
-  }
-
   .base-table th,
   .base-table td {
-    padding: 9px 10px;
+    padding: 10px 12px;
     font-size: 14px;
+  }
+
+  .base-table th:not(.actions-header),
+  .base-table td:not(.actions-cell) {
+    max-width: min(20rem, 42vw);
+    overflow-wrap: anywhere;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 899px) and (min-width: 641px) {
+  .base-table :is(th, td).col--hide-tablet {
+    display: none !important;
+  }
+}
+
+/* Карточки на телефоне */
+@media (max-width: 640px) {
   .table-filters {
-    padding: 8px;
+    padding: 10px;
+    border-radius: 12px;
   }
 
   .filters-row {
-    gap: 8px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
   }
 
-  .base-table {
-    min-width: 400px;
-  }
-
-  .base-table th,
-  .base-table td {
-    padding: 7px 8px;
-    font-size: 12px;
-  }
-}
-
-/* Card-like layout for mobile phones */
-@media (max-width: 640px) {
   .table-container {
     max-width: 100%;
     overflow-x: hidden;
@@ -425,92 +447,137 @@ const getNestedValue = (obj: any, path: string) => {
   .base-table {
     min-width: 0;
     border-radius: 0;
+    border: none;
+    background: transparent;
   }
 
   .base-table thead {
     display: none;
   }
 
-  .base-table,
-  .base-table tbody,
-  .base-table tr,
-  .base-table td {
+  .base-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: transparent;
+  }
+
+  .base-table :is(th, td).col--hide-tablet,
+  .base-table :is(th, td).col--hide-mobile {
+    display: none !important;
+  }
+
+  .base-table tbody tr.table-meta-row {
+    display: block;
+    width: 100%;
+    margin: 0;
+  }
+
+  .base-table tbody tr.table-meta-row td {
     display: block;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    border-radius: 12px;
+    border: 1px solid var(--russ-border);
   }
 
-  .table-row {
-    margin: 10px 0;
-    border-radius: 10px;
-    background: var(--russ-bg-secondary);
-    border: 1px solid var(--russ-border-light);
+  .base-table tbody tr.table-row {
+    display: grid;
+    grid-auto-flow: dense;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    border-radius: 12px;
+    background: var(--russ-bg);
+    border: 1px solid var(--russ-border);
+    box-shadow: 0 1px 2px rgb(15 23 42 / 0.06);
     overflow: hidden;
   }
 
-  .base-table td {
+  .base-table tbody tr.table-row > td {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
-    padding: 6px 10px;
+    align-items: stretch;
+    gap: 4px;
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--russ-border-light);
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--russ-text-primary);
+    background: var(--russ-bg);
     word-break: break-word;
-    font-size: 12px;
+    overflow-wrap: anywhere;
   }
 
-  .base-table td > * {
+  .base-table tbody tr.table-row > td > * {
     max-width: 100%;
   }
 
-  /* колонка "#" — в одну строку (номер + значение) */
-  .base-table td[data-label="#"] {
+  .base-table tbody tr.table-row > td.td--mobile-title {
+    grid-column: 1 / -1;
+    order: -1;
+    padding: 12px 14px;
+    font-size: 15px;
+    font-weight: 600;
+    background: var(--russ-bg-secondary);
+    border-bottom: 1px solid var(--russ-border);
+  }
+
+  .base-table tbody tr.table-row > td.td--mobile-title::before {
+    display: none;
+  }
+
+  .base-table tbody tr.table-row > td[data-label='#'] {
     flex-direction: row;
     align-items: center;
+    flex-wrap: wrap;
     gap: 6px;
   }
 
-  .base-table td[data-label="#"]::before {
+  .base-table tbody tr.table-row > td[data-label='#']::before {
     margin: 0;
   }
 
-  /* убираем радиусы углов последней строки на мобильных */
-  .base-table tbody tr:last-child td:first-child,
-  .base-table tbody tr:last-child td:last-child {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-
-  /* аккуратное разделение полей внутри карточки */
-  .base-table td:not(:last-child) {
-    border-bottom: 1px solid var(--russ-border-light);
-  }
-
-  .base-table td:last-child {
+  .base-table tbody tr.table-row > td.actions-cell {
+    grid-column: 1 / -1;
+    order: 9;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 12px !important;
+    height: auto;
     border-bottom: none;
+    background: var(--russ-bg-secondary);
   }
 
-  .base-table td::before {
+  .base-table tbody tr.table-row > td::before {
     content: attr(data-label);
     font-weight: 600;
     color: var(--russ-text-secondary);
-    margin: 0 0 1px 0;
-    max-width: 100%;
-    white-space: normal;
-    font-size: 11px;
-    opacity: 0.9;
-  }
-
-  .actions-cell {
-    justify-content: flex-start;
-    padding: 6px 10px !important;
-    height: auto;
+    font-size: 10px;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    opacity: 0.88;
   }
 
   .actions-cell-inner {
     height: auto;
     min-height: 0;
     justify-content: center;
+    width: 100%;
+  }
+}
+
+@media (max-width: 360px) {
+  .base-table tbody tr.table-row {
+    grid-template-columns: 1fr;
   }
 }
 </style>
