@@ -46,12 +46,4 @@ const BibliBaseTable = BaseTable
 .app-table-wrap {
   position: relative;
 }
-
-@media (max-width: 640px) {
-  .app-table-wrap :deep(td.actions-cell) {
-    height: auto !important;
-    min-height: 0 !important;
-    align-items: stretch !important;
-  }
-}
 </style>

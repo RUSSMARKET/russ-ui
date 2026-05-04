@@ -79,9 +79,7 @@ interface TableColumn {
   sortable?: boolean
   filterable?: boolean
   sortKey?: string
-  /** Скрыть колонку на экранах уже 900px (планшет в портрете). */
   hideBelowTablet?: boolean
-  /** Скрыть колонку на экранах уже 640px (телефон). */
   hideOnMobile?: boolean
 }
 
@@ -430,7 +428,8 @@ const columnColClass = (column: TableColumn) => {
   }
 
   .base-table {
-    min-width: min(100%, 560px);
+    width: max-content;
+    min-width: 100%;
   }
 
   .base-table :is(th, td).col--hide-tablet,
