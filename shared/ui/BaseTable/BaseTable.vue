@@ -41,7 +41,7 @@
           <tr v-for="(item, index) in sortedItems" :key="item.id || index" class="table-row" :class="rowClass"
             @click="handleRowClick ? handleRowClick(item) : null">
             <td v-for="column in columns" :key="column.key"
-              :class="[column.cellClass, columnColClass(column), { 'td--mobile-title': column.mobileTitle }]"
+              :class="[column.cellClass, columnColClass(column)]"
               :data-label="column.header">
               <slot :name="`cell-${column.key}`" :item="item" :column="column"
                 :value="getNestedValue(item, column.key)">
@@ -81,10 +81,8 @@ interface TableColumn {
   sortKey?: string
   /** Скрыть колонку на экранах уже 900px (планшет в портрете). */
   hideBelowTablet?: boolean
-  /** Скрыть колонку только в карточном режиме (экран уже 640px). */
+  /** Скрыть колонку на экранах уже 640px (телефон). */
   hideOnMobile?: boolean
-  /** В карточном режиме — строка заголовка карточки на всю ширину (обычно имя / ID). */
-  mobileTitle?: boolean
 }
 
 interface Props {
@@ -248,10 +246,6 @@ const columnColClass = (column: TableColumn) => {
   border-spacing: 0;
   border-radius: 0 0 14px 14px;
   overflow: hidden;
-}
-
-.base-table::-webkit-scrollbar {
-  display: none;
 }
 
 .base-table th,
@@ -421,45 +415,22 @@ const columnColClass = (column: TableColumn) => {
   }
 }
 
-/* Карточки на телефоне */
+/* Телефон: та же таблица, горизонтальный скролл, плотнее ячейки */
 @media (max-width: 640px) {
   .table-filters {
     padding: 10px;
-    border-radius: 12px;
   }
 
   .filters-row {
-    flex-direction: column;
-    align-items: stretch;
     gap: 10px;
   }
 
-  .table-container {
-    max-width: 100%;
-    overflow-x: hidden;
-  }
-
   .table-scroll {
-    overflow-x: hidden;
-    padding: 0;
+    overflow-x: auto;
   }
 
   .base-table {
-    min-width: 0;
-    border-radius: 0;
-    border: none;
-    background: transparent;
-  }
-
-  .base-table thead {
-    display: none;
-  }
-
-  .base-table tbody {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    background: transparent;
+    min-width: min(100%, 560px);
   }
 
   .base-table :is(th, td).col--hide-tablet,
@@ -467,117 +438,18 @@ const columnColClass = (column: TableColumn) => {
     display: none !important;
   }
 
-  .base-table tbody tr.table-meta-row {
-    display: block;
-    width: 100%;
-    margin: 0;
-  }
-
-  .base-table tbody tr.table-meta-row td {
-    display: block;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    border-radius: 12px;
-    border: 1px solid var(--russ-border);
-  }
-
-  .base-table tbody tr.table-row {
-    display: grid;
-    grid-auto-flow: dense;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    margin: 0;
-    border-radius: 12px;
-    background: var(--russ-bg);
-    border: 1px solid var(--russ-border);
-    box-shadow: 0 1px 2px rgb(15 23 42 / 0.06);
-    overflow: hidden;
-  }
-
-  .base-table tbody tr.table-row > td {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 4px;
-    width: auto;
-    max-width: none;
-    margin: 0;
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--russ-border-light);
+  .base-table th,
+  .base-table td {
+    padding: 8px 10px;
     font-size: 13px;
-    line-height: 1.4;
-    color: var(--russ-text-primary);
-    background: var(--russ-bg);
-    word-break: break-word;
-    overflow-wrap: anywhere;
   }
 
-  .base-table tbody tr.table-row > td > * {
-    max-width: 100%;
-  }
-
-  .base-table tbody tr.table-row > td.td--mobile-title {
-    grid-column: 1 / -1;
-    order: -1;
-    padding: 12px 14px;
-    font-size: 15px;
-    font-weight: 600;
-    background: var(--russ-bg-secondary);
-    border-bottom: 1px solid var(--russ-border);
-  }
-
-  .base-table tbody tr.table-row > td.td--mobile-title::before {
-    display: none;
-  }
-
-  .base-table tbody tr.table-row > td[data-label='#'] {
-    flex-direction: row;
-    align-items: center;
-    flex-wrap: wrap;
+  .header-content {
     gap: 6px;
   }
 
-  .base-table tbody tr.table-row > td[data-label='#']::before {
-    margin: 0;
-  }
-
-  .base-table tbody tr.table-row > td.actions-cell {
-    grid-column: 1 / -1;
-    order: 9;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 12px !important;
-    height: auto;
-    border-bottom: none;
-    background: var(--russ-bg-secondary);
-  }
-
-  .base-table tbody tr.table-row > td::before {
-    content: attr(data-label);
-    font-weight: 600;
-    color: var(--russ-text-secondary);
+  .sort-icon {
     font-size: 10px;
-    line-height: 1.2;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    opacity: 0.88;
-  }
-
-  .actions-cell-inner {
-    height: auto;
-    min-height: 0;
-    justify-content: center;
-    width: 100%;
-  }
-}
-
-@media (max-width: 360px) {
-  .base-table tbody tr.table-row {
-    grid-template-columns: 1fr;
   }
 }
 </style>
