@@ -65,12 +65,14 @@ const props = withDefaults(defineProps<{
   showProjectSwitcher?: boolean
   projectSelectionRequired?: boolean
   noProjectsAvailable?: boolean
-  onProjectChange?: (value: string | number | null) => void | Promise<void>
 }>(), {
   pageTitle: '', userName: '', menuItems: () => [], supportHref: 'https://t.me/uliasupport', supportLabel: 'Помощь',
   navigation: undefined, projectOptions: () => [], currentProjectId: null, projectSwitching: false, showProjectSwitcher: false,
-  projectSelectionRequired: false, noProjectsAvailable: false, onProjectChange: undefined,
+  projectSelectionRequired: false, noProjectsAvailable: false,
 })
+
+/** Слушайте @project-change — проп onProjectChange в Vue 3 может не дойти до компонента (префикс on + заглавная). */
+const emit = defineEmits<{ (e: 'projectChange', value: string | number | null): void }>()
 
 const menuRef = ref<any>(null)
 const showProjectNudge = computed(() => props.showProjectSwitcher && !props.noProjectsAvailable && !props.projectSwitching && props.projectSelectionRequired && props.projectOptions.length > 0 && (props.currentProjectId == null || props.currentProjectId === ''))
@@ -80,7 +82,9 @@ function toggleNavigation() {
   else props.navigation.openNavigation?.()
 }
 function toggle(event: Event) { menuRef.value?.toggle?.(event) }
-function handleProjectChange(value: string | number | null) { props.onProjectChange?.(value) }
+function handleProjectChange(value: string | number | null) {
+  emit('projectChange', value)
+}
 </script>
 
 <style scoped>
