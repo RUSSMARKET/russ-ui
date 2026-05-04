@@ -77,6 +77,7 @@ const onCancel = () => {
   margin-bottom: 1.5rem;
   margin-top: 0;
   line-height: 1.5;
+  white-space: pre-line;
 }
 
 .confirm-error {
