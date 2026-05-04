@@ -234,7 +234,7 @@ const getNestedValue = (obj: any, path: string) => {
 
 .base-table th,
 .base-table td {
-  padding: 10px 12px;
+  padding: 14px 16px;
   border-bottom: 1px solid var(--russ-border);
   font-size: clamp(14px, calc(14px + (18 - 14) * ((100vw - 320px) / (1920 - 320))), 18px);
   color: var(--russ-text-secondary);
