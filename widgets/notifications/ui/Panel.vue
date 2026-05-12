@@ -170,7 +170,7 @@ const deleteNotification = async (id) => {
   padding: 4px;
   border-radius: 4px;
   transition: all 0.2s ease;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
 }
 
 .remove_icon:hover {

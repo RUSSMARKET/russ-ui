@@ -1,10 +1,195 @@
-import type { ThemeConfig } from './types'
+import type { ThemeConfig, ThemeColors } from './types'
+
+/**
+ * Тёмная палитра fintech (синий акцент на тёмных поверхностях)
+ */
+const fintechColorsDark: ThemeColors = {
+  primary: '#6b8cff',
+  primaryDark: '#4d6fd4',
+  primaryLight: '#8aa3ff',
+  primaryHover: '#7d99ff',
+  primaryActive: '#5a7ae6',
+
+  secondary: '#818cf8',
+  secondaryDark: '#6366f1',
+  secondaryLight: '#a5b4fc',
+
+  accent: '#60a5fa',
+  accentDark: '#3b82f6',
+  accentLight: '#93c5fd',
+
+  textPrimary: '#f1f5f9',
+  textSecondary: '#e2e8f0',
+  textTertiary: '#94a3b8',
+  textInverse: '#0f172a',
+
+  background: '#0c1117',
+  backgroundSecondary: '#141c2b',
+  backgroundTertiary: '#1c2838',
+
+  border: '#334155',
+  borderLight: '#3d4f63',
+  borderDark: '#475569',
+
+  success: '#4ade80',
+  successLight: '#14532d',
+  successDark: '#22c55e',
+
+  error: '#f87171',
+  errorLight: '#7f1d1d',
+  errorDark: '#ef4444',
+
+  warning: '#fbbf24',
+  warningLight: '#713f12',
+  warningDark: '#f59e0b',
+
+  info: '#60a5fa',
+  infoLight: '#1e3a5f',
+  infoDark: '#3b82f6',
+
+  neutral: '#94a3b8',
+  neutralLight: '#cbd5e1',
+  neutralDark: '#64748b',
+
+  label: '#a5b4fc',
+  value: '#93c5fd',
+  checkboxAccent: '#60a5fa',
+  focusRing: 'rgba(96, 165, 250, 0.35)',
+
+  textQuaternary: '#64748b',
+  textMuted: '#94a3b8',
+
+  backgroundQuaternary: '#243044',
+  backgroundHover: '#1e293b',
+  backgroundActive: '#334155',
+  backgroundDisabled: '#1e293b',
+
+  borderQuaternary: '#475569',
+  inputBorder: '#475569',
+  inputBorderFocus: '#60a5fa',
+  inputBorderError: '#f87171',
+
+  inputBg: '#1c2838',
+  inputBgDisabled: '#141c2b',
+  inputBgHover: '#243044',
+  inputText: '#e2e8f0',
+  inputPlaceholder: '#64748b',
+  inputError: '#f87171',
+  inputErrorBg: '#450a0a',
+
+  overlay: 'rgba(0, 0, 0, 0.65)',
+  overlayLight: 'rgba(0, 0, 0, 0.45)',
+  shadowColor: 'rgba(0, 0, 0, 0.4)',
+
+  yellow: '#fcd34d',
+  yellowLight: '#422006',
+  orange: '#fb923c',
+  orangeLight: '#431407',
+  purple: '#c4b5fd',
+  purpleLight: '#312e81',
+
+  primaryGradientStart: '#4d6fd4',
+  primaryGradientEnd: '#1e3a8a',
+}
+
+/**
+ * Тёмная палитра rusaisklad (нейтрально-серый акцент)
+ */
+const rusaiskladColorsDark: ThemeColors = {
+  primary: '#9ca3af',
+  primaryDark: '#6b7280',
+  primaryLight: '#d1d5db',
+  primaryHover: '#d1d5db',
+  primaryActive: '#9ca3af',
+
+  secondary: '#d1d5db',
+  secondaryDark: '#9ca3af',
+  secondaryLight: '#e5e7eb',
+
+  accent: '#9ca3af',
+  accentDark: '#6b7280',
+  accentLight: '#d1d5db',
+
+  textPrimary: '#f3f4f6',
+  textSecondary: '#e5e7eb',
+  textTertiary: '#9ca3af',
+  textInverse: '#111827',
+
+  background: '#0f1115',
+  backgroundSecondary: '#181b21',
+  backgroundTertiary: '#22262e',
+
+  border: '#374151',
+  borderLight: '#3f4654',
+  borderDark: '#4b5563',
+
+  success: '#9ca3af',
+  successLight: '#292e36',
+  successDark: '#d1d5db',
+
+  error: '#f87171',
+  errorLight: '#7f1d1d',
+  errorDark: '#ef4444',
+
+  warning: '#fbbf24',
+  warningLight: '#713f12',
+  warningDark: '#f59e0b',
+
+  info: '#9ca3af',
+  infoLight: '#292e36',
+  infoDark: '#d1d5db',
+
+  neutral: '#9ca3af',
+  neutralLight: '#d1d5db',
+  neutralDark: '#6b7280',
+
+  label: '#d1d5db',
+  value: '#e5e7eb',
+  checkboxAccent: '#9ca3af',
+  focusRing: 'rgba(156, 163, 175, 0.35)',
+
+  textQuaternary: '#6b7280',
+  textMuted: '#9ca3af',
+
+  backgroundQuaternary: '#2a2f38',
+  backgroundHover: '#22262e',
+  backgroundActive: '#374151',
+  backgroundDisabled: '#1f2329',
+
+  borderQuaternary: '#4b5563',
+  inputBorder: '#4b5563',
+  inputBorderFocus: '#d1d5db',
+  inputBorderError: '#f87171',
+
+  inputBg: '#22262e',
+  inputBgDisabled: '#181b21',
+  inputBgHover: '#2a2f38',
+  inputText: '#e5e7eb',
+  inputPlaceholder: '#6b7280',
+  inputError: '#f87171',
+  inputErrorBg: '#450a0a',
+
+  overlay: 'rgba(0, 0, 0, 0.65)',
+  overlayLight: 'rgba(0, 0, 0, 0.45)',
+  shadowColor: 'rgba(0, 0, 0, 0.4)',
+
+  yellow: '#fcd34d',
+  yellowLight: '#422006',
+  orange: '#fb923c',
+  orangeLight: '#431407',
+  purple: '#c4b5fd',
+  purpleLight: '#312e81',
+
+  primaryGradientStart: '#6b7280',
+  primaryGradientEnd: '#374151',
+}
 
 /**
  * Тема для проекта fintech (синяя цветовая схема)
  */
 export const fintechTheme: ThemeConfig = {
   name: 'fintech',
+  colorsDark: fintechColorsDark,
   colors: {
     // Основные цвета (синие)
     primary: '#213e89',
@@ -108,7 +293,7 @@ export const fintechTheme: ThemeConfig = {
     // Дополнительные оттенки primary для градиентов
     primaryGradientStart: '#213e89',
     primaryGradientEnd: '#1a3069',
-  }
+  },
 }
 
 /**
@@ -117,6 +302,7 @@ export const fintechTheme: ThemeConfig = {
  */
 export const rusaiskladTheme: ThemeConfig = {
   name: 'rusaisklad',
+  colorsDark: rusaiskladColorsDark,
   colors: {
     // Основные цвета (серые: primary ~ gray-500, dark ~ gray-600/700, light ~ gray-400)
     primary: '#6b7280',       // gray-500
@@ -220,7 +406,7 @@ export const rusaiskladTheme: ThemeConfig = {
     // Дополнительные оттенки primary для градиентов
     primaryGradientStart: '#6b7280',  // gray-500
     primaryGradientEnd: '#4b5563',     // gray-600
-  }
+  },
 }
 
 /**

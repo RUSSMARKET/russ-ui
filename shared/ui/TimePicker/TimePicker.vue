@@ -209,7 +209,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .time-picker-wrapper { width: 100%; position: relative; }
 .time-picker-wrapper.is-embedded .time-picker-input {
-  background: #fff;
+  background: var(--russ-input-bg);
   box-shadow: none;
   border: 1px solid var(--russ-border);
 }
@@ -245,7 +245,7 @@ onBeforeUnmount(() => {
 .clock-icon { color: var(--russ-text-tertiary); display: inline-flex; }
 .time-dropdown { background: var(--russ-input-bg); border: 1.5px solid var(--russ-border); border-radius: 12px; box-shadow: 0 8px 24px var(--russ-shadow-color); padding: 10px; overflow: auto; overscroll-behavior: contain; }
 .time-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
-.time-col { width: 100%; max-height: 172px; overflow: auto; border: 1px solid var(--russ-border); border-radius: 8px; padding: 4px; background: #fff; scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+.time-col { width: 100%; max-height: 172px; overflow: auto; border: 1px solid var(--russ-border); border-radius: 8px; padding: 4px; background: var(--russ-bg); scrollbar-width: thin; scrollbar-color: var(--russ-border-light) transparent; }
 .time-col-title {
   position: sticky;
   top: -4px;
@@ -255,9 +255,9 @@ onBeforeUnmount(() => {
   color: var(--russ-text-secondary);
   margin: 0 0 6px;
   padding: 8px 4px 6px;
-  background: #fff;
+  background: var(--russ-bg);
   border-bottom: 1px solid var(--russ-border);
-  box-shadow: 0 2px 0 #fff;
+  box-shadow: 0 2px 0 var(--russ-bg);
 }
 .time-option { width: 100%; border: 0; background: transparent; padding: 3px; border-radius: 4px; text-align: center; cursor: pointer; color: var(--russ-text-primary); font-size: 11px; line-height: 1.15; }
 .time-option:hover { background: var(--russ-bg-hover); }
@@ -267,10 +267,10 @@ onBeforeUnmount(() => {
 .time-col--minutes { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; align-content: start; }
 .time-col--minutes .time-col-title { grid-column: 1 / -1; margin-bottom: 4px; }
 .time-col::-webkit-scrollbar { width: 6px; height: 6px; }
-.time-col::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
+.time-col::-webkit-scrollbar-thumb { background: var(--russ-border-light); border-radius: 999px; }
 .time-col::-webkit-scrollbar-track { background: transparent; }
 .time-footer { display: flex; gap: 6px; margin-top: 8px; }
-.time-footer-btn { flex: 1; border: 1px solid var(--russ-border); border-radius: 8px; background: #fff; padding: 7px 8px; cursor: pointer; color: var(--russ-text-secondary); font-weight: 600; font-size: 12px; }
+.time-footer-btn { flex: 1; border: 1px solid var(--russ-border); border-radius: 8px; background: var(--russ-bg); padding: 7px 8px; cursor: pointer; color: var(--russ-text-secondary); font-weight: 600; font-size: 12px; }
 .time-footer-btn:hover { border-color: var(--russ-primary); color: var(--russ-primary); }
-.time-footer-btn.clear:hover { border-color: #ef4444; color: #ef4444; }
+.time-footer-btn.clear:hover { border-color: var(--russ-error); color: var(--russ-error); }
 </style>

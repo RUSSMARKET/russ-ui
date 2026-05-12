@@ -1,6 +1,3 @@
-/**
- * Цветовая схема темы
- */
 export interface ThemeColors {
   // Основные цвета
   primary: string
@@ -107,11 +104,18 @@ export interface ThemeColors {
 }
 
 /**
+ * Светлая / тёмная схема оформления (общие CSS-переменные)
+ */
+export type ColorScheme = 'light' | 'dark'
+
+/**
  * Конфигурация темы
  */
 export interface ThemeConfig {
   name: string
   colors: ThemeColors
+  /** Палитра для тёмной темы (fintech / rusaisklad) */
+  colorsDark: ThemeColors
 }
 
 /**

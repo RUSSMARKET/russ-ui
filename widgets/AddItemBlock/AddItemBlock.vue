@@ -907,7 +907,7 @@ const onDrop = (dropIndex: number) => {
 }
 
 .product-avatar {
-  background: linear-gradient(135deg, var(--russ-primary) 60%, var(--russ-primary-light) 100%) !important;
+  background: var(--russ-primary) !important;
 }
 
 .product-avatar i {
@@ -915,7 +915,7 @@ const onDrop = (dropIndex: number) => {
 }
 
 .agent-avatar {
-  background: #475569 !important;
+  background: var(--russ-neutral-dark) !important;
 }
 
 .agent-avatar span {

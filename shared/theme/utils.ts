@@ -1,15 +1,27 @@
-import type { ThemeConfig } from './types'
+import type { ColorScheme, ThemeConfig, ThemeColors } from './types'
+
+/**
+ * Активная палитра (светлая или тёмная ветка темы fintech / rusaisklad)
+ */
+export function resolveThemeColors(theme: ThemeConfig, colorScheme: ColorScheme): ThemeColors {
+  return colorScheme === 'dark' ? theme.colorsDark : theme.colors
+}
 
 /**
  * Применить тему к документу через CSS переменные
  */
-export function applyTheme(theme: ThemeConfig): void {
+export function applyTheme(theme: ThemeConfig, colorScheme: ColorScheme = 'light'): void {
   if (typeof document === 'undefined') {
     return
   }
 
   const root = document.documentElement
-  const colors = theme.colors
+  root.dataset.russColorScheme = colorScheme
+
+  const colors = resolveThemeColors(theme, colorScheme)
+  const isDark = colorScheme === 'dark'
+  const isFintech = theme.name === 'fintech'
+  const isSklad = theme.name === 'rusaisklad'
 
   // Основные цвета
   root.style.setProperty('--russ-primary', colors.primary)
@@ -38,6 +50,7 @@ export function applyTheme(theme: ThemeConfig): void {
   root.style.setProperty('--russ-bg', colors.background)
   root.style.setProperty('--russ-bg-secondary', colors.backgroundSecondary)
   root.style.setProperty('--russ-bg-tertiary', colors.backgroundTertiary)
+  root.style.setProperty('--russ-bg-elevated', colors.background)
   
   // Цвета границ
   root.style.setProperty('--russ-border', colors.border)
@@ -100,6 +113,10 @@ export function applyTheme(theme: ThemeConfig): void {
   // Цвета для теней и оверлеев
   root.style.setProperty('--russ-overlay', colors.overlay)
   root.style.setProperty('--russ-overlay-light', colors.overlayLight)
+  root.style.setProperty(
+    '--russ-overlay-strong',
+    isDark ? 'rgba(0, 0, 0, 0.88)' : 'rgba(0, 0, 0, 0.62)'
+  )
   root.style.setProperty('--russ-shadow-color', colors.shadowColor)
   
   // Специальные цвета
@@ -115,41 +132,140 @@ export function applyTheme(theme: ThemeConfig): void {
   root.style.setProperty('--russ-primary-gradient-end', colors.primaryGradientEnd)
   
   // Дополнительные фоновые цвета (fintech — синий, rusaisklad — серый, иначе зелёный)
-  const isGrayTheme = colors.primary === '#6b7280'
-  const isFintechTheme = colors.primaryLight === '#1b3170'
-  const bgTint = isFintechTheme ? '#e8edff' : isGrayTheme ? '#f3f4f6' : '#e0f2f1'
-  const bgLight = isFintechTheme ? '#f5f7ff' : isGrayTheme ? '#f9fafb' : '#f0fdf4'
-  const bgLighter = isFintechTheme ? '#e0e7ff' : isGrayTheme ? '#e5e7eb' : '#d1fae5'
+  let bgTint: string
+  let bgLight: string
+  let bgLighter: string
+  let bgGrayLight: string
+  if (isDark) {
+    if (isFintech) {
+      bgTint = '#1a2744'
+      bgLight = '#141c2b'
+      bgLighter = '#243044'
+      bgGrayLight = '#1e293b'
+    } else if (isSklad) {
+      bgTint = '#22262e'
+      bgLight = '#181b21'
+      bgLighter = '#2a2f38'
+      bgGrayLight = '#1f2329'
+    } else {
+      bgTint = '#134e4a'
+      bgLight = '#0f172a'
+      bgLighter = '#115e59'
+      bgGrayLight = '#1e293b'
+    }
+  } else {
+    const isGrayThemeLight = isSklad
+    const isFintechLight = isFintech
+    bgTint = isFintechLight ? '#e8edff' : isGrayThemeLight ? '#f3f4f6' : '#e0f2f1'
+    bgLight = isFintechLight ? '#f5f7ff' : isGrayThemeLight ? '#f9fafb' : '#f0fdf4'
+    bgLighter = isFintechLight ? '#e0e7ff' : isGrayThemeLight ? '#e5e7eb' : '#d1fae5'
+    bgGrayLight = '#f4f7fb'
+  }
   root.style.setProperty('--russ-bg-blue-tint', bgTint)
   root.style.setProperty('--russ-bg-blue-light', bgLight)
   root.style.setProperty('--russ-bg-blue-lighter', bgLighter)
-  root.style.setProperty('--russ-bg-gray-light', '#f4f7fb')
+  root.style.setProperty('--russ-bg-gray-light', bgGrayLight)
 
-  // Дополнительные цвета для статусов (для серой темы — серые оттенки)
-  root.style.setProperty('--russ-success-text', isGrayTheme ? '#374151' : '#065f46')
-  root.style.setProperty('--russ-success-border', isGrayTheme ? '#9ca3af' : '#34d399')
-  root.style.setProperty('--russ-warning-text', '#92400e')
-  root.style.setProperty('--russ-error-text', '#991b1b')
-  const infoText = isFintechTheme ? '#1e40af' : isGrayTheme ? '#374151' : '#0f766e'
-  const infoBorder = isFintechTheme ? '#bfdbfe' : isGrayTheme ? '#d1d5db' : '#99f6e4'
+  // Дополнительные цвета для статусов
+  let successText: string
+  let successBorder: string
+  let warningText: string
+  let errorText: string
+  let infoText: string
+  let infoBorder: string
+  if (isDark) {
+    if (isSklad) {
+      successText = '#e5e7eb'
+      successBorder = '#6b7280'
+      infoText = '#e5e7eb'
+      infoBorder = '#4b5563'
+    } else if (isFintech) {
+      successText = '#86efac'
+      successBorder = '#22c55e'
+      infoText = '#93c5fd'
+      infoBorder = '#3b82f6'
+    } else {
+      successText = '#5eead4'
+      successBorder = '#14b8a6'
+      infoText = '#5eead4'
+      infoBorder = '#0d9488'
+    }
+    warningText = '#fde68a'
+    errorText = '#fecaca'
+  } else {
+    const isGrayThemeLight = isSklad
+    const isFintechLight = isFintech
+    successText = isGrayThemeLight ? '#374151' : '#065f46'
+    successBorder = isGrayThemeLight ? '#9ca3af' : '#34d399'
+    warningText = '#92400e'
+    errorText = '#991b1b'
+    infoText = isFintechLight ? '#1e40af' : isGrayThemeLight ? '#374151' : '#0f766e'
+    infoBorder = isFintechLight ? '#bfdbfe' : isGrayThemeLight ? '#d1d5db' : '#99f6e4'
+  }
+  root.style.setProperty('--russ-success-text', successText)
+  root.style.setProperty('--russ-success-border', successBorder)
+  root.style.setProperty('--russ-warning-text', warningText)
+  root.style.setProperty('--russ-error-text', errorText)
   root.style.setProperty('--russ-info-text', infoText)
   root.style.setProperty('--russ-info-border', infoBorder)
 
-  // Цвета для акцентов в инпутах (gray = 107, 114, 128)
-  const accentRgb = isFintechTheme ? '29, 76, 210' : isGrayTheme ? '107, 114, 128' : '5, 150, 105'
+  // Цвета для акцентов в инпутах
+  let accentRgb: string
+  if (isDark) {
+    accentRgb = isFintech ? '96, 165, 250' : isSklad ? '209, 213, 219' : '94, 234, 212'
+  } else {
+    accentRgb = isFintech ? '29, 76, 210' : isSklad ? '107, 114, 128' : '5, 150, 105'
+  }
   root.style.setProperty('--russ-accent-tint-12', `rgba(${accentRgb}, 0.12)`)
   root.style.setProperty('--russ-accent-tint-18', `rgba(${accentRgb}, 0.18)`)
   root.style.setProperty('--russ-accent-tint-40', `rgba(${accentRgb}, 0.4)`)
 
   // Цвета для теней с акцентом
-  const primaryRgb = isFintechTheme ? '33, 62, 137' : isGrayTheme ? '107, 114, 128' : '5, 150, 105'
-  const accentRgbForShadow = isFintechTheme ? '37, 99, 235' : isGrayTheme ? '107, 114, 128' : '14, 184, 166'
-  const secondaryRgb = isFintechTheme ? '99, 102, 241' : isGrayTheme ? '107, 114, 128' : '16, 185, 129'
-  root.style.setProperty('--russ-shadow-primary', `rgba(${primaryRgb}, 0.1)`)
-  root.style.setProperty('--russ-shadow-primary-light', `rgba(${primaryRgb}, 0.06)`)
+  let primaryRgb: string
+  let accentRgbForShadow: string
+  let secondaryRgb: string
+  const shadowPrimaryAlpha = isDark ? 0.25 : 0.1
+  const shadowPrimaryLightAlpha = isDark ? 0.15 : 0.06
+  if (isDark) {
+    if (isFintech) {
+      primaryRgb = '107, 140, 255'
+      accentRgbForShadow = '96, 165, 250'
+      secondaryRgb = '129, 140, 248'
+    } else if (isSklad) {
+      primaryRgb = '156, 163, 175'
+      accentRgbForShadow = '209, 213, 219'
+      secondaryRgb = '156, 163, 175'
+    } else {
+      primaryRgb = '94, 234, 212'
+      accentRgbForShadow = '45, 212, 191'
+      secondaryRgb = '94, 234, 212'
+    }
+  } else {
+    primaryRgb = isFintech ? '33, 62, 137' : isSklad ? '107, 114, 128' : '5, 150, 105'
+    accentRgbForShadow = isFintech ? '37, 99, 235' : isSklad ? '107, 114, 128' : '14, 184, 166'
+    secondaryRgb = isFintech ? '99, 102, 241' : isSklad ? '107, 114, 128' : '16, 185, 129'
+  }
+  root.style.setProperty('--russ-shadow-primary', `rgba(${primaryRgb}, ${shadowPrimaryAlpha})`)
+  root.style.setProperty('--russ-shadow-primary-light', `rgba(${primaryRgb}, ${shadowPrimaryLightAlpha})`)
   root.style.setProperty('--russ-shadow-accent', `rgba(${accentRgbForShadow}, 0.2)`)
   root.style.setProperty('--russ-shadow-accent-light', `rgba(${accentRgbForShadow}, 0.1)`)
   root.style.setProperty('--russ-shadow-secondary', `rgba(${secondaryRgb}, 0.1)`)
+
+  const successRgbForShadow = isSklad ? '107, 114, 128' : '34, 197, 94'
+  root.style.setProperty(
+    '--russ-shadow-success',
+    `rgba(${successRgbForShadow}, ${isDark ? 0.28 : 0.2})`
+  )
+  root.style.setProperty('--russ-shadow-warning', `rgba(245, 158, 11, ${isDark ? 0.22 : 0.15})`)
+
+  const contrastBg = isDark
+    ? colors.backgroundTertiary
+    : isSklad
+      ? '#374151'
+      : '#1e293b'
+  const contrastTextMuted = isDark ? colors.textTertiary : '#cbd5e1'
+  root.style.setProperty('--russ-bg-dark', contrastBg)
+  root.style.setProperty('--russ-text-light', contrastTextMuted)
 }
 
 /**

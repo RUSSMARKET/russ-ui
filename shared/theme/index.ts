@@ -8,7 +8,8 @@
  * 
  * 2. Используйте composable в компонентах:
  *    import { useTheme } from '@russ-ui/bibli/shared/theme'
- *    const { setTheme, colors } = useTheme('fintech')
+ *    const { setTheme, setColorScheme, toggleColorScheme, colors } = useTheme('fintech')
+ *    setColorScheme('dark') // тёмная палитра для текущего бренда (fintech / rusaisklad)
  * 
  * 3. Или установите тему глобально в app.vue:
  *    import { useTheme } from '@russ-ui/bibli/shared/theme'
