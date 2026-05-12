@@ -44,6 +44,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue'
 import { Menu } from '../../shared/ui'
 import CurrentProjectSwitcher from '../Project/CurrentProjectSwitcher.vue'
 
