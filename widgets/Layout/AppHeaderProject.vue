@@ -13,14 +13,14 @@
         </div>
         <h1 class="page_name">{{ pageTitle }}</h1>
       </div>
-      <div v-if="showProjectSwitcher" class="header-project-switcher desktop-switcher">
+      <!-- <div v-if="showProjectSwitcher" class="header-project-switcher desktop-switcher">
         <CurrentProjectSwitcher
           :project-options="projectOptions"
           :current-project-id="currentProjectId"
           :project-switching="projectSwitching"
           @change="handleProjectChange"
         />
-      </div>
+      </div> -->
       <div class="header-wrapper-menu">
         <a :href="supportHref" target="_blank" rel="noopener" class="support-header-btn">
           <span class="support-header-text">{{ supportLabel }}</span>
@@ -32,19 +32,18 @@
         <Menu ref="menuRef" id="overlay_menu" :model="menuItems" :popup="true" />
       </div>
     </div>
-    <div v-if="showProjectSwitcher" class="header-project-switcher mobile-switcher">
+    <!-- <div v-if="showProjectSwitcher" class="header-project-switcher mobile-switcher">
       <CurrentProjectSwitcher
         :project-options="projectOptions"
         :current-project-id="currentProjectId"
         :project-switching="projectSwitching"
         @change="handleProjectChange"
       />
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import { Menu } from '../../shared/ui'
 import CurrentProjectSwitcher from '../Project/CurrentProjectSwitcher.vue'
 
