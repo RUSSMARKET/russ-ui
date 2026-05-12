@@ -42,6 +42,7 @@ export { Card } from './Card';
 export { Chip } from './Chip';
 export { Form } from './Form';
 export { ProgressSpinner } from './ProgressSpinner';
+export { ProjectSwitchCard } from './ProjectSwitchCard';
 export { FileUpload } from './FileUpload';
 export { Checkbox } from './Checkbox';
 export { Menu } from './Menu';
