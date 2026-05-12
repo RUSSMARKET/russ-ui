@@ -596,8 +596,8 @@ const ruchnikFilters = computed<FilterConfig[]>(() => {
     items.push({
       key: "agentId",
       type: "select",
-      label: "Агент / РГ",
-      placeholder: "Все агенты и РГ",
+      label: "Агент",
+      placeholder: "Все агенты",
       options: agentOptions.value.map((a) => ({
         id: a.id,
         name: a.name,
@@ -699,8 +699,8 @@ const addRuchnikFilters = computed<FilterConfig[]>(() => {
   items.push({
     key: "agentId",
     type: "select",
-    label: "Агент / РГ",
-    placeholder: "Все агенты и РГ",
+    label: "Агент",
+    placeholder: "Все агенты",
     options: agentOptions.value.map((a) => ({
       id: a.id,
       name: a.name,
@@ -795,8 +795,8 @@ const editRuchnikFilters = computed<FilterConfig[]>(() => {
   items.push({
     key: "agentId",
     type: "select",
-    label: "Агент / РГ",
-    placeholder: "Все агенты и РГ",
+    label: "Агент",
+    placeholder: "Все агенты",
     options: agentOptions.value.map((a) => ({
       id: a.id,
       name: a.name,
