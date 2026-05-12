@@ -71,7 +71,6 @@ const props = withDefaults(defineProps<{
   projectSelectionRequired: false, noProjectsAvailable: false,
 })
 
-/** Слушайте @project-change — проп onProjectChange в Vue 3 может не дойти до компонента (префикс on + заглавная). */
 const emit = defineEmits<{ (e: 'projectChange', value: string | number | null): void }>()
 
 const menuRef = ref<any>(null)
