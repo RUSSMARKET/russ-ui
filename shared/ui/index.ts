@@ -27,6 +27,7 @@ export { UnifiedPageHeader, HeaderTabToolbar, InventoryLinesHeader } from './pag
 export { ProjectSelect } from './project';
 export { default as Pill } from './Pill';
 export { EditShiftsModal } from './EditShiftsModal';
+export type { EditModalStaffSummary } from './EditShiftsModal/types';
 export { QRModal } from './QRModal';
 export { YandexQRModal } from './YandexQRModal';
 export { ExtraditionModal } from './ExtraditionModal';

@@ -155,6 +155,8 @@ const handleReset = () => {
       resetValue[filter.key] = null;
     } else if (filter.type === 'date-range') {
       resetValue[filter.key] = { from: null, to: null };
+    } else if (filter.type === 'custom') {
+      resetValue[filter.key] = null;
     } else {
       resetValue[filter.key] = '';
     }
