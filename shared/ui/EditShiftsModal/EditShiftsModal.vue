@@ -98,17 +98,17 @@
           type="button"
           class="mode-chip"
           :class="{ 'mode-chip-on': paintMode }"
-          title="Клик по ячейке ставит или снимает смену (активный интервал сверху)."
+          title="Один клик по ячейке: поставить или снять смену с выбранным шаблоном (сверху). Если в ячейке уже другая смена — клик заменит её на выбранный шаблон."
           @click="togglePaintMode"
         >
-          <i class="pi pi-palette" aria-hidden="true" />
-          Кисть
+          <i class="pi pi-check-square" aria-hidden="true" />
+          По клику
         </button>
         <button
           type="button"
           class="mode-chip"
           :class="{ 'mode-chip-on': rangeSelectMode }"
-          title="Первый клик — угол, второй клик — противоположный угол (прямоугольник). Повторный клик по первой ячейке — сброс"
+          title="Первый клик — угол, второй — противоположный угол прямоугольника; область добавляется к выделению, можно задать несколько прямоугольников подряд. Сброс — кнопка «Сброс выделения»."
           @click="toggleRangeSelectMode"
         >
           <i class="pi pi-table" aria-hidden="true" />
@@ -124,9 +124,9 @@
     <div class="table-container-edit" :class="{ 'paint-mode-on': paintMode }">
       <div v-if="rectSelectNeedsSecondClick" class="rect-corner-hint">
         <span class="rect-corner-hint-mark" aria-hidden="true">1</span>
-        <span>Угол отмечен — кликните <strong>вторую</strong> ячейку области. Повторный клик по первой сбрасывает.</span>
+        <span>Угол отмечен — кликните <strong>вторую</strong> ячейку области; ячейки добавятся к выделению. Затем можно снова отметить угол и задать ещё область. Повторный клик по первой ячейке снимает только текущий угол.</span>
       </div>
-      <div v-else-if="rectSelectionCount > 0" class="rect-selection-bar">
+      <div v-if="rectSelectionCount > 0" class="rect-selection-bar">
         <span class="rect-selection-label">Выбрано ячеек: {{ rectSelectionCount }}</span>
         <button type="button" class="rect-bar-btn rect-bar-primary" @click="applyRectSelection">
           Поставить интервал
@@ -533,7 +533,8 @@ const dayEditIntervalId = ref<number | null>(null);
 const paintMode = ref(false);
 const rangeSelectMode = ref(false);
 const rectAnchor = ref<{ staffId: number; date: string } | null>(null);
-const rectEnd = ref<{ staffId: number; date: string } | null>(null);
+/** Объединённое выделение: несколько прямоугольников подряд без дублирования ячеек. */
+const accumulatedRectCells = ref<Map<string, { userId: number; date: string }>>(new Map());
 let longPressTimer: number | null = null;
 
 function syntheticToggleEvent(nextChecked: boolean): Event {
@@ -551,10 +552,14 @@ function dateColIndex(date: string): number {
   return props.editModalMonthDates.indexOf(date);
 }
 
-const rectSelectedCells = computed(() => {
-  const a = rectAnchor.value;
-  const b = rectEnd.value;
-  if (!a || !b) return [];
+function rectCellKey(userId: number, date: string): string {
+  return `${userId}_${date}`;
+}
+
+function computeRectCellsBetween(
+  a: { staffId: number; date: string },
+  b: { staffId: number; date: string }
+): { userId: number; date: string }[] {
   const i0 = staffRowIndex(a.staffId);
   const i1 = staffRowIndex(b.staffId);
   const d0 = dateColIndex(a.date);
@@ -574,27 +579,35 @@ const rectSelectedCells = computed(() => {
     }
   }
   return out;
-});
+}
 
-const rectSelectionCount = computed(() => rectSelectedCells.value.length);
+function mergeRectCellsIntoAccumulated(cells: { userId: number; date: string }[]) {
+  const m = new Map(accumulatedRectCells.value);
+  for (const c of cells) {
+    m.set(rectCellKey(c.userId, c.date), c);
+  }
+  accumulatedRectCells.value = m;
+}
+
+const rectSelectionCount = computed(() => accumulatedRectCells.value.size);
 
 const rectSelectNeedsSecondClick = computed(
-  () => rangeSelectMode.value && !!rectAnchor.value && !rectEnd.value
+  () => rangeSelectMode.value && !!rectAnchor.value
 );
 
 function isRectHighlight(staffId: number, date: string): boolean {
-  return rectSelectedCells.value.some((c) => c.userId === staffId && c.date === date);
+  return accumulatedRectCells.value.has(rectCellKey(staffId, date));
 }
 
 /** Первая точка прямоугольника выбрана, ждём второй клик — подсветка угла. */
 function isRectAnchorAwaitingSecond(staffId: number, date: string): boolean {
-  if (!rangeSelectMode.value || !rectAnchor.value || rectEnd.value) return false;
+  if (!rangeSelectMode.value || !rectAnchor.value) return false;
   return rectAnchor.value.staffId === staffId && rectAnchor.value.date === date;
 }
 
 function resetRectSelection() {
   rectAnchor.value = null;
-  rectEnd.value = null;
+  accumulatedRectCells.value = new Map();
 }
 
 function togglePaintMode() {
@@ -613,34 +626,65 @@ function toggleRangeSelectMode() {
     resetRectSelection();
   } else {
     paintMode.value = false;
+    resetRectSelection();
   }
+}
+
+function resolveIntervalIdFromCellDisplay(userId: number, date: string): number | null {
+  const disp = props.getShiftDisplayTime(userId, date);
+  if (!disp) return null;
+  const found = props.plannedShiftIntervals.find((i: PlannedShiftInterval) => {
+    const st = i.start_time.slice(0, 5);
+    const en = i.end_time.slice(0, 5);
+    return disp === `${st}-${en}`;
+  });
+  return found?.id ?? null;
 }
 
 function onMainTileClick(ev: MouseEvent, staffId: number, date: string) {
   if (props.isPastDate(date)) return;
   if (rangeSelectMode.value) {
     if (ev.shiftKey && rectAnchor.value) {
-      rectEnd.value = { staffId, date };
+      mergeRectCellsIntoAccumulated(
+        computeRectCellsBetween(rectAnchor.value, { staffId, date })
+      );
+      rectAnchor.value = null;
       return;
     }
     const a = rectAnchor.value;
     if (!a) {
       rectAnchor.value = { staffId, date };
-      rectEnd.value = null;
       return;
     }
     const sameCell = a.staffId === staffId && a.date === date;
     if (sameCell) {
       rectAnchor.value = null;
-      rectEnd.value = null;
       return;
     }
-    rectEnd.value = { staffId, date };
+    mergeRectCellsIntoAccumulated(computeRectCellsBetween(a, { staffId, date }));
+    rectAnchor.value = null;
     return;
   }
   const visuallyOn =
     props.hasShiftOnDate(staffId, date) ||
     props.isPendingShiftSelection(staffId, date);
+  const sel = props.selectedIntervalId;
+  const hasSelectedInterval =
+    sel !== undefined && sel !== null && sel !== '';
+  if (paintMode.value && hasSelectedInterval && visuallyOn) {
+    const currentId = resolveIntervalIdFromCellDisplay(staffId, date);
+    const selectedNum = Number(sel);
+    const sameAsSelected =
+      currentId != null && Number(currentId) === selectedNum;
+    if (!sameAsSelected) {
+      emit('update-shift-immediate', {
+        userId: staffId,
+        date,
+        intervalId: selectedNum,
+      });
+      return;
+    }
+  }
   const nextChecked = !visuallyOn;
   emit('toggle-shift', staffId, date, syntheticToggleEvent(nextChecked));
 }
@@ -671,15 +715,19 @@ function onTileLongPressEnd() {
   }
 }
 
+function getAccumulatedRectCellsArray(): { userId: number; date: string }[] {
+  return [...accumulatedRectCells.value.values()];
+}
+
 function applyRectSelection() {
-  const cells = rectSelectedCells.value;
+  const cells = getAccumulatedRectCellsArray();
   if (!cells.length) return;
   emit('apply-shifts-cells', { cells });
   resetRectSelection();
 }
 
 function emitClearRectCells() {
-  const cells = rectSelectedCells.value;
+  const cells = getAccumulatedRectCellsArray();
   if (!cells.length) return;
   emit('clear-shifts-cells', { cells });
   resetRectSelection();
