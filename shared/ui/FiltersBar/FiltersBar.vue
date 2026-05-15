@@ -2,8 +2,16 @@
   <div class="filters-bar-wrapper">
     <!-- Mobile filters button -->
     <div v-if="showMobileButton" class="mobile-filters-btn-wrapper">
-      <button class="mobile-filters-btn" @click="toggleMobileFilters" title="Фильтры">
-        <i class="pi pi-filter"></i>
+      <button
+        type="button"
+        class="reporting-header-action reporting-header-action--filters"
+        title="Фильтры"
+        @click="toggleMobileFilters"
+      >
+        <span class="reporting-header-action-icon" aria-hidden="true">
+          <i class="pi pi-filter"></i>
+        </span>
+        <span class="reporting-header-action-label reporting-header-action-label--single">Фильтры</span>
         <span v-if="hasActiveFilters" class="filter-indicator"></span>
       </button>
     </div>
@@ -68,6 +76,7 @@
 </template>
 
 <script setup lang="ts">
+import '../../styles/reporting-header-actions.css';
 import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import { FilterItem } from '../FilterItem';
 
@@ -120,7 +129,9 @@ const wrapperRef = ref<HTMLElement | null>(null);
 // Проверяем, находится ли компонент внутри модального окна
 const checkIfInsideModal = () => {
   if (!wrapperRef.value) return;
-  const modal = wrapperRef.value.closest('.base-modal, .modal-overlay, [class*="modal"], [class*="Modal"], .staff-results-base-modal, .effectiveness-base-modal');
+  const modal = wrapperRef.value.closest(
+    '.base-modal, .modal-overlay, .planned-shifts-page, .edit-shifts-embedded, [class*="modal"], [class*="Modal"], .staff-results-base-modal, .effectiveness-base-modal',
+  );
   isInsideModal.value = !!modal;
 };
 
@@ -242,41 +253,13 @@ onMounted(() => {
 .mobile-filters-btn-wrapper {
   display: none;
   margin-bottom: 0;
-  align-items: center;
+  align-items: stretch;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.mobile-filters-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  border: 2px solid #cbd5e1;
-  border-radius: 12px;
-  padding: 14px;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  color: var(--russ-text-secondary);
-  font-size: clamp(18px, calc(18px + (24 - 18) * ((100vw - 320px) / (1920 - 320))), 24px);
-  min-width: 48px;
-  height: 48px;
-}
-
-.mobile-filters-btn:hover {
-  background: linear-gradient(135deg, var(--russ-border-light) 0%, var(--russ-border-dark) 100%);
-  border-color: var(--russ-border-dark);
-  color: var(--russ-text-secondary);
-}
-
-.filter-indicator {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 8px;
-  height: 8px;
-  background: var(--russ-error);
-  border-radius: 50%;
-  border: 2px solid var(--russ-text-inverse);
+.mobile-filters-btn-wrapper .reporting-header-action.reporting-header-action--filters {
+  width: 100%;
 }
 
 .filters-container {
@@ -436,10 +419,15 @@ onMounted(() => {
 
 /* Responsive */
 @media (max-width: 1024px) {
+  .filters-bar-wrapper {
+    flex-wrap: wrap;
+    align-items: stretch;
+  }
+
   .mobile-filters-btn-wrapper {
-    display: inline-flex;
-    margin-left: auto;
-    justify-content: flex-end;
+    display: flex;
+    margin-left: 0;
+    justify-content: stretch;
   }
 
   /* Скрываем desktop-фильтры на мобильных устройствах */
@@ -452,6 +440,8 @@ onMounted(() => {
   /* Проверяем, что мы внутри модального окна */
   .base-modal .desktop-filters.always-visible,
   .modal-overlay .desktop-filters.always-visible,
+  .planned-shifts-page .desktop-filters.always-visible,
+  .edit-shifts-embedded .desktop-filters.always-visible,
   [class*="modal"] .desktop-filters.always-visible,
   [class*="Modal"] .desktop-filters.always-visible {
     display: flex !important;

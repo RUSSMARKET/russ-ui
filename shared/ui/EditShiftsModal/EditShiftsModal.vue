@@ -1,23 +1,20 @@
 <template>
-  <BaseModal
-    :model-value="visible"
-    class="edit-shifts-base-modal"
-    title="Редактирование запланированных смен"
-    :width="1520"
-    maxWidth="1680px"
-    @update:modelValue="(val: boolean) => { if (!val) $emit('close'); }"
+  <component
+    :is="embedded ? 'div' : BaseModal"
+    v-bind="wrapperBind"
+    @update:modelValue="onWrapperModelUpdate"
   >
-    <div>
+    <div :class="embedded ? 'edit-shifts-embedded-inner' : 'edit-shifts-modal-inner'">
       <FiltersBar
         :filters="filterConfigs"
         :model-value="filterValues"
-        :show-mobile-button="false"
+        :show-mobile-button="embedded"
         @update:model-value="handleFiltersUpdate"
         @filter-change="handleFilterChange"
         @reset="handleReset"
       />
-    </div>
 
+    <div class="edit-shifts-table-stack">
     <div class="table-controls-section">
       <div class="controls-row">
         <div class="shift-settings-compact shift-settings-wide">
@@ -26,28 +23,66 @@
             Интервалы:
           </span>
           <div class="interval-palette-wrap">
-            <div
-              v-if="plannedShiftIntervals.length === 0"
-              class="interval-palette-empty"
-            >
-              Нет сохранённых интервалов
-            </div>
-            <div v-else class="interval-palette" role="tablist" aria-label="Шаблоны смен">
-              <button
-                v-for="interval in plannedShiftIntervals"
-                :key="interval.id"
-                type="button"
-                role="tab"
-                :aria-selected="Number(selectedIntervalId) === Number(interval.id)"
-                :class="[
-                  'interval-chip',
-                  { 'interval-chip-active': Number(selectedIntervalId) === Number(interval.id) },
-                ]"
-                :title="formatIntervalFullLabel(interval)"
-                @click="handleIntervalSelect(interval.id)"
+            <div class="interval-palette-desktop">
+              <div
+                v-if="plannedShiftIntervals.length === 0"
+                class="interval-palette-empty"
               >
-                {{ formatIntervalFullLabel(interval) }}
-              </button>
+                Нет сохранённых интервалов
+              </div>
+              <div
+                v-else
+                class="interval-palette"
+                role="tablist"
+                aria-label="Шаблоны смен"
+              >
+                <button
+                  v-for="interval in plannedShiftIntervals"
+                  :key="interval.id"
+                  type="button"
+                  role="tab"
+                  :aria-selected="
+                    Number(selectedIntervalId) === Number(interval.id)
+                  "
+                  :class="[
+                    'interval-chip',
+                    {
+                      'interval-chip-active':
+                        Number(selectedIntervalId) === Number(interval.id),
+                    },
+                  ]"
+                  :title="formatIntervalFullLabel(interval)"
+                  @click="handleIntervalSelect(interval.id)"
+                >
+                  {{ formatIntervalFullLabel(interval) }}
+                </button>
+              </div>
+            </div>
+            <div class="interval-palette-mobile">
+              <div
+                v-if="plannedShiftIntervals.length === 0"
+                class="interval-palette-empty"
+              >
+                Нет сохранённых интервалов
+              </div>
+              <select
+                v-else
+                class="interval-template-select"
+                :value="selectedIntervalSelectValue"
+                aria-label="Шаблон смены"
+                @change="onIntervalNativeChange($event)"
+              >
+                <option value="" disabled>
+                  Выберите шаблон смены
+                </option>
+                <option
+                  v-for="interval in plannedShiftIntervals"
+                  :key="'m-iv-' + interval.id"
+                  :value="String(interval.id)"
+                >
+                  {{ formatIntervalFullLabel(interval) }}
+                </option>
+              </select>
             </div>
             <button
               type="button"
@@ -68,9 +103,7 @@
           >
             <i class="pi pi-chevron-left"></i>
           </button>
-          <span class="pagination-info"
-            >{{ editModePage }} / {{ editModeLastPage }}</span
-          >
+          <span class="pagination-info">{{ editModePage }} / {{ editModeLastPage }}</span>
           <button
             class="pagination-btn"
             :disabled="editModePage >= editModeLastPage"
@@ -117,7 +150,7 @@
         <span
           v-if="selectedIntervalId == null || selectedIntervalId === ''"
           class="toolbar-interval-hint"
-        >Выберите интервал сверху</span>
+        >Выберите интервал</span>
       </div>
     </div>
 
@@ -372,7 +405,9 @@
         Нет сотрудников для отображения
       </div>
     </div>
-    <template #footer>
+    </div>
+    </div>
+    <template v-if="!embedded" #footer>
       <button
         class="btn-primary"
         :disabled="!canSubmitPendingBatch"
@@ -384,7 +419,7 @@
         Закрыть
       </button>
     </template>
-  </BaseModal>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -396,6 +431,7 @@ import MonthPicker from '../MonthPicker/MonthPicker.vue';
 import type { Staff, PlannedShiftInterval, EditModalStaffSummary } from './types';
 
 interface Props {
+  embedded?: boolean;
   visible: boolean;
   loading: boolean;
   search: string;
@@ -433,7 +469,9 @@ interface Props {
   getShiftTooltip: (userId: number, date: string) => string;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  embedded: false,
+});
 
 const emit = defineEmits<{
   'close': [];
@@ -454,6 +492,25 @@ const emit = defineEmits<{
   'apply-shifts-cells': [payload: { cells: { userId: number; date: string }[] }];
   'clear-shifts-cells': [payload: { cells: { userId: number; date: string }[] }];
 }>();
+
+const wrapperBind = computed(() => {
+  if (props.embedded) {
+    return { class: 'edit-shifts-embedded' };
+  }
+  return {
+    modelValue: props.visible,
+    class: 'edit-shifts-base-modal',
+    title: 'Редактирование запланированных смен',
+    width: 1520,
+    maxWidth: '1680px',
+  };
+});
+
+function onWrapperModelUpdate(val: boolean) {
+  if (!props.embedded && !val) {
+    emit('close');
+  }
+}
 
 const EMPTY_SUMMARY: EditModalStaffSummary = {
   planHoursTotal: '—',
@@ -785,6 +842,23 @@ function handleIntervalSelect(value: number | string | undefined) {
   }
 }
 
+const selectedIntervalSelectValue = computed(() => {
+  const s = props.selectedIntervalId;
+  if (s === undefined || s === null || s === '') return '';
+  return String(s);
+});
+
+function onIntervalNativeChange(ev: Event) {
+  const el = ev.target as HTMLSelectElement;
+  const raw = el.value;
+  if (raw === '') {
+    handleIntervalSelect(undefined);
+    return;
+  }
+  const n = Number(raw);
+  handleIntervalSelect(Number.isNaN(n) ? raw : n);
+}
+
 onUnmounted(() => {
   document.removeEventListener('pointerdown', onDocumentPointerDown, true);
   onTileLongPressEnd();
@@ -934,12 +1008,20 @@ const handleReset = () => {
   margin-bottom: 20px;
 }
 
+.edit-shifts-table-stack {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 .table-controls-section {
-  margin-bottom: 12px;
-  padding: 0;
-  background: transparent;
-  border: none;
-  border-radius: 0;
+  margin-bottom: 0;
+  padding: 12px 16px 8px;
+  background: var(--russ-bg);
+  border: 1.5px solid var(--russ-border);
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 2px 12px var(--russ-shadow-primary-light),
+    0 1.5px 4px var(--russ-shadow-color);
   width: 100%;
   box-sizing: border-box;
 }
@@ -1009,7 +1091,7 @@ const handleReset = () => {
   color: var(--russ-text-muted);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .controls-row {
     flex-wrap: wrap;
     gap: 12px;
@@ -1058,6 +1140,56 @@ const handleReset = () => {
   gap: 8px;
   flex: 1;
   min-width: 0;
+}
+
+.interval-palette-desktop {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: flex-start;
+}
+
+.interval-palette-mobile {
+  display: none;
+  flex: 1;
+  min-width: 0;
+  align-items: stretch;
+}
+
+.interval-template-select {
+  width: 100%;
+  min-height: var(--ui-control-height, 40px);
+  padding: 8px 32px 8px 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--russ-border);
+  background: var(--russ-bg);
+  color: var(--russ-text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.interval-template-select:focus {
+  outline: none;
+  border-color: var(--russ-primary);
+  box-shadow: 0 0 0 3px var(--russ-shadow-accent-light);
+}
+
+@media (max-width: 1024px) {
+  .interval-palette-desktop {
+    display: none !important;
+  }
+
+  .interval-palette-mobile {
+    display: flex;
+  }
+
+  .interval-palette-mobile .interval-palette-empty {
+    font-size: 11px;
+    line-height: 1.3;
+  }
 }
 
 .interval-palette {
@@ -1502,12 +1634,13 @@ const handleReset = () => {
 
 
 .table-container-edit {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.05),
-    0 1.5px 4px rgba(0, 0, 0, 0.03);
+  background: var(--russ-bg);
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 2px 12px var(--russ-shadow-primary-light),
+    0 1.5px 4px var(--russ-shadow-color);
   border: 1.5px solid var(--russ-border);
-  margin-top: 16px;
+  border-top: none;
+  margin-top: 0;
   position: relative;
   padding-bottom: 12px;
 }
@@ -2024,5 +2157,208 @@ const handleReset = () => {
 .btn-cancel-modern:hover {
   background: var(--russ-bg-secondary);
   border-color: var(--russ-border-dark);
+}
+
+/* Мобилка: без липких краёв (ФИО + сводка) — иначе перекрывают все дни; горизонтальный скролл. */
+@media (max-width: 1024px) {
+  .table-controls-section {
+    padding: 10px 12px 8px;
+  }
+
+  .table-responsive-edit {
+    max-height: min(72vh, 640px);
+    overflow-x: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .staff-table-edit {
+    font-size: 11px;
+    min-width: max-content;
+  }
+
+  .sticky-col-edit.left-col-edit {
+    position: static;
+    left: auto;
+    z-index: auto;
+  }
+
+  .staff-table-edit thead th.left-col-edit {
+    position: sticky;
+    top: 0;
+    left: auto;
+    z-index: 15;
+    background: var(--russ-bg-blue-light);
+  }
+
+  .sticky-summary-pack {
+    position: static;
+    right: auto;
+    z-index: auto;
+    min-width: 0;
+    max-width: none;
+    width: auto;
+    box-shadow: none;
+  }
+
+  .summary-head-cell {
+    z-index: 15 !important;
+  }
+
+  .summary-inner-head,
+  .summary-inner-body {
+    grid-template-columns: repeat(7, minmax(26px, 1fr));
+    gap: 1px;
+    font-size: 8px;
+  }
+
+  .staff-table-edit th,
+  .staff-table-edit td {
+    height: auto;
+    min-height: 36px;
+    padding: 2px;
+    font-size: 10px;
+  }
+
+  .staff-table-edit th {
+    z-index: 10;
+  }
+
+  .wide-col-edit {
+    min-width: 72px !important;
+    max-width: 96px;
+    width: 88px;
+    font-size: 10px;
+    padding: 2px 4px;
+  }
+
+  .staff-name-edit {
+    font-size: 11px;
+    padding: 3px;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .staff-code-edit {
+    font-size: 9px;
+  }
+
+  .date-number-edit {
+    font-size: 11px;
+  }
+
+  .weekday-name-edit {
+    font-size: 7px;
+  }
+
+  .shift-cell-wrap {
+    min-width: 44px;
+    max-width: 56px;
+  }
+
+  .shift-cell-tile {
+    min-height: 40px;
+    height: 40px;
+    max-height: 40px;
+    padding: 2px 4px;
+    font-size: 10px;
+  }
+
+  .shift-cell-edit {
+    width: 22px;
+    height: 22px;
+    font-size: 10px;
+  }
+
+  .shift-time-compact {
+    gap: 0;
+  }
+
+  .shift-time-dur-hero {
+    font-size: 11px;
+  }
+
+  .shift-time-start-muted {
+    font-size: 8px;
+  }
+
+  .day-edit-popover {
+    left: 0;
+    right: 0;
+    top: calc(100% + 6px);
+    transform: none;
+    max-width: none;
+    width: min(100%, 280px);
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .table-responsive-edit {
+    max-height: min(68vh, 560px);
+  }
+
+  .staff-table-edit th,
+  .staff-table-edit td {
+    min-height: 34px;
+    padding: 1px;
+    font-size: 9px;
+  }
+
+  .wide-col-edit {
+    min-width: 64px !important;
+    max-width: 84px;
+    width: 72px;
+  }
+
+  .shift-cell-wrap {
+    min-width: 40px;
+    max-width: 48px;
+  }
+
+  .shift-cell-tile {
+    min-height: 36px;
+    height: 36px;
+    max-height: 36px;
+    padding: 1px 3px;
+  }
+
+  .summary-inner-head,
+  .summary-inner-body {
+    grid-template-columns: repeat(7, minmax(22px, 1fr));
+    font-size: 7px;
+  }
+}
+
+.edit-shifts-embedded {
+  width: 100%;
+  min-height: 0;
+}
+
+.edit-shifts-embedded-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  min-height: 0;
+}
+
+.edit-shifts-modal-inner .table-controls-section {
+  margin-bottom: 0;
+  border-radius: 12px;
+}
+
+.edit-shifts-modal-inner .table-container-edit {
+  margin-top: 12px;
+  border-radius: 12px;
+  border-top: 1.5px solid var(--russ-border);
+}
+
+.edit-shifts-modal-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
 }
 </style>
