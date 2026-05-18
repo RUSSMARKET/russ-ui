@@ -1,0 +1,177 @@
+/**
+ * Единый вид кнопок в шапке (отчётность, заявки, мобильные фильтры в FiltersBar и т.д.)
+ */
+
+.reporting-header-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 10px 18px;
+  background: var(--russ-bg);
+  color: var(--russ-primary);
+  border: 1.5px solid var(--russ-border);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  line-height: 1.2;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.reporting-header-action:hover {
+  background: var(--russ-bg-secondary);
+  border-color: var(--russ-primary);
+  color: var(--russ-primary-dark);
+}
+
+.reporting-header-action:focus-visible {
+  outline: none;
+  border-color: var(--russ-primary);
+  box-shadow: 0 0 0 3px var(--russ-shadow-accent-light);
+}
+
+.reporting-header-action-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9px;
+  background: var(--russ-bg-tertiary);
+  flex-shrink: 0;
+}
+
+.reporting-header-action-icon i {
+  font-size: 0.9375rem;
+  line-height: 1;
+  width: 1em;
+  margin: 0;
+  color: var(--russ-primary);
+}
+
+.reporting-header-action-label {
+  display: inline-flex;
+  align-items: center;
+}
+
+.reporting-header-action-label-compact {
+  display: none;
+}
+
+/* На десктопе отдельная кнопка «Фильтры» в шапке страницы скрыта — показывается только mobile / FiltersBar */
+.reporting-header-action--filters {
+  display: none;
+}
+
+.filter-indicator {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  background: var(--russ-error);
+  border-radius: 50%;
+  border: 2px solid var(--russ-bg);
+  box-sizing: border-box;
+}
+
+.reporting-header-action--filters .filter-indicator {
+  border-color: var(--russ-info-light);
+}
+
+@media (max-width: 1024px) {
+  .reporting-header-action {
+    padding: 10px 14px;
+    font-size: 13px;
+    gap: 6px;
+  }
+
+  .reporting-header-action-label-full {
+    display: none;
+  }
+
+  .reporting-header-action-label-compact {
+    display: inline;
+  }
+
+  .reporting-header-action--filters {
+    display: inline-flex;
+    background: var(--russ-info-light);
+    border: 1.5px dashed var(--russ-primary);
+    border-radius: 12px;
+    color: var(--russ-primary);
+  }
+
+  .reporting-header-action--filters:hover {
+    background: var(--russ-bg-secondary);
+    border-style: solid;
+    border-color: var(--russ-primary);
+    color: var(--russ-primary-dark);
+  }
+
+  .reporting-header-action--filters .reporting-header-action-icon {
+    background: var(--russ-primary);
+  }
+
+  .reporting-header-action--filters .reporting-header-action-icon i {
+    color: var(--russ-text-inverse);
+  }
+
+  .reporting-header-action-icon {
+    width: 1.875rem;
+    height: 1.875rem;
+    border-radius: 8px;
+  }
+
+  .reporting-header-action-icon i {
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .reporting-header-action {
+    padding: 8px 12px;
+    font-size: 12px;
+    min-height: 40px;
+  }
+
+  .reporting-header-action-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .reporting-header-action-icon i {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .reporting-header-action {
+    padding: 7px 10px;
+    font-size: 11px;
+    min-height: 38px;
+  }
+
+  .reporting-header-action-icon {
+    width: 1.625rem;
+    height: 1.625rem;
+    border-radius: 7px;
+  }
+
+  .reporting-header-action-icon i {
+    font-size: 0.75rem;
+  }
+}

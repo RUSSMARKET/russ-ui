@@ -39,3 +39,13 @@ export interface PlannedShiftInterval {
   end_time: string;
   timezone: number;
 }
+
+export interface EditModalStaffSummary {
+  planHoursTotal: string;
+  planShiftCount: string;
+  factHoursTotal: string;
+  yandex: string;
+  dvd: string;
+  coeffTotal: string;
+  coeffPerHour: string;
+}

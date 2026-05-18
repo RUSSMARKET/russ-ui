@@ -322,9 +322,9 @@ function calculateDropdownPosition() {
     }
   }
 
-  // Используем fixed позиционирование для отображения поверх модалок.
-  // Значение должно быть выше типичных z-index модалок/оверлеев в приложениях-потребителях.
-  const baseZIndex = 10000;
+  // Поверх BaseModal (по умолчанию 10000) и вложенных модалок (например 12000+).
+  // Согласовано с DatePicker / TimePicker в bibli (100000).
+  const baseZIndex = 100000;
   const safeMaxHeight = (value) => `${Math.max(120, Math.min(value, 265))}px`;
   
   if (openUpward.value) {
@@ -619,7 +619,7 @@ watch(() => props.loading, (isLoading) => {
   position: absolute;
   left: 0;
   right: 0;
-  z-index: 999;
+  z-index: 100000;
   background: var(--russ-input-bg);
   border: 1.5px solid var(--russ-border);
   border-radius: 10px;
