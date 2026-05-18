@@ -8,3 +8,4 @@ export * from './ArticlesStories';
 export * from './KpiCalendar';
 export * from './Layout'; 
 export * from './Project';
+export * from './Auth';
