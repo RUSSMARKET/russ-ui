@@ -1,5 +1,5 @@
 <template>
-    <BaseModal :modelValue="visible" size="sm" max-width="520px" class="effectiveness-base-modal"
+    <BaseModal :modelValue="visible" size="sm" max-width="640px" class="effectiveness-base-modal reporting-modal"
         @update:modelValue="(v: boolean) => { if (!v) closeModal(); }">
         <template #header>
             <div class="modal-title">
@@ -9,7 +9,14 @@
         </template>
 
         <div class="modal-content">
-            <div class="filters-section">
+            <div class="reporting-modal-filters">
+                <div class="reporting-modal-filters-head">
+                    <span class="reporting-modal-filters-title">Параметры отчёта</span>
+                    <span v-if="activeContextLabel" class="reporting-modal-context">
+                        <i class="pi pi-map-marker" aria-hidden="true"></i>
+                        {{ activeContextLabel }}
+                    </span>
+                </div>
                 <FiltersBar :filters="filterConfigs" :model-value="filterValues" :show-reset-button="false"
                     :show-mobile-button="false" @update:model-value="handleFiltersUpdate"
                     @filter-change="handleFilterChange" />
@@ -17,16 +24,24 @@
         </div>
 
         <template #footer>
-            <button class="btn-export" @click="handleExport"
-                :disabled="isExporting || !filters.project || filters.project === undefined"
-                :class="{ 'btn-export-loading': isExporting }">
-                <i v-if="!isExporting && filters.project" class="pi pi-external-link"></i>
-                <span v-if="isExporting" class="loader"></span>
-                {{ isExporting ? 'Открытие...' : (filters.project ? 'Открыть в Excel' : 'Выберите проект') }}
-            </button>
-            <button class="btn-close" @click="closeModal">
-                Закрыть
-            </button>
+            <div class="reporting-modal-footer">
+                <button
+                    type="button"
+                    class="reporting-header-action"
+                    :disabled="isExporting || !filters.project"
+                    @click="handleExport"
+                >
+                    <span class="reporting-header-action-icon" aria-hidden="true">
+                        <i :class="isExporting ? 'pi pi-spin pi-spinner' : 'pi pi-external-link'"></i>
+                    </span>
+                    <span class="reporting-header-action-label reporting-header-action-label--single">
+                        {{ exportButtonLabel }}
+                    </span>
+                </button>
+                <button type="button" class="reporting-header-action reporting-header-action--text-only" @click="closeModal">
+                    <span class="reporting-header-action-label reporting-header-action-label--single">Закрыть</span>
+                </button>
+            </div>
         </template>
     </BaseModal>
 </template>
@@ -36,7 +51,9 @@ import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import { FiltersBar, type FilterConfig, BaseModal } from '@/shared/ui';
 import { useToast } from '../Toast';
 import { useProjects, useAgents } from '@/shared/composables';
+import { applySingleProjectPointDefaults } from '../../utils';
 import type { Agent } from '@/stores/agents';
+import '../../styles/reporting-modal.css';
 
 export interface ShiftReportField {
     id?: number;
@@ -143,6 +160,35 @@ const pointOptions = computed(() => {
     ];
 });
 
+const showProjectFilter = computed(() => projects.value.length !== 1);
+
+const showPointFilter = computed(() => {
+    if (!filters.value.project) return false;
+    return getPointsByProjectId(filters.value.project).length !== 1;
+});
+
+const exportButtonLabel = computed(() => {
+    if (isExporting.value) return 'Открытие...';
+    if (!filters.value.project) return 'Выберите проект';
+    return 'Открыть в Excel';
+});
+
+const activeContextLabel = computed(() => {
+    const parts: string[] = [];
+
+    if (!showProjectFilter.value && filters.value.project) {
+        const project = projects.value.find(p => p.id === filters.value.project);
+        if (project?.name) parts.push(project.name);
+    }
+
+    if (!showPointFilter.value && filters.value.project && filters.value.point) {
+        const point = getPointsByProjectId(filters.value.project).find(p => p.id === filters.value.point);
+        if (point?.name) parts.push(point.name);
+    }
+
+    return parts.join(' · ');
+});
+
 const userOptions = computed(() => {
     // Если выбран проект и точка, показываем агентов только для этой точки
     // Если выбран только проект, показываем агентов для этого проекта
@@ -176,77 +222,96 @@ const filterValues = computed(() => ({
     sortBy: filters.value.sort_by,
 }));
 
-const filterConfigs = computed((): FilterConfig[] => [
-    {
-        key: 'dateRange',
-        type: 'date-range' as const,
-        label: 'Период',
-        placeholder: 'Выберите период',
-    },
-    {
-        key: 'project',
-        type: 'select' as const,
-        label: 'Проект',
-        placeholder: (isLoadingData.value || isLoadingProjects.value) ? 'Загрузка...' : 'Проект',
-        options: projectOptions.value,
-        optionLabel: 'name',
-        optionValue: 'id',
-        searchable: false,
-        disabled: isLoadingData.value || isLoadingProjects.value,
-        onChange: () => onProjectChange(),
-    },
-    {
-        key: 'point',
-        type: 'select' as const,
-        label: 'Точка',
-        placeholder: isLoadingData.value ? 'Загрузка точек...' : (filters.value.project && filters.value.project !== undefined) ? 'Выберите точку' : 'Сначала выберите проект',
-        options: pointOptions.value,
-        optionLabel: 'name',
-        optionValue: 'id',
-        searchable: false,
-        disabled: isLoadingData.value || !filters.value.project || filters.value.project === undefined,
-    },
-    {
-        key: 'userId',
-        type: 'select' as const,
-        label: 'Агент',
-        placeholder: (isLoadingData.value || isLoadingAgents.value) ? 'Загрузка агентов...' : 'Выберите агента',
-        options: userOptions.value,
-        optionLabel: 'name',
-        optionValue: 'id',
-        searchable: false,
-        disabled: isLoadingData.value || isLoadingAgents.value,
-    },
-    {
-        key: 'options',
-        type: 'select' as const,
-        label: 'Метрика',
-        placeholder: isLoadingMetrics.value ? 'Загрузка метрик...' : (!filters.value.project || filters.value.project === undefined) ? 'Сначала выберите проект' : 'Все метрики',
-        options: metricOptions.value,
-        optionLabel: 'name',
-        optionValue: 'id',
-        searchable: false,
-        disabled: isLoadingMetrics.value || !filters.value.project || filters.value.project === undefined,
-    },
-    {
-        key: 'sortBy',
-        type: 'select' as const,
-        label: 'Сортировка',
-        placeholder: 'По фамилии',
-        options: sortByOptions.value,
-        optionLabel: 'name',
-        optionValue: 'id',
-        searchable: false,
-    },
-]);
+const filterConfigs = computed((): FilterConfig[] => {
+    const configs: FilterConfig[] = [
+        {
+            key: 'dateRange',
+            type: 'date-range' as const,
+            label: 'Период',
+            placeholder: 'Выберите период',
+        },
+    ];
+
+    if (showProjectFilter.value) {
+        configs.push({
+            key: 'project',
+            type: 'select' as const,
+            label: 'Проект',
+            placeholder: (isLoadingData.value || isLoadingProjects.value) ? 'Загрузка...' : 'Проект',
+            options: projectOptions.value,
+            optionLabel: 'name',
+            optionValue: 'id',
+            searchable: false,
+            disabled: isLoadingData.value || isLoadingProjects.value,
+            onChange: () => onProjectChange(),
+        });
+    }
+
+    if (showPointFilter.value) {
+        configs.push({
+            key: 'point',
+            type: 'select' as const,
+            label: 'Точка',
+            placeholder: isLoadingData.value ? 'Загрузка точек...' : (filters.value.project && filters.value.project !== undefined) ? 'Выберите точку' : 'Сначала выберите проект',
+            options: pointOptions.value,
+            optionLabel: 'name',
+            optionValue: 'id',
+            searchable: false,
+            disabled: isLoadingData.value || !filters.value.project || filters.value.project === undefined,
+        });
+    }
+
+    configs.push(
+        {
+            key: 'userId',
+            type: 'select' as const,
+            label: 'Агент',
+            placeholder: (isLoadingData.value || isLoadingAgents.value) ? 'Загрузка агентов...' : 'Выберите агента',
+            options: userOptions.value,
+            optionLabel: 'name',
+            optionValue: 'id',
+            searchable: false,
+            disabled: isLoadingData.value || isLoadingAgents.value,
+        },
+        {
+            key: 'options',
+            type: 'select' as const,
+            label: 'Метрика',
+            placeholder: isLoadingMetrics.value ? 'Загрузка метрик...' : (!filters.value.project || filters.value.project === undefined) ? 'Сначала выберите проект' : 'Все метрики',
+            options: metricOptions.value,
+            optionLabel: 'name',
+            optionValue: 'id',
+            searchable: false,
+            disabled: isLoadingMetrics.value || !filters.value.project || filters.value.project === undefined,
+        },
+        {
+            key: 'sortBy',
+            type: 'select' as const,
+            label: 'Сортировка',
+            placeholder: 'По фамилии',
+            options: sortByOptions.value,
+            optionLabel: 'name',
+            optionValue: 'id',
+            searchable: false,
+        },
+    );
+
+    return configs;
+});
 
 const handleFiltersUpdate = (values: Record<string, any>) => {
+    const oldProject = filters.value.project;
     filters.value.dateRange = values.dateRange || { from: undefined, to: undefined };
     filters.value.project = values.project || undefined;
     filters.value.point = values.point || undefined;
     filters.value.user_id = values.userId || undefined;
     filters.value.options = values.options || undefined;
     filters.value.sort_by = values.sortBy || undefined;
+
+    if (oldProject !== filters.value.project) {
+        filters.value.point = undefined;
+        applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
+    }
 };
 
 const handleFilterChange = (key: string, value: any) => {
@@ -257,7 +322,8 @@ const handleFilterChange = (key: string, value: any) => {
 
 const onProjectChange = () => {
     filters.value.point = undefined;
-    filters.value.options = undefined; // Сбрасываем выбранную метрику при смене проекта
+    filters.value.options = undefined;
+    applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
 };
 
 // Сбрасываем sort_by при изменении options, если выбраны опции, требующие options
@@ -448,7 +514,7 @@ const closeModal = async () => {
     }
 };
 
-watch(() => props.visible, (newVal) => {
+watch(() => props.visible, async (newVal) => {
     if (newVal) {
         const now = new Date();
         const dateRange = filters.value.dateRange || { from: undefined, to: undefined };
@@ -460,27 +526,23 @@ watch(() => props.visible, (newVal) => {
         }
         filters.value.dateRange = dateRange;
 
-        // Всегда вызываем загрузку - store сам проверит кэш и вернет данные из кэша или загрузит новые
-        // Это гарантирует, что данные будут загружены при первом открытии после обновления страницы
         isLoadingData.value = true;
 
-        const promises: Promise<any>[] = [
-            loadProjectsAndPoints(), // Store проверит кэш внутри
-            loadAgentsData(filters.value.project), // Загружаем агентов для выбранного проекта (если есть)
-        ];
+        try {
+            await Promise.all([
+                loadProjectsAndPoints(),
+                props.fetchShiftReportFieldsByProjects().then(response => {
+                    shiftReportFields.value = response.data;
+                }).catch(error => {
+                    console.error('Ошибка загрузки метрик:', error);
+                }),
+            ]);
 
-        // Метрики загружаем всегда (они специфичны для модалки)
-        promises.push(
-            props.fetchShiftReportFieldsByProjects().then(response => {
-                shiftReportFields.value = response.data;
-            }).catch(error => {
-                console.error('Ошибка загрузки метрик:', error);
-            })
-        );
-
-        Promise.all(promises).finally(() => {
+            applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
+            await loadAgentsData(filters.value.project);
+        } finally {
             isLoadingData.value = false;
-        });
+        }
     }
 });
 
@@ -488,14 +550,15 @@ watch(() => props.visible, (newVal) => {
 watch(() => filters.value.project, async (newProjectId, oldProjectId) => {
     if (!newProjectId) {
         filters.value.options = undefined;
-        filters.value.user_id = undefined; // Сбрасываем выбранного агента
+        filters.value.user_id = undefined;
+        filters.value.point = undefined;
+        return;
     }
 
-    // Если проект изменился, загружаем агентов для нового проекта
-    if (newProjectId && newProjectId !== oldProjectId) {
+    if (newProjectId !== oldProjectId) {
+        applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
         try {
             await loadAgentsData(newProjectId);
-            // Сбрасываем выбранного агента, так как список изменился
             filters.value.user_id = undefined;
         } catch (error) {
             console.error('Ошибка загрузки агентов для проекта:', error);
@@ -531,81 +594,12 @@ onMounted(() => {
     margin: 0;
     font-size: 20px;
     font-weight: 700;
-    color: #213e89;
+    color: var(--russ-primary);
 }
 
 .modal-content {
     display: flex;
     flex-direction: column;
     gap: 16px;
-}
-
-
-.loader {
-    width: 16px;
-    height: 16px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.btn-export {
-    background: linear-gradient(135deg, var(--russ-success) 0%, var(--russ-success-dark) 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 24px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-export:hover:not(:disabled) {
-    background: linear-gradient(135deg, var(--russ-success-dark) 0%, var(--russ-success-dark) 100%);
-    box-shadow: 0 4px 12px var(--russ-shadow-primary);
-}
-
-.btn-export:disabled {
-    background: var(--russ-text-quaternary);
-    color: var(--russ-text-tertiary);
-    cursor: not-allowed;
-    opacity: 0.7;
-    transform: none;
-    box-shadow: none;
-}
-
-.btn-export-loading {
-    background: linear-gradient(135deg, var(--russ-primary) 0%, var(--russ-primary-dark) 100%) !important;
-    color: white !important;
-    cursor: wait !important;
-}
-
-.btn-close {
-    background: var(--russ-bg-disabled);
-    color: var(--russ-text-secondary);
-    border: 1px solid var(--russ-border-dark);
-    border-radius: 8px;
-    padding: 12px 24px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btn-close:hover {
-    background: var(--russ-border);
-    color: var(--russ-primary);
-    border-color: var(--russ-primary);
 }
 </style>

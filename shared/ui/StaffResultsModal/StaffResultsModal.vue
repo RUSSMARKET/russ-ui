@@ -1,5 +1,5 @@
 <template>
-    <BaseModal :modelValue="visible" size="lg" class="staff-results-base-modal"
+    <BaseModal :modelValue="visible" size="lg" class="staff-results-base-modal reporting-modal"
         @update:modelValue="(v: boolean) => { if (!v) closeModal(); }">
         <template #header>
             <div class="modal-title">
@@ -9,20 +9,31 @@
         </template>
 
         <div class="modal-content">
-            <div class="filters-section">
+            <div class="reporting-modal-filters">
+                <div class="reporting-modal-filters-head">
+                    <span class="reporting-modal-filters-title">Параметры отчёта</span>
+                    <span v-if="!dateOnly && activeContextLabel" class="reporting-modal-context">
+                        <i class="pi pi-map-marker" aria-hidden="true"></i>
+                        {{ activeContextLabel }}
+                    </span>
+                </div>
                 <FiltersBar :filters="filterConfigs" :model-value="filterValues" :show-reset-button="false"
                     :show-mobile-button="false" @update:model-value="handleFiltersUpdate"
                     @filter-change="handleFilterChange">
                     <template #actions>
                         <div class="filter-item filter-item--actions">
-                            <button class="apply-filters-btn" @click="loadResults" :disabled="isLoading" :class="{
-                                'loading-btn': isLoading
-                            }">
-                                <div class="btn-content">
-                                    <div class="btn-text">
-                                        {{ isLoading ? 'Загрузка...' : 'Применить фильтры' }}
-                                    </div>
-                                </div>
+                            <button
+                                type="button"
+                                class="reporting-header-action reporting-modal-apply-btn"
+                                :disabled="isLoading"
+                                @click="loadResults"
+                            >
+                                <span class="reporting-header-action-icon" aria-hidden="true">
+                                    <i :class="isLoading ? 'pi pi-spin pi-spinner' : 'pi pi-check'"></i>
+                                </span>
+                                <span class="reporting-header-action-label reporting-header-action-label--single">
+                                    {{ isLoading ? 'Загрузка...' : 'Применить' }}
+                                </span>
                             </button>
                         </div>
                     </template>
@@ -73,16 +84,24 @@
         </div>
 
         <template v-if="!dateOnly" #footer>
-            <button class="btn-export" @click="handleExport" :disabled="isExporting || !results.length"
-                :class="{ 'btn-export-loading': isExporting }">
-
-                <i v-if="!isExporting" class="pi pi-external-link"></i>
-                <span v-if="isExporting" class="loader"></span>
-                {{ isExporting ? 'Открытие...' : 'Открыть в Excel' }}
-            </button>
-            <button class="btn-close" @click="closeModal">
-                Закрыть
-            </button>
+            <div class="reporting-modal-footer">
+                <button
+                    type="button"
+                    class="reporting-header-action"
+                    :disabled="isExporting || !results.length"
+                    @click="handleExport"
+                >
+                    <span class="reporting-header-action-icon" aria-hidden="true">
+                        <i :class="isExporting ? 'pi pi-spin pi-spinner' : 'pi pi-external-link'"></i>
+                    </span>
+                    <span class="reporting-header-action-label reporting-header-action-label--single">
+                        {{ isExporting ? 'Открытие...' : 'Открыть в Excel' }}
+                    </span>
+                </button>
+                <button type="button" class="reporting-header-action reporting-header-action--text-only" @click="closeModal">
+                    <span class="reporting-header-action-label reporting-header-action-label--single">Закрыть</span>
+                </button>
+            </div>
         </template>
     </BaseModal>
 </template>
@@ -92,7 +111,9 @@ import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue';
 import { FiltersBar, type FilterConfig, BaseModal } from '@/shared/ui';
 import { useToast } from '../Toast';
 import { useProjects, useAgents } from '@/shared/composables';
+import { applySingleProjectPointDefaults } from '../../utils';
 import type { Agent } from '@/stores/agents';
+import '../../styles/reporting-modal.css';
 
 interface StaffResultTotal {
     id?: number;
@@ -176,6 +197,29 @@ const pointOptions = computed(() => {
         { id: undefined, name: 'Все точки' },
         ...filteredPoints.map(point => ({ id: point.id, name: point.name }))
     ];
+});
+
+const showProjectFilter = computed(() => projects.value.length !== 1);
+
+const showPointFilter = computed(() => {
+    if (!filters.value.project) return false;
+    return getPointsByProjectId(filters.value.project).length !== 1;
+});
+
+const activeContextLabel = computed(() => {
+    const parts: string[] = [];
+
+    if (!showProjectFilter.value && filters.value.project) {
+        const project = projects.value.find(p => p.id === filters.value.project);
+        if (project?.name) parts.push(project.name);
+    }
+
+    if (!showPointFilter.value && filters.value.project && filters.value.point) {
+        const point = getPointsByProjectId(filters.value.project).find(p => p.id === filters.value.point);
+        if (point?.name) parts.push(point.name);
+    }
+
+    return parts.join(' · ');
 });
 
 const formatPersonName = (person: any): string => {
@@ -284,30 +328,40 @@ const filterConfigs = computed((): FilterConfig[] => {
     ];
 
     if (!props.dateOnly) {
+        if (showProjectFilter.value) {
+            configs.push(
+                {
+                    key: 'project',
+                    type: 'select' as const,
+                    label: 'Проект',
+                    placeholder: (isLoadingData.value || isLoadingProjects.value) ? 'Загрузка проектов...' : 'Выберите проект',
+                    options: projectOptions.value,
+                    optionLabel: 'name',
+                    optionValue: 'id',
+                    searchable: false,
+                    disabled: isLoadingData.value || isLoadingProjects.value,
+                    onChange: () => onProjectChange(),
+                },
+            );
+        }
+
+        if (showPointFilter.value) {
+            configs.push(
+                {
+                    key: 'point',
+                    type: 'select' as const,
+                    label: 'Точка',
+                    placeholder: isLoadingData.value ? 'Загрузка точек...' : (filters.value.project && filters.value.project !== undefined) ? 'Выберите точку' : 'Сначала выберите проект',
+                    options: pointOptions.value,
+                    optionLabel: 'name',
+                    optionValue: 'id',
+                    searchable: false,
+                    disabled: isLoadingData.value || !filters.value.project || filters.value.project === undefined,
+                },
+            );
+        }
+
         configs.push(
-            {
-                key: 'project',
-                type: 'select' as const,
-                label: 'Проект',
-                placeholder: (isLoadingData.value || isLoadingProjects.value) ? 'Загрузка проектов...' : 'Выберите проект',
-                options: projectOptions.value,
-                optionLabel: 'name',
-                optionValue: 'id',
-                searchable: false,
-                disabled: isLoadingData.value || isLoadingProjects.value,
-                onChange: () => onProjectChange(),
-            },
-            {
-                key: 'point',
-                type: 'select' as const,
-                label: 'Точка',
-                placeholder: isLoadingData.value ? 'Загрузка точек...' : (filters.value.project && filters.value.project !== undefined) ? 'Выберите точку' : 'Сначала выберите проект',
-                options: pointOptions.value,
-                optionLabel: 'name',
-                optionValue: 'id',
-                searchable: false,
-                disabled: isLoadingData.value || !filters.value.project || filters.value.project === undefined,
-            },
             {
                 key: 'user',
                 type: 'select' as const,
@@ -335,6 +389,7 @@ const handleFiltersUpdate = (values: Record<string, any>) => {
     // Сбрасываем point при изменении project
     if (oldProject !== filters.value.project) {
         filters.value.point = undefined;
+        applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
     }
 };
 
@@ -394,17 +449,11 @@ const setYesterdayAsDefault = () => {
 
 const onProjectChange = async () => {
     filters.value.point = undefined;
-    filters.value.user = undefined; // Сбрасываем выбранного агента при смене проекта
+    filters.value.user = undefined;
 
-    if (!filters.value.project || filters.value.project === undefined) {
-        toast.add({
-            severity: 'info',
-            summary: 'Информация',
-            detail: 'Сначала выберите конкретный проект, чтобы увидеть доступные точки',
-            life: 3000,
-        });
-    } else {
-        // Загружаем агентов для выбранного проекта
+    applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
+
+    if (filters.value.project && filters.value.project !== undefined) {
         try {
             await loadAgentsData(filters.value.project);
         } catch (error) {
@@ -608,23 +657,16 @@ watch(() => props.visible, async (newVal) => {
     if (newVal) {
         setYesterdayAsDefault();
 
-        // Всегда вызываем загрузку - store сам проверит кэш и вернет данные из кэша или загрузит новые
-        // Это гарантирует, что данные будут загружены при первом открытии после обновления страницы
         isLoadingData.value = true;
 
-        const promises: Promise<any>[] = [];
-
-        if (!props.dateOnly) {
-            promises.push(
-                loadProjectsAndPoints(), // Store проверит кэш внутри
-                loadAgentsData(filters.value.project) // Загружаем агентов для выбранного проекта (если есть)
-            );
-        }
-
-        loadResults();
-
         try {
-            await Promise.all(promises);
+            if (!props.dateOnly) {
+                await loadProjectsAndPoints();
+                applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
+                await loadAgentsData(filters.value.project);
+            }
+
+            await loadResults();
         } finally {
             isLoadingData.value = false;
         }
@@ -634,15 +676,16 @@ watch(() => props.visible, async (newVal) => {
 // При изменении проекта перезагружаем агентов для этого проекта
 watch(() => filters.value.project, async (newProjectId, oldProjectId) => {
     if (newProjectId && newProjectId !== oldProjectId) {
+        applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
         try {
             await loadAgentsData(newProjectId);
-            // Сбрасываем выбранного агента, так как список изменился
             filters.value.user = undefined;
         } catch (error) {
             console.error('Ошибка загрузки агентов для проекта:', error);
         }
     } else if (!newProjectId) {
         filters.value.user = undefined;
+        filters.value.point = undefined;
     }
 });
 
@@ -696,108 +739,7 @@ onUnmounted(() => {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 24px;
-}
-
-.apply-filters-btn {
-    background: var(--russ-primary);
-    color: var(--russ-text-inverse);
-    border: 1px solid var(--russ-primary);
-    border-radius: 10px;
-    padding: 0 16px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    height: var(--filter-control-height, var(--ui-control-height, 40px));
-    min-height: var(--filter-control-height, var(--ui-control-height, 40px));
-    width: 100%;
-    white-space: nowrap;
-}
-
-.apply-filters-btn:hover:not([disabled]) {
-    background: var(--russ-primary-dark);
-    border-color: var(--russ-primary-dark);
-}
-
-.apply-filters-btn:active:not([disabled]) {
-    transform: translateY(1px);
-}
-
-.btn-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-}
-
-.btn-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-}
-
-.btn-icon i {
-    font-size: 14px;
-}
-
-.btn-icon .loader {
-    width: 16px;
-    height: 16px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-}
-
-.btn-text {
-    font-weight: 600;
-    font-size: 13px;
-}
-
-.apply-filters-btn[disabled] {
-    background: var(--russ-border);
-    color: var(--russ-text-quaternary);
-    border-color: var(--russ-border-dark);
-    cursor: not-allowed;
-    opacity: 0.7;
-    transform: none;
-}
-
-.disabled-btn {
-    background: var(--russ-bg-disabled) !important;
-    color: var(--russ-text-quaternary) !important;
-    border: 2px solid var(--russ-border-dark) !important;
-    cursor: not-allowed !important;
-    opacity: 0.8 !important;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06) !important;
-}
-
-.disabled-btn:hover {
-    background: linear-gradient(135deg, var(--russ-bg-disabled) 0%, var(--russ-border) 100%) !important;
-    color: var(--russ-text-quaternary) !important;
-    transform: none !important;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06) !important;
-}
-
-.loading-btn {
-    background: var(--russ-primary) !important;
-    color: white !important;
-    cursor: wait !important;
-    opacity: 0.8;
-}
-
-.loading-btn:hover {
-    background: var(--russ-primary) !important;
-    transform: none !important;
+    gap: 20px;
 }
 
 .results-section {
@@ -856,7 +798,7 @@ onUnmounted(() => {
 }
 
 .result-card {
-    background: #fff;
+    background: var(--russ-bg);
     border: 1px solid var(--russ-border);
     border-radius: 12px;
     padding: 10px;
@@ -962,74 +904,6 @@ onUnmounted(() => {
     gap: 12px;
 }
 
-.btn-export {
-    background: linear-gradient(135deg, var(--russ-success) 0%, var(--russ-success-dark) 100%);
-    color: var(--russ-text-inverse);
-    border: none;
-    border-radius: 8px;
-    padding: 12px 24px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 2px 8px var(--russ-shadow-success);
-}
-
-.btn-export:hover:not(:disabled) {
-    background: linear-gradient(135deg, var(--russ-success-dark) 0%, var(--russ-success-dark) 100%);
-    box-shadow: 0 4px 12px var(--russ-shadow-success);
-}
-
-.btn-export:disabled {
-    background: var(--russ-text-quaternary);
-    color: var(--russ-text-tertiary);
-    cursor: not-allowed;
-    opacity: 0.7;
-    transform: none;
-    box-shadow: none;
-}
-
-.btn-export-loading {
-    background: linear-gradient(135deg, var(--russ-success) 0%, var(--russ-success-dark) 100%) !important;
-    color: var(--russ-text-inverse) !important;
-    cursor: wait !important;
-}
-
-.btn-export-loading:hover {
-    background: linear-gradient(135deg, var(--russ-success) 0%, var(--russ-success-dark) 100%) !important;
-    transform: none !important;
-}
-
-.btn-export .loader {
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--russ-text-inverse);
-    border-top: 2px solid transparent;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-.btn-close {
-    background: var(--russ-bg-disabled);
-    color: var(--russ-text-secondary);
-    border: 1px solid var(--russ-border-dark);
-    border-radius: 8px;
-    padding: 12px 24px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btn-close:hover {
-    background: var(--russ-border);
-    color: var(--russ-primary);
-    border-color: var(--russ-primary);
-}
-
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity 0.3s ease;
@@ -1077,12 +951,6 @@ onUnmounted(() => {
     .modal-actions {
         flex-direction: column;
         gap: 8px;
-    }
-
-    .btn-export,
-    .btn-close {
-        width: 100%;
-        justify-content: center;
     }
 
     .modal-header {
@@ -1139,7 +1007,7 @@ onUnmounted(() => {
     gap: 12px;
     margin-top: 8px;
     padding: 12px 16px;
-    background: linear-gradient(135deg, var(--russ-warning-light) 0%, var(--russ-warning-light) 100%);
+    background: var(--russ-warning-light);
     border: 1px solid var(--russ-warning);
     border-radius: 12px;
     box-shadow: 0 2px 8px var(--russ-shadow-warning);
@@ -1154,7 +1022,7 @@ onUnmounted(() => {
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--russ-warning) 0%, var(--russ-warning-dark) 100%);
+    background: var(--russ-warning);
 }
 
 .hint-icon {
@@ -1163,7 +1031,7 @@ onUnmounted(() => {
     justify-content: center;
     width: 24px;
     height: 24px;
-    background: linear-gradient(135deg, var(--russ-warning) 0%, var(--russ-warning-dark) 100%);
+    background: var(--russ-warning);
     border-radius: 50%;
     color: var(--russ-text-inverse);
     font-size: 12px;
