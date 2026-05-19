@@ -4,10 +4,10 @@
       <i class="pi pi-folder-open"></i>
       <span>Нет доступных проектов</span>
     </div>
-    <div v-else-if="showSingleProjectBadge" class="project-switcher-single">
+    <!-- <div v-else-if="showSingleProjectBadge" class="project-switcher-single">
       <span class="project-switcher-single-label">Ваш проект</span>
       <span class="project-switcher-single-value">{{ currentProjectOption?.name }}</span>
-    </div>
+    </div> -->
     <ProjectSelect
       v-else
       :model-value="resolvedValue"
@@ -44,15 +44,15 @@ const props = withDefaults(
 
 const emit = defineEmits<{ (e: 'change', value: string | number | null): void }>()
 const hasProjects = computed(() => props.projectOptions.length > 0)
-const currentProjectOption = computed(() => {
-  if (!props.projectOptions.length) return null
-  if (props.currentProjectId != null && props.currentProjectId !== '') {
-    const matchedProject = props.projectOptions.find((project: ProjectOption) => String(project.id) === String(props.currentProjectId))
-    if (matchedProject) return matchedProject
-  }
-  return props.projectOptions[0] ?? null
-})
-const showSingleProjectBadge = computed(() => props.projectOptions.length === 1 && Boolean(currentProjectOption.value))
+// const currentProjectOption = computed(() => {
+//   if (!props.projectOptions.length) return null
+//   if (props.currentProjectId != null && props.currentProjectId !== '') {
+//     const matchedProject = props.projectOptions.find((project: ProjectOption) => String(project.id) === String(props.currentProjectId))
+//     if (matchedProject) return matchedProject
+//   }
+//   return props.projectOptions[0] ?? null
+// })
+// const showSingleProjectBadge = computed(() => props.projectOptions.length === 1 && Boolean(currentProjectOption.value))
 const resolvedValue = computed(() => (props.currentProjectId != null && props.currentProjectId !== '' ? props.currentProjectId : null))
 function handleChange(value: string | number | null) {
   emit('change', value)
@@ -86,7 +86,7 @@ function handleChange(value: string | number | null) {
   opacity: 0.75;
 }
 
-.project-switcher-single {
+/* .project-switcher-single {
   min-height: 44px;
   display: flex;
   flex-direction: column;
@@ -119,5 +119,5 @@ function handleChange(value: string | number | null) {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
+} */
 </style>
