@@ -343,9 +343,10 @@ watch(() => filters.value.options, (newOptions) => {
 
 const formatDateForAPI = (date: Date | undefined): string | undefined => {
     if (!date) return undefined;
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const normalized = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const year = normalized.getFullYear();
+    const month = String(normalized.getMonth() + 1).padStart(2, '0');
+    const day = String(normalized.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 };
 

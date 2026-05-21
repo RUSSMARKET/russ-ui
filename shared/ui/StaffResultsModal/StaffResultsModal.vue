@@ -19,7 +19,7 @@
                 </div>
                 <FiltersBar :filters="filterConfigs" :model-value="filterValues" :show-reset-button="false"
                     :show-mobile-button="false" @update:model-value="handleFiltersUpdate"
-                    @filter-change="handleFilterChange" />
+                    @filter-change="handleFilterChange" @filter-close="handleFilterClose" />
             </div>
 
 
@@ -367,7 +367,8 @@ const filterConfigs = computed((): FilterConfig[] => {
 
 const handleFiltersUpdate = (values: Record<string, any>) => {
     const oldProject = filters.value.project;
-    filters.value.dateRange = values.dateRange || { from: null, to: null };
+    const nextDateRange = values.dateRange || { from: null, to: null };
+    filters.value.dateRange = nextDateRange;
     filters.value.project = values.project || undefined;
     filters.value.point = values.point || undefined;
     filters.value.user = values.user || undefined;
@@ -379,19 +380,37 @@ const handleFiltersUpdate = (values: Record<string, any>) => {
             applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
         }
     }
+
+    if (nextDateRange.from && nextDateRange.to) {
+        scheduleLoadResults();
+    }
 };
 
 const handleFilterChange = async (key: string, value: any) => {
     if (key === 'project') {
         await onProjectChange();
     }
-    scheduleLoadResults();
+    if (key !== 'dateRange') {
+        scheduleLoadResults();
+    }
+};
+
+const handleFilterClose = (key: string) => {
+    if (key === 'dateRange') {
+        scheduleLoadResults();
+    }
 };
 
 let loadResultsTimer: ReturnType<typeof setTimeout> | null = null;
+let pendingResultsReload = false;
 
 const scheduleLoadResults = () => {
-    if (!props.visible || isLoadingData.value) return;
+    if (!props.visible) return;
+
+    if (isLoadingData.value) {
+        pendingResultsReload = true;
+        return;
+    }
 
     if (loadResultsTimer) {
         clearTimeout(loadResultsTimer);
@@ -401,6 +420,15 @@ const scheduleLoadResults = () => {
         loadResultsTimer = null;
         loadResults();
     }, 150);
+};
+
+const flushPendingResultsReload = () => {
+    if (!pendingResultsReload) {
+        return;
+    }
+
+    pendingResultsReload = false;
+    scheduleLoadResults();
 };
 
 // Статус для "ручников":
@@ -424,9 +452,10 @@ function getStatusClass(result: any): string {
 const formatDateForAPI = (date: Date | null): string | undefined => {
     if (!date) return undefined;
 
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const normalized = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const year = normalized.getFullYear();
+    const month = String(normalized.getMonth() + 1).padStart(2, '0');
+    const day = String(normalized.getDate()).padStart(2, '0');
 
     return `${year}-${month}-${day}`;
 };
@@ -438,16 +467,11 @@ const formatNumber = (num: number): string => {
 const setYesterdayAsDefault = () => {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-
-    const startOfYesterday = new Date(yesterday);
-    startOfYesterday.setHours(0, 0, 0, 0);
-
-    const endOfYesterday = new Date(yesterday);
-    endOfYesterday.setHours(23, 59, 59, 999);
+    yesterday.setHours(0, 0, 0, 0);
 
     filters.value.dateRange = {
-        from: startOfYesterday,
-        to: endOfYesterday
+        from: new Date(yesterday),
+        to: new Date(yesterday),
     };
 };
 
@@ -560,6 +584,7 @@ const handleExport = async () => {
     isExporting.value = true;
 
     try {
+        await nextTick();
         const params: any = {};
         const dateRange = filters.value.dateRange || { from: null, to: null };
 
@@ -740,6 +765,7 @@ watch(() => props.visible, async (newVal) => {
             await loadResults();
         } finally {
             isLoadingData.value = false;
+            flushPendingResultsReload();
         }
     }
 });
