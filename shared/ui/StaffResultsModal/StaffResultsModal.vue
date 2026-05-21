@@ -375,7 +375,9 @@ const handleFiltersUpdate = (values: Record<string, any>) => {
     // Сбрасываем point при изменении project
     if (oldProject !== filters.value.project) {
         filters.value.point = undefined;
-        applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
+        if (filters.value.project) {
+            applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
+        }
     }
 };
 
@@ -453,7 +455,9 @@ const onProjectChange = async () => {
     filters.value.point = undefined;
     filters.value.user = undefined;
 
-    applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
+    if (filters.value.project) {
+        applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
+    }
 
     if (filters.value.project && filters.value.project !== undefined) {
         try {
@@ -678,17 +682,27 @@ function shouldSyncParentFilters(): boolean {
 
 function applyInitialFiltersFromParent() {
     const projectId = normalizedParentProject();
-    if (projectId !== undefined) {
-        filters.value.project = projectId;
-    }
-
     const pointId = normalizedParentPoint();
-    if (pointId !== undefined) {
-        filters.value.point = pointId;
+    const projectChanged = filters.value.project !== projectId;
+    const pointChanged = filters.value.point !== pointId;
+
+    filters.value.project = projectId;
+    filters.value.point = pointId;
+
+    if (projectChanged || pointChanged) {
+        filters.value.user = undefined;
     }
 
     lastSyncedParentProject = projectId;
     lastSyncedParentPoint = pointId;
+}
+
+async function applyParentFiltersFromPage() {
+    applyInitialFiltersFromParent();
+    if (normalizedParentProject() !== undefined) {
+        applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
+    }
+    await loadAgentsData(filters.value.project);
 }
 
 /** Подтянуть проект/точку со страницы отчётности только при замене фильтра, не при закрытии модалки. */
@@ -697,9 +711,7 @@ async function syncParentFiltersIfNeeded(): Promise<boolean> {
         return false;
     }
 
-    applyInitialFiltersFromParent();
-    applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
-    await loadAgentsData(filters.value.project);
+    await applyParentFiltersFromPage();
     return true;
 }
 
@@ -722,11 +734,7 @@ watch(() => props.visible, async (newVal) => {
         try {
             if (!props.dateOnly) {
                 await loadProjectsAndPoints();
-                const syncedFromParent = await syncParentFiltersIfNeeded();
-                if (!syncedFromParent) {
-                    applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
-                    await loadAgentsData(filters.value.project);
-                }
+                await applyParentFiltersFromPage();
             }
 
             await loadResults();

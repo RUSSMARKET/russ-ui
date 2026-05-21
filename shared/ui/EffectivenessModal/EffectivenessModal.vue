@@ -314,7 +314,9 @@ const handleFiltersUpdate = (values: Record<string, any>) => {
 
     if (oldProject !== filters.value.project) {
         filters.value.point = undefined;
-        applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
+        if (filters.value.project) {
+            applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
+        }
     }
 };
 
@@ -327,7 +329,9 @@ const handleFilterChange = (key: string, value: any) => {
 const onProjectChange = () => {
     filters.value.point = undefined;
     filters.value.options = undefined;
-    applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
+    if (filters.value.project) {
+        applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
+    }
 };
 
 // Сбрасываем sort_by при изменении options, если выбраны опции, требующие options
@@ -529,17 +533,33 @@ function shouldSyncParentFilters(): boolean {
 
 function applyInitialFiltersFromParent() {
     const projectId = normalizedParentProject();
-    if (projectId !== undefined) {
-        filters.value.project = projectId;
-    }
-
     const pointId = normalizedParentPoint();
-    if (pointId !== undefined) {
-        filters.value.point = pointId;
+    const projectChanged = filters.value.project !== projectId;
+    const pointChanged = filters.value.point !== pointId;
+
+    filters.value.project = projectId;
+    filters.value.point = pointId;
+
+    if (projectChanged || pointChanged) {
+        filters.value.user_id = undefined;
+        filters.value.options = undefined;
+        filters.value.sort_by = undefined;
     }
 
     lastSyncedParentProject = projectId;
     lastSyncedParentPoint = pointId;
+}
+
+async function applyParentFiltersFromPage() {
+    applyInitialFiltersFromParent();
+    if (normalizedParentProject() !== undefined) {
+        applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
+    }
+    await loadAgentsData(filters.value.project);
+
+    if (filters.value.project) {
+        await loadMetricsForProject(filters.value.project);
+    }
 }
 
 /** Подтянуть проект/точку со страницы отчётности только при замене фильтра, не при закрытии модалки. */
@@ -548,14 +568,7 @@ async function syncParentFiltersIfNeeded(): Promise<boolean> {
         return false;
     }
 
-    applyInitialFiltersFromParent();
-    applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
-    await loadAgentsData(filters.value.project);
-
-    if (filters.value.project) {
-        await loadMetricsForProject(filters.value.project);
-    }
-
+    await applyParentFiltersFromPage();
     return true;
 }
 
@@ -593,11 +606,7 @@ watch(() => props.visible, async (newVal) => {
                 }),
             ]);
 
-            const syncedFromParent = await syncParentFiltersIfNeeded();
-            if (!syncedFromParent) {
-                applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
-                await loadAgentsData(filters.value.project);
-            }
+            await applyParentFiltersFromPage();
         } finally {
             isLoadingData.value = false;
         }
@@ -625,7 +634,9 @@ watch(() => filters.value.project, async (newProjectId, oldProjectId) => {
     }
 
     if (newProjectId !== oldProjectId) {
-        applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
+        if (newProjectId) {
+            applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
+        }
         try {
             await loadAgentsData(newProjectId);
             filters.value.user_id = undefined;
