@@ -19,7 +19,7 @@
                 </div>
                 <FiltersBar :filters="filterConfigs" :model-value="filterValues" :show-reset-button="false"
                     :show-mobile-button="false" @update:model-value="handleFiltersUpdate"
-                    @filter-change="handleFilterChange" @filter-close="handleFilterClose" />
+                    @filter-change="handleFilterChange" />
             </div>
 
 
@@ -386,10 +386,6 @@ const handleFilterChange = async (key: string, value: any) => {
     scheduleLoadResults();
 };
 
-const handleFilterClose = () => {
-    scheduleLoadResults();
-};
-
 let loadResultsTimer: ReturnType<typeof setTimeout> | null = null;
 
 const scheduleLoadResults = () => {
@@ -661,16 +657,50 @@ const loadAgentsData = async (projectId?: number) => {
     }
 };
 
-function applyInitialFiltersFromParent() {
+let lastSyncedParentProject: number | undefined;
+let lastSyncedParentPoint: number | undefined;
+
+function normalizedParentProject(): number | undefined {
     const projectId = Number(props.initialProject);
-    if (Number.isFinite(projectId) && projectId > 0) {
+    return Number.isFinite(projectId) && projectId > 0 ? projectId : undefined;
+}
+
+function normalizedParentPoint(): number | undefined {
+    const pointId = Number(props.initialPoint);
+    return Number.isFinite(pointId) && pointId > 0 ? pointId : undefined;
+}
+
+function shouldSyncParentFilters(): boolean {
+    const projectId = normalizedParentProject();
+    const pointId = normalizedParentPoint();
+    return projectId !== lastSyncedParentProject || pointId !== lastSyncedParentPoint;
+}
+
+function applyInitialFiltersFromParent() {
+    const projectId = normalizedParentProject();
+    if (projectId !== undefined) {
         filters.value.project = projectId;
     }
 
-    const pointId = Number(props.initialPoint);
-    if (Number.isFinite(pointId) && pointId > 0) {
+    const pointId = normalizedParentPoint();
+    if (pointId !== undefined) {
         filters.value.point = pointId;
     }
+
+    lastSyncedParentProject = projectId;
+    lastSyncedParentPoint = pointId;
+}
+
+/** Подтянуть проект/точку со страницы отчётности только при замене фильтра, не при закрытии модалки. */
+async function syncParentFiltersIfNeeded(): Promise<boolean> {
+    if (!shouldSyncParentFilters()) {
+        return false;
+    }
+
+    applyInitialFiltersFromParent();
+    applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
+    await loadAgentsData(filters.value.project);
+    return true;
 }
 
 const closeModal = async () => {
@@ -692,9 +722,11 @@ watch(() => props.visible, async (newVal) => {
         try {
             if (!props.dateOnly) {
                 await loadProjectsAndPoints();
-                applyInitialFiltersFromParent();
-                applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
-                await loadAgentsData(filters.value.project);
+                const syncedFromParent = await syncParentFiltersIfNeeded();
+                if (!syncedFromParent) {
+                    applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
+                    await loadAgentsData(filters.value.project);
+                }
             }
 
             await loadResults();
@@ -703,6 +735,19 @@ watch(() => props.visible, async (newVal) => {
         }
     }
 });
+
+watch(
+    () => [props.initialProject, props.initialPoint],
+    async () => {
+        if (!props.visible || props.dateOnly) {
+            return;
+        }
+
+        if (await syncParentFiltersIfNeeded()) {
+            scheduleLoadResults();
+        }
+    },
+);
 
 // При изменении проекта перезагружаем агентов для этого проекта
 watch(() => filters.value.project, async (newProjectId, oldProjectId) => {

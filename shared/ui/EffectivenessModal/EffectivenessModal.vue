@@ -508,16 +508,55 @@ const loadMetricsForProject = async (projectId: number) => {
     }
 };
 
-function applyInitialFiltersFromParent() {
+let lastSyncedParentProject: number | undefined;
+let lastSyncedParentPoint: number | undefined;
+
+function normalizedParentProject(): number | undefined {
     const projectId = Number(props.initialProject);
-    if (Number.isFinite(projectId) && projectId > 0) {
+    return Number.isFinite(projectId) && projectId > 0 ? projectId : undefined;
+}
+
+function normalizedParentPoint(): number | undefined {
+    const pointId = Number(props.initialPoint);
+    return Number.isFinite(pointId) && pointId > 0 ? pointId : undefined;
+}
+
+function shouldSyncParentFilters(): boolean {
+    const projectId = normalizedParentProject();
+    const pointId = normalizedParentPoint();
+    return projectId !== lastSyncedParentProject || pointId !== lastSyncedParentPoint;
+}
+
+function applyInitialFiltersFromParent() {
+    const projectId = normalizedParentProject();
+    if (projectId !== undefined) {
         filters.value.project = projectId;
     }
 
-    const pointId = Number(props.initialPoint);
-    if (Number.isFinite(pointId) && pointId > 0) {
+    const pointId = normalizedParentPoint();
+    if (pointId !== undefined) {
         filters.value.point = pointId;
     }
+
+    lastSyncedParentProject = projectId;
+    lastSyncedParentPoint = pointId;
+}
+
+/** Подтянуть проект/точку со страницы отчётности только при замене фильтра, не при закрытии модалки. */
+async function syncParentFiltersIfNeeded(): Promise<boolean> {
+    if (!shouldSyncParentFilters()) {
+        return false;
+    }
+
+    applyInitialFiltersFromParent();
+    applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
+    await loadAgentsData(filters.value.project);
+
+    if (filters.value.project) {
+        await loadMetricsForProject(filters.value.project);
+    }
+
+    return true;
 }
 
 const closeModal = async () => {
@@ -554,14 +593,27 @@ watch(() => props.visible, async (newVal) => {
                 }),
             ]);
 
-            applyInitialFiltersFromParent();
-            applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
-            await loadAgentsData(filters.value.project);
+            const syncedFromParent = await syncParentFiltersIfNeeded();
+            if (!syncedFromParent) {
+                applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
+                await loadAgentsData(filters.value.project);
+            }
         } finally {
             isLoadingData.value = false;
         }
     }
 });
+
+watch(
+    () => [props.initialProject, props.initialPoint],
+    async () => {
+        if (!props.visible) {
+            return;
+        }
+
+        await syncParentFiltersIfNeeded();
+    },
+);
 
 // При изменении проекта перезагружаем агентов для этого проекта
 watch(() => filters.value.project, async (newProjectId, oldProjectId) => {
