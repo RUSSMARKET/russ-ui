@@ -379,15 +379,30 @@ const handleFiltersUpdate = (values: Record<string, any>) => {
     }
 };
 
-const handleFilterChange = (key: string, value: any) => {
+const handleFilterChange = async (key: string, value: any) => {
     if (key === 'project') {
-        onProjectChange();
+        await onProjectChange();
     }
+    scheduleLoadResults();
 };
 
 const handleFilterClose = () => {
+    scheduleLoadResults();
+};
+
+let loadResultsTimer: ReturnType<typeof setTimeout> | null = null;
+
+const scheduleLoadResults = () => {
     if (!props.visible || isLoadingData.value) return;
-    loadResults();
+
+    if (loadResultsTimer) {
+        clearTimeout(loadResultsTimer);
+    }
+
+    loadResultsTimer = setTimeout(() => {
+        loadResultsTimer = null;
+        loadResults();
+    }, 150);
 };
 
 // Статус для "ручников":
@@ -467,7 +482,10 @@ const isValidId = (val: unknown): val is number => {
     return false;
 };
 
+let loadResultsRequestId = 0;
+
 const loadResults = async () => {
+    const requestId = ++loadResultsRequestId;
     isLoading.value = true;
 
     try {
@@ -490,13 +508,20 @@ const loadResults = async () => {
             params.user = Number(filters.value.user);
         }
 
+        let responseData: any[] = [];
         if (props.dateOnly) {
             const response = await props.fetchPlanReports(params);
-            results.value = Array.isArray(response?.data) ? response.data : [];
+            responseData = Array.isArray(response?.data) ? response.data : [];
         } else {
             const response = await props.fetchStaffResultsTotal(params);
-            results.value = response.data;
+            responseData = response.data;
         }
+
+        if (requestId !== loadResultsRequestId) {
+            return;
+        }
+
+        results.value = responseData;
 
         if (results.value.length === 0) {
             toast.add({
@@ -523,7 +548,9 @@ const loadResults = async () => {
             life: 4000,
         });
     } finally {
-        isLoading.value = false;
+        if (requestId === loadResultsRequestId) {
+            isLoading.value = false;
+        }
     }
 };
 
@@ -698,6 +725,11 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+    if (loadResultsTimer) {
+        clearTimeout(loadResultsTimer);
+        loadResultsTimer = null;
+    }
+    loadResultsRequestId += 1;
     isLoading.value = false;
 });
 </script>

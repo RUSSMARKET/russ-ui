@@ -101,7 +101,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'dropdown-close']);
 
 const isOpen = ref(false);
 const wrapperRef = ref(null);
@@ -233,13 +233,22 @@ const calendarDays = computed(() => {
   return days;
 });
 
+const closeCalendar = () => {
+  if (!isOpen.value) return;
+  isOpen.value = false;
+  emit('dropdown-close');
+};
+
 const toggleCalendar = () => {
-  isOpen.value = !isOpen.value;
   if (isOpen.value) {
-    nextTick(() => {
-      calculatePosition();
-    });
+    closeCalendar();
+    return;
   }
+
+  isOpen.value = true;
+  nextTick(() => {
+    calculatePosition();
+  });
 };
 
 const selectDate = (date) => {
@@ -396,7 +405,7 @@ const selectThisWeek = () => {
 
 const clearDate = () => {
   emit('update:modelValue', { from: null, to: null });
-  isOpen.value = false;
+  closeCalendar();
 };
 
 const previousMonth = () => {
@@ -448,7 +457,7 @@ const handleClickOutside = (event) => {
     dropdownRef.value &&
     !dropdownRef.value.contains(event.target)
   ) {
-    isOpen.value = false;
+    closeCalendar();
   }
 };
 
