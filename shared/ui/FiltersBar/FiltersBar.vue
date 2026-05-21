@@ -26,7 +26,8 @@
         <div class="mobile-filters-content">
           <div class="filters-grid-mobile">
             <FilterItem v-for="(filter, index) in filters" :key="filterItemKey(filter, index)" :filter="filter"
-              :model-value="getFilterValue(filter.key)" @update:model-value="handleFilterChange(filter.key, $event)" />
+              :model-value="getFilterValue(filter.key)" @update:model-value="handleFilterChange(filter.key, $event)"
+              @filter-close="(key) => emit('filter-close', key)" />
             <slot name="actions"></slot>
             <div v-if="showResetButton" class="filter-item filter-item--reset">
               <button class="reset-filters-btn" @click="handleReset" title="Сбросить все фильтры">
@@ -53,7 +54,8 @@
       ref="wrapperRef">
       <div class="filters-grid">
         <FilterItem v-for="(filter, index) in filters" :key="filterItemKey(filter, index)" :filter="filter"
-          :model-value="getFilterValue(filter.key)" @update:model-value="handleFilterChange(filter.key, $event)" />
+          :model-value="getFilterValue(filter.key)" @update:model-value="handleFilterChange(filter.key, $event)"
+          @filter-close="(key) => emit('filter-close', key)" />
         <slot name="actions"></slot>
         <div v-if="showResetButton" class="filter-item filter-item--reset">
           <button class="reset-filters-btn" @click="handleReset" title="Сбросить все фильтры">
@@ -118,6 +120,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   'update:modelValue': [value: Record<string, any>];
   'filter-change': [key: string, value: any];
+  'filter-close': [key: string];
   'reset': [];
 }>();
 

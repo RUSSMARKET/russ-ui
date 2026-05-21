@@ -19,25 +19,7 @@
                 </div>
                 <FiltersBar :filters="filterConfigs" :model-value="filterValues" :show-reset-button="false"
                     :show-mobile-button="false" @update:model-value="handleFiltersUpdate"
-                    @filter-change="handleFilterChange">
-                    <template #actions>
-                        <div class="filter-item filter-item--actions">
-                            <button
-                                type="button"
-                                class="reporting-header-action reporting-modal-apply-btn"
-                                :disabled="isLoading"
-                                @click="loadResults"
-                            >
-                                <span class="reporting-header-action-icon" aria-hidden="true">
-                                    <i :class="isLoading ? 'pi pi-spin pi-spinner' : 'pi pi-check'"></i>
-                                </span>
-                                <span class="reporting-header-action-label reporting-header-action-label--single">
-                                    {{ isLoading ? 'Загрузка...' : 'Применить' }}
-                                </span>
-                            </button>
-                        </div>
-                    </template>
-                </FiltersBar>
+                    @filter-change="handleFilterChange" @filter-close="handleFilterClose" />
             </div>
 
 
@@ -397,6 +379,11 @@ const handleFilterChange = (key: string, value: any) => {
     if (key === 'project') {
         onProjectChange();
     }
+};
+
+const handleFilterClose = () => {
+    if (!props.visible || isLoadingData.value) return;
+    loadResults();
 };
 
 // Статус для "ручников":

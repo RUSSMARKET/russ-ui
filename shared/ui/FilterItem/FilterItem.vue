@@ -11,10 +11,12 @@
       :option-value="filter.optionValue || 'id'"
       :placeholder="filter.placeholder"
       :searchable="filter.searchable !== false"
+      :multiple="filter.multiple === true"
       :disabled="filter.disabled"
       :loading="filter.loading"
       :width="filter.width"
       @update:model-value="handleChange"
+      @dropdown-close="handleDropdownClose"
     />
 
     <!-- Input -->
@@ -45,6 +47,7 @@
       :placeholder="filter.placeholder"
       :disabled="filter.disabled"
       @update:model-value="handleChange"
+      @dropdown-close="handleDropdownClose"
     />
 
     <!-- Search -->
@@ -90,6 +93,7 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits<{
   'update:modelValue': [value: any];
+  'filter-close': [key: string];
 }>();
 
 const filterItemClass = computed(() => {
@@ -100,6 +104,10 @@ const filterItemClass = computed(() => {
 
 const handleChange = (value: any) => {
   emit('update:modelValue', value);
+};
+
+const handleDropdownClose = () => {
+  emit('filter-close', props.filter.key);
 };
 
 function onInputFocusNative(e: FocusEvent) {
