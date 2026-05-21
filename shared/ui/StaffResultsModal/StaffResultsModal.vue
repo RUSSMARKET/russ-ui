@@ -118,6 +118,10 @@ interface UserFilterOption {
 
 interface Props {
     visible: boolean;
+    /** Проект из фильтров страницы отчётности (при открытии модалки). */
+    initialProject?: number;
+    /** Точка из фильтров страницы отчётности (при открытии модалки). */
+    initialPoint?: number;
     dateOnly?: boolean;
     fetchStaffResultsTotal: (params: {
         date_from?: string;
@@ -630,6 +634,18 @@ const loadAgentsData = async (projectId?: number) => {
     }
 };
 
+function applyInitialFiltersFromParent() {
+    const projectId = Number(props.initialProject);
+    if (Number.isFinite(projectId) && projectId > 0) {
+        filters.value.project = projectId;
+    }
+
+    const pointId = Number(props.initialPoint);
+    if (Number.isFinite(pointId) && pointId > 0) {
+        filters.value.point = pointId;
+    }
+}
+
 const closeModal = async () => {
     try {
         await nextTick();
@@ -649,6 +665,7 @@ watch(() => props.visible, async (newVal) => {
         try {
             if (!props.dateOnly) {
                 await loadProjectsAndPoints();
+                applyInitialFiltersFromParent();
                 applySingleProjectPointDefaults(filters.value, projects.value, getPointsByProjectId);
                 await loadAgentsData(filters.value.project);
             }
