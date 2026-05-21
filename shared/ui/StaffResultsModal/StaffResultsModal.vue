@@ -118,9 +118,7 @@ interface UserFilterOption {
 
 interface Props {
     visible: boolean;
-    /** Проект из фильтров страницы отчётности (при открытии модалки). */
     initialProject?: number;
-    /** Точка из фильтров страницы отчётности (при открытии модалки). */
     initialPoint?: number;
     dateOnly?: boolean;
     fetchStaffResultsTotal: (params: {
@@ -258,9 +256,6 @@ const getAllRg = (): UserFilterOption[] => {
 };
 
 const userOptions = computed(() => {
-    // Если выбран проект и точка, показываем агентов только для этой точки
-    // Если выбран только проект, показываем агентов для этого проекта
-    // Если ничего не выбрано, показываем всех агентов и РГ
     let agentsToShow: Agent[] = [];
     let rgToShow: UserFilterOption[] = [];
     if (filters.value.project) {
@@ -270,7 +265,6 @@ const userOptions = computed(() => {
         );
         rgToShow = getRgByProjectAndPoint(filters.value.project, filters.value.point);
     } else {
-        // Если проект не выбран, показываем всех агентов (из кэша 'all' или объединенных)
         agentsToShow = agents.value;
         rgToShow = getAllRg();
     }
