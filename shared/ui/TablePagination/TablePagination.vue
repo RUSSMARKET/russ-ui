@@ -58,15 +58,15 @@ function goTo(page: number) {
   font-size: 14px !important;
   font-weight: 700 !important;
   border-radius: 10px !important;
-  border: 1px solid var(--russ-border, #dee2e6) !important;
-  background: var(--russ-bg-hover, #f1f3f5) !important;
-  color: var(--russ-text-secondary, #495057) !important;
+  border: 1px solid var(--russ-border) !important;
+  background: var(--russ-bg-hover) !important;
+  color: var(--russ-text-secondary) !important;
   transition: background 0.18s ease, border-color 0.18s ease;
 }
 
 .russ-table-pagination .custom-button:hover:not(:disabled) {
-  background: var(--russ-border, #dee2e6) !important;
-  border-color: var(--russ-border, #dee2e6) !important;
+  background: var(--russ-border) !important;
+  border-color: var(--russ-border) !important;
 }
 
 .russ-table-pagination .custom-button:disabled,
@@ -76,7 +76,7 @@ function goTo(page: number) {
 }
 
 .russ-table-pagination .page-info {
-  color: var(--russ-text-tertiary, #868e96);
+  color: var(--russ-text-tertiary);
   font-weight: 600;
   font-size: 14px;
 }

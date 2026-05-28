@@ -154,7 +154,7 @@ const handleSearchEnter = () => {
   font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
   font-size: 13px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--russ-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   white-space: nowrap;

@@ -25,7 +25,7 @@ withDefaults(
 <style scoped>
 .project-switch-card {
   width: min(420px, calc(100vw - 32px));
-  background: var(--russ-bg-elevated, #fff);
+  background: var(--russ-bg-elevated, var(--russ-text-inverse));
   border: 1px solid var(--russ-border, rgba(0, 0, 0, 0.08));
   border-radius: 16px;
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
@@ -40,14 +40,14 @@ withDefaults(
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: color-mix(in srgb, var(--russ-primary, #2563eb) 12%, transparent);
+  background: color-mix(in srgb, var(--russ-primary, var(--russ-accent)) 12%, transparent);
 }
 
 .project-switch-spinner {
   width: 28px;
   height: 28px;
-  border: 3px solid color-mix(in srgb, var(--russ-primary, #2563eb) 24%, transparent);
-  border-top-color: var(--russ-primary, #2563eb);
+  border: 3px solid color-mix(in srgb, var(--russ-primary, var(--russ-accent)) 24%, transparent);
+  border-top-color: var(--russ-primary, var(--russ-accent));
   border-radius: 50%;
   animation: projectSwitchSpin 0.8s linear infinite;
 }
@@ -56,14 +56,14 @@ withDefaults(
   margin: 0;
   font-size: 20px;
   line-height: 1.25;
-  color: var(--russ-text-primary, #111);
+  color: var(--russ-text-primary);
 }
 
 .project-switch-card p {
   margin: 10px 0 16px;
   font-size: 14px;
   line-height: 1.45;
-  color: var(--russ-text-tertiary, #666);
+  color: var(--russ-text-tertiary);
 }
 
 .project-switch-progress {
@@ -71,7 +71,7 @@ withDefaults(
   height: 6px;
   border-radius: 999px;
   overflow: hidden;
-  background: color-mix(in srgb, var(--russ-primary, #2563eb) 12%, transparent);
+  background: color-mix(in srgb, var(--russ-primary, var(--russ-accent)) 12%, transparent);
 }
 
 .project-switch-progress::before {
@@ -80,7 +80,7 @@ withDefaults(
   inset: 0;
   width: 42%;
   border-radius: 999px;
-  background: var(--russ-primary, #2563eb);
+  background: var(--russ-primary, var(--russ-accent));
   animation: projectSwitchProgress 1.2s ease-in-out infinite;
 }
 

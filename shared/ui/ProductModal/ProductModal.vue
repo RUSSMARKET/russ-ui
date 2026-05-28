@@ -226,7 +226,7 @@ const onHide = () => {
 
 :deep(.product-form .custom-input),
 :deep(.product-form .base-select-combo) {
-  background: #fff !important;
+  background: var(--russ-text-inverse) !important;
   border-radius: 10px !important;
   border: 1px solid var(--russ-border) !important;
   box-shadow: none !important;
@@ -262,7 +262,7 @@ const onHide = () => {
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid var(--russ-border);
-  background: #fff;
+  background: var(--russ-text-inverse);
   flex-shrink: 0;
 }
 
@@ -296,7 +296,7 @@ const onHide = () => {
 
 .remove-logo-btn-inline {
   border: 1px solid var(--russ-border);
-  background: #fff;
+  background: var(--russ-text-inverse);
   color: var(--russ-error);
   border-radius: 8px;
   padding: 8px 10px;
@@ -311,7 +311,7 @@ const onHide = () => {
 
 .remove-logo-btn-inline:hover {
   border-color: var(--russ-error);
-  background: #fff5f5;
+  background: var(--russ-error-light);
 }
 
 .remove-icon {
@@ -357,7 +357,7 @@ const onHide = () => {
   flex: 0 0 auto;
   min-width: 110px;
   padding: 0.65rem 0.9rem !important;
-  background: #fff !important;
+  background: var(--russ-text-inverse) !important;
   color: var(--russ-text-secondary) !important;
   border: 1px solid var(--russ-border) !important;
   border-radius: 8px !important;

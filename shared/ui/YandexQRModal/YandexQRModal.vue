@@ -202,7 +202,7 @@ onUnmounted(() => {
 
 .yandex-qr-image-container {
   border: 0;
-  background-color: white;
+  background-color: var(--russ-bg);
   padding: 0;
   min-height: 200px;
   border-radius: 5px;

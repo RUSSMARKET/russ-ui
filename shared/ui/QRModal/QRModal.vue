@@ -152,12 +152,12 @@ const onHide = () => {
 
 .qr-info p {
   margin: 0.5rem 0;
-  color: #374151;
+  color: var(--russ-text-secondary);
 }
 
 .product-name {
   font-weight: 600;
-  color: #1f2937;
+  color: var(--russ-text-primary);
 }
 
 .product-logo-yandex {
@@ -182,7 +182,7 @@ const onHide = () => {
 
 /* Yandex QR Modal - Full Screen Yellow - точно как было */
 .qr-modal-yandex .base-modal-overlay {
-  background-color: #fed521 !important;
+  background-color: var(--russ-yellow) !important;
   padding: 0 !important;
   position: fixed !important;
   left: 0 !important;
@@ -197,7 +197,7 @@ const onHide = () => {
   border-radius: 0 !important;
   margin: 0 !important;
   border: 0 !important;
-  background-color: #fed521 !important;
+  background-color: var(--russ-yellow) !important;
   box-shadow: none !important;
   position: fixed !important;
   left: 0 !important;
@@ -242,7 +242,7 @@ const onHide = () => {
   flex-direction: column !important;
   align-items: center !important;
   text-align: center !important;
-  color: #000 !important;
+  color: var(--russ-text-primary) !important;
   font-size: clamp(25px, calc(25px + (40 - 25) * ((100vw - 320px) / (600 - 320))), 40px) !important;
   margin: 0 !important;
 }
@@ -256,7 +256,7 @@ const onHide = () => {
 
 .qr-modal-yandex .qr-image-container {
   border: 0 !important;
-  background-color: white !important;
+  background-color: var(--russ-bg) !important;
   padding: 0 !important;
   min-height: 200px !important;
   border-radius: 5px !important;
@@ -264,7 +264,7 @@ const onHide = () => {
 
 /* Yandex White QR Modal - Full Screen White - точно как было */
 .qr-modal-yandex-white .base-modal-overlay {
-  background-color: #ffffff !important;
+  background-color: var(--russ-text-inverse) !important;
   padding: 0 !important;
   position: fixed !important;
   left: 0 !important;
@@ -279,7 +279,7 @@ const onHide = () => {
   border-radius: 0 !important;
   margin: 0 !important;
   border: 0 !important;
-  background-color: #ffffff !important;
+  background-color: var(--russ-text-inverse) !important;
   box-shadow: none !important;
   position: fixed !important;
   left: 0 !important;
@@ -314,7 +314,7 @@ const onHide = () => {
 
 .qr-modal-yandex-white .qr-image-container {
   border: 0 !important;
-  background-color: white !important;
+  background-color: var(--russ-bg) !important;
   padding: 0 !important;
   min-height: 200px !important;
   border-radius: 5px !important;

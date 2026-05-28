@@ -580,7 +580,7 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--russ-bg-tertiary);
 }
 
 .calendar-nav-btn {
@@ -590,22 +590,22 @@ onBeforeUnmount(() => {
   width: 32px;
   height: 32px;
   border: none;
-  background: #f9fafb;
+  background: var(--russ-bg-quaternary);
   border-radius: 8px;
   cursor: pointer;
-  color: #64748b;
+  color: var(--russ-text-muted);
   transition: all 0.2s;
 }
 
 .calendar-nav-btn:hover {
-  background: #e5e7eb;
-  color: #213e89;
+  background: var(--russ-border);
+  color: var(--russ-primary);
 }
 
 .calendar-month-year {
   font-size: 15px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--russ-bg-dark);
 }
 
 .calendar-weekdays {
@@ -619,7 +619,7 @@ onBeforeUnmount(() => {
   text-align: center;
   font-size: 12px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--russ-text-muted);
   padding: 8px 4px;
 }
 
@@ -635,7 +635,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   font-size: 13px;
-  color: #1e293b;
+  color: var(--russ-bg-dark);
   cursor: pointer;
   border-radius: 8px;
   transition: all 0.2s;
@@ -644,35 +644,35 @@ onBeforeUnmount(() => {
 }
 
 .calendar-day:hover:not(.is-disabled):not(.is-other-month) {
-  background: #f3f4f6;
+  background: var(--russ-bg-hover);
 }
 
 .calendar-day.is-other-month {
-  color: #d1d5db;
+  color: var(--russ-border-dark);
 }
 
 .calendar-day.is-today {
-  background: #e0e7ff;
-  color: #213e89;
+  background: var(--russ-bg-blue-lighter);
+  color: var(--russ-primary);
   font-weight: 600;
 }
 
 .calendar-day.is-in-range {
-  background: #e0e7ff;
-  color: #213e89;
+  background: var(--russ-bg-blue-lighter);
+  color: var(--russ-primary);
   border-radius: 0;
 }
 
 .calendar-day.is-start {
-  background: #6366f1;
-  color: #fff;
+  background: var(--russ-secondary);
+  color: var(--russ-text-inverse);
   font-weight: 600;
   border-radius: 8px 0 0 8px;
 }
 
 .calendar-day.is-end {
-  background: #6366f1;
-  color: #fff;
+  background: var(--russ-secondary);
+  color: var(--russ-text-inverse);
   font-weight: 600;
   border-radius: 0 8px 8px 0;
 }
@@ -683,8 +683,8 @@ onBeforeUnmount(() => {
 
 .calendar-day.is-start.is-today,
 .calendar-day.is-end.is-today {
-  background: #6366f1;
-  color: #fff;
+  background: var(--russ-secondary);
+  color: var(--russ-text-inverse);
 }
 
 .calendar-day.is-disabled {
@@ -698,17 +698,17 @@ onBeforeUnmount(() => {
   gap: 8px;
   margin-top: 16px;
   padding-top: 12px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--russ-bg-tertiary);
 }
 
 .calendar-today-btn,
 .calendar-clear-btn {
   flex: 1;
   padding: 8px 16px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--russ-border);
   border-radius: 8px;
-  background: #fff;
-  color: #64748b;
+  background: var(--russ-text-inverse);
+  color: var(--russ-text-muted);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -716,14 +716,14 @@ onBeforeUnmount(() => {
 }
 
 .calendar-today-btn:hover {
-  background: #f9fafb;
-  border-color: #6366f1;
-  color: #6366f1;
+  background: var(--russ-bg-quaternary);
+  border-color: var(--russ-secondary);
+  color: var(--russ-secondary);
 }
 
 .calendar-clear-btn:hover {
-  background: #fef2f2;
-  border-color: #ef4444;
-  color: #ef4444;
+  background: var(--russ-error-light);
+  border-color: var(--russ-input-error);
+  color: var(--russ-input-error);
 }
 </style>

@@ -76,14 +76,14 @@ const clearFilter = () => {
 .filter-label {
     font-size: 12px;
     font-weight: 600;
-    color: #4b5563;
+    color: var(--russ-neutral-dark);
     white-space: nowrap;
 }
 
 .clear-filter-btn {
     background: none;
     border: none;
-    color: #ef4444;
+    color: var(--russ-input-error);
     cursor: pointer;
     padding: 2px;
     border-radius: 4px;
@@ -96,8 +96,8 @@ const clearFilter = () => {
 }
 
 .clear-filter-btn:hover {
-    background: #fee2e2;
-    color: #dc2626;
+    background: var(--russ-error-light);
+    color: var(--russ-error);
 }
 
 .filter-content {
@@ -107,11 +107,11 @@ const clearFilter = () => {
 .filter-input {
     width: 100%;
     padding: 6px 8px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--russ-border);
     border-radius: 6px;
     font-size: 12px;
-    color: #374151;
-    background: white;
+    color: var(--russ-text-secondary);
+    background: var(--russ-bg);
     transition: all 0.2s ease;
 }
 

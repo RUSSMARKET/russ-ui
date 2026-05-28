@@ -25,7 +25,7 @@
       >
         <path
           d="M10 3L4.5 8.5L2 6"
-          stroke="white"
+          stroke="var(--russ-text-inverse)"
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
@@ -167,7 +167,7 @@ watch(() => props.modelValue, (newValue) => {
   min-height: 20px;
   border: 2px solid var(--russ-border-dark);
   border-radius: 4px;
-  background: white;
+  background: var(--russ-bg);
   transition: all 0.2s ease;
   position: relative;
   flex-shrink: 0;

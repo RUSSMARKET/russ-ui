@@ -211,8 +211,8 @@ const columnColClass = (column: TableColumn) => {
 }
 
 .table-filters {
-  background: #f8fafc;
-  border: 1px solid #e5e7eb;
+  background: var(--russ-bg-secondary);
+  border: 1px solid var(--russ-border);
   border-radius: 12px 12px 0 0;
   padding: 16px;
   margin-bottom: 0;
@@ -297,7 +297,7 @@ const columnColClass = (column: TableColumn) => {
 }
 
 .table-row:hover {
-  background: #f9fafb;
+  background: var(--russ-bg-quaternary);
 }
 
 .actions-cell {
@@ -327,7 +327,7 @@ const columnColClass = (column: TableColumn) => {
 }
 
 .sortable:hover {
-  background: #f0f0f0;
+  background: var(--russ-bg-hover);
 }
 
 .header-content {
@@ -345,21 +345,21 @@ const columnColClass = (column: TableColumn) => {
 
 .sort-icon {
   font-size: 12px;
-  color: #d1d5db;
+  color: var(--russ-border-dark);
   transition: color 0.2s ease;
 }
 
 .sort-icon.active {
-  color: #4f46e5;
+  color: var(--russ-secondary-dark);
 }
 
 .sort-icon:not(.active):hover {
-  color: #9ca3af;
+  color: var(--russ-text-quaternary);
 }
 
 .no-results {
   text-align: center;
-  color: #6b7280;
+  color: var(--russ-text-tertiary);
   font-style: italic;
 }
 
@@ -367,8 +367,8 @@ const columnColClass = (column: TableColumn) => {
   display: inline-block;
   width: 20px;
   height: 20px;
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #3498db;
+  border: 3px solid var(--russ-border-light);
+  border-top: 3px solid var(--russ-info);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-right: 8px;

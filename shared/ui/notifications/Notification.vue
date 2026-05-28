@@ -93,7 +93,7 @@ watch(latestNotification, (newNotification) => {
 }
 
 .notification {
-  background: white;
+  background: var(--russ-bg);
   border-radius: 8px;
   padding: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);

@@ -353,9 +353,9 @@ onBeforeUnmount(() => {
 .date-time-picker__section { margin-bottom: 8px; }
 .date-time-picker__section:last-child { margin-bottom: 0; }
 .date-time-picker__section-title { font-size: 12px; font-weight: 700; color: var(--russ-text-secondary); margin-bottom: 6px; }
-.date-time-picker__calendar { border: 1px solid var(--russ-border); border-radius: 10px; padding: 6px; background: #fff; }
+.date-time-picker__calendar { border: 1px solid var(--russ-border); border-radius: 10px; padding: 6px; background: var(--russ-text-inverse); }
 .date-time-picker__calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-.date-time-picker__nav-btn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: 1px solid var(--russ-border); border-radius: 8px; background: #fff; color: var(--russ-text-secondary); cursor: pointer; }
+.date-time-picker__nav-btn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: 1px solid var(--russ-border); border-radius: 8px; background: var(--russ-text-inverse); color: var(--russ-text-secondary); cursor: pointer; }
 .date-time-picker__nav-btn:hover { border-color: var(--russ-primary); color: var(--russ-primary); }
 .date-time-picker__month-year { font-size: 12px; font-weight: 600; color: var(--russ-text-primary); }
 .date-time-picker__weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 4px; }
@@ -364,7 +364,7 @@ onBeforeUnmount(() => {
 .date-time-picker__day { border: 0; background: transparent; border-radius: 7px; min-height: 24px; font-size: 11px; color: var(--russ-text-primary); cursor: pointer; }
 .date-time-picker__day:hover:not(.is-other-month) { background: var(--russ-bg-hover); }
 .date-time-picker__day.is-other-month { color: var(--russ-text-quaternary); }
-.date-time-picker__day.is-today { background: #e0e7ff; color: var(--russ-primary); font-weight: 600; }
+.date-time-picker__day.is-today { background: var(--russ-bg-blue-lighter); color: var(--russ-primary); font-weight: 600; }
 .date-time-picker__day.is-selected { background: var(--russ-primary); color: var(--russ-text-inverse); font-weight: 600; }
 .date-time-picker__section--time {
   border: 1px solid var(--russ-border);
@@ -376,7 +376,7 @@ onBeforeUnmount(() => {
   margin-bottom: 8px;
 }
 .date-time-picker__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
-.date-time-picker__btn { border: 1px solid var(--russ-border); border-radius: 8px; background: #fff; padding: 7px 8px; cursor: pointer; color: var(--russ-text-secondary); font-size: 12px; font-weight: 600; }
+.date-time-picker__btn { border: 1px solid var(--russ-border); border-radius: 8px; background: var(--russ-text-inverse); padding: 7px 8px; cursor: pointer; color: var(--russ-text-secondary); font-size: 12px; font-weight: 600; }
 .date-time-picker__btn:hover { border-color: var(--russ-primary); color: var(--russ-primary); }
-.date-time-picker__btn.clear:hover { border-color: #ef4444; color: #ef4444; }
+.date-time-picker__btn.clear:hover { border-color: var(--russ-input-error); color: var(--russ-input-error); }
 </style>

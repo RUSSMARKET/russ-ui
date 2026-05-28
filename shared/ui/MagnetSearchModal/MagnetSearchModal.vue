@@ -404,7 +404,7 @@ watch(() => props.visible, (newVal) => {
     font-size: 14px;
     color: var(--russ-text-primary);
     transition: all 0.2s ease;
-    background: white;
+    background: var(--russ-bg);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
     width: 100%;
 }
@@ -423,7 +423,7 @@ watch(() => props.visible, (newVal) => {
 
 .magnet-search-button {
     background: linear-gradient(135deg, var(--russ-accent-light) 0%, var(--russ-accent) 100%);
-    color: white;
+    color: var(--russ-text-inverse);
     border: none;
     padding: 14px 24px;
     border-radius: 8px;
@@ -484,7 +484,7 @@ watch(() => props.visible, (newVal) => {
     justify-content: space-between;
     align-items: center;
     padding: 8px 12px;
-    background: white;
+    background: var(--russ-bg);
     border-radius: 4px;
     border: 1px solid var(--russ-border);
 }
@@ -525,7 +525,7 @@ watch(() => props.visible, (newVal) => {
     justify-content: space-between;
     align-items: center;
     padding: 8px 12px;
-    background: white;
+    background: var(--russ-bg);
     border-radius: 4px;
     border: 1px solid var(--russ-border);
 }
@@ -672,12 +672,12 @@ watch(() => props.visible, (newVal) => {
 }
 
 .card-number {
-    background: linear-gradient(135deg, #f0f4f8 0%, #e0e7ff 100%);
+    background: linear-gradient(135deg, var(--russ-bg-gray-light) 0%, var(--russ-bg-blue-lighter) 100%);
     padding: 4px 10px;
     border-radius: 5px;
     font-size: 12px;
-    border: 1px solid #dbeafe;
-    color: #1e40af;
+    border: 1px solid var(--russ-info-light);
+    color: var(--russ-info-text);
 }
 
 .status-cell {
@@ -770,7 +770,7 @@ watch(() => props.visible, (newVal) => {
 }
 
 .file-preview-overlay i {
-    color: white;
+    color: var(--russ-text-inverse);
     font-size: 16px;
 }
 

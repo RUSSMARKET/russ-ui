@@ -16,6 +16,6 @@ defineEmits(['click'])
   transition: background 0.2s;
 }
 .step:hover {
-  background: var(--russ-bg-hover, #f3f4f6);
+  background: var(--russ-bg-hover, var(--russ-bg-hover));
 }
 </style>

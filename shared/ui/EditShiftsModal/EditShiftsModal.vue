@@ -1231,7 +1231,7 @@ const handleReset = () => {
 
 .interval-chip-active {
   background: var(--russ-primary) !important;
-  color: #fff !important;
+  color: var(--russ-text-inverse) !important;
   border-color: var(--russ-primary) !important;
 }
 
@@ -1310,7 +1310,7 @@ const handleReset = () => {
   border-radius: 50%;
   font-size: 12px;
   font-weight: 800;
-  color: #fff;
+  color: var(--russ-text-inverse);
   background: var(--russ-primary);
   box-shadow: 0 0 0 2px rgba(33, 62, 137, 0.2);
 }
@@ -1326,7 +1326,7 @@ const handleReset = () => {
   padding: 6px 12px;
   border-radius: 6px;
   border: 1px solid var(--russ-border);
-  background: #fff;
+  background: var(--russ-text-inverse);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -1341,12 +1341,12 @@ const handleReset = () => {
 .rect-bar-primary {
   background: var(--russ-primary);
   border-color: var(--russ-primary);
-  color: #fff;
+  color: var(--russ-text-inverse);
 }
 
 .rect-bar-primary:hover {
   filter: brightness(1.05);
-  color: #fff;
+  color: var(--russ-text-inverse);
 }
 
 .rect-bar-ghost {
@@ -1388,7 +1388,7 @@ const handleReset = () => {
   bottom: auto;
   transform: translateX(-50%);
   z-index: 130;
-  background: #fff;
+  background: var(--russ-text-inverse);
   border: 1px solid var(--russ-border-dark);
   border-radius: 10px;
   padding: 10px;
@@ -1438,7 +1438,7 @@ const handleReset = () => {
   padding: 6px 12px;
   border: 1px solid var(--russ-border);
   border-radius: 6px;
-  background: #fff;
+  background: var(--russ-text-inverse);
   font-size: 12px;
   cursor: pointer;
 }
@@ -1481,7 +1481,7 @@ const handleReset = () => {
 }
 
 .staff-table-edit tbody td.sticky-summary-pack {
-  background: #fff !important;
+  background: var(--russ-text-inverse) !important;
 }
 
 .staff-table-edit tr:nth-child(even) td.sticky-summary-pack {
@@ -1596,7 +1596,7 @@ const handleReset = () => {
 
 .pagination-compact .pagination-select:focus {
   outline: none;
-  background: white;
+  background: var(--russ-bg);
   box-shadow: 0 0 0 2px rgba(33, 62, 137, 0.1);
 }
 
@@ -1658,7 +1658,7 @@ const handleReset = () => {
   border-collapse: separate;
   border-spacing: 0;
   font-size: 12px;
-  background: #fff;
+  background: var(--russ-text-inverse);
   border-radius: 8px;
   overflow: visible;
   box-shadow: 0 1px 4px rgba(33, 62, 137, 0.06);
@@ -1817,7 +1817,7 @@ const handleReset = () => {
 
 .shift-cell-tile:hover:not(:disabled) {
   border-color: rgba(33, 62, 137, 0.35);
-  background: #fff;
+  background: var(--russ-text-inverse);
   box-shadow: none;
 }
 
@@ -2088,7 +2088,7 @@ const handleReset = () => {
   padding: 10px 14px;
   border-radius: 10px;
   border: 1px solid var(--russ-border-dark);
-  background: #fff;
+  background: var(--russ-text-inverse);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   font-size: 13px;
   font-weight: 600;
@@ -2124,7 +2124,7 @@ const handleReset = () => {
 .btn-primary {
   padding: 10px 24px;
   background: var(--russ-primary);
-  color: white;
+  color: var(--russ-text-inverse);
   border: none;
   border-radius: 8px;
   font-size: 14px;
@@ -2144,7 +2144,7 @@ const handleReset = () => {
 
 .btn-cancel-modern {
   padding: 10px 24px;
-  background: white;
+  background: var(--russ-bg);
   color: var(--russ-text-muted);
   border: 1px solid var(--russ-border-light);
   border-radius: 8px;

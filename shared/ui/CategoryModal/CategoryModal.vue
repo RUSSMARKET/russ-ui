@@ -247,12 +247,12 @@ const onHide = () => {
   border-color: var(--russ-input-border-focus);
   box-shadow: 1px 0px 5px 5px var(--russ-shadow-color);
   outline: none;
-  background: white;
+  background: var(--russ-bg);
 }
 
 .category-input:hover {
   border-color: var(--russ-border-dark);
-  background: white;
+  background: var(--russ-bg);
 }
 
 .category-input-error {
@@ -268,7 +268,7 @@ const onHide = () => {
 .category-add-btn {
   padding: 12px 24px;
   background: var(--russ-accent-dark);
-  color: white;
+  color: var(--russ-text-inverse);
   border: none;
   border-radius: 10px;
   font-weight: 600;
@@ -303,7 +303,7 @@ const onHide = () => {
   width: 16px;
   height: 16px;
   border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border-top-color: var(--russ-text-inverse);
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }

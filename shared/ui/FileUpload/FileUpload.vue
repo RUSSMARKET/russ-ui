@@ -186,7 +186,7 @@ watch(() => props.maxFileSize, () => {
 }
 
 .file-upload-button:hover:not(:disabled):not(.file-upload-button-disabled) {
-  background: white;
+  background: var(--russ-bg);
   border-color: var(--russ-border-dark);
   box-shadow: none;
 }
@@ -195,7 +195,7 @@ watch(() => props.maxFileSize, () => {
   outline: none;
   border-color: var(--russ-secondary);
   box-shadow: 1px 0px 5px 5px var(--russ-shadow-color);
-  background: white;
+  background: var(--russ-bg);
 }
 
 .file-upload-button:active:not(:disabled):not(.file-upload-button-disabled) {

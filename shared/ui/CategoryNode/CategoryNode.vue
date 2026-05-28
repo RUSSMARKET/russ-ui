@@ -63,7 +63,7 @@ defineEmits<{
   border-radius: 6px;
 }
 .category-row.selected {
-  background: var(--russ-info-light, #e3f2fd);
+  background: var(--russ-info-light);
 }
 .category-row.inactive {
   opacity: 0.75;
@@ -81,16 +81,16 @@ defineEmits<{
   background: transparent;
   cursor: pointer;
   border-radius: 4px;
-  color: var(--russ-text-primary, #374151);
+  color: var(--russ-text-primary, var(--russ-text-secondary));
 }
 .icon-btn:hover {
-  background: var(--russ-bg-hover, #e5e7eb);
+  background: var(--russ-bg-hover, var(--russ-border));
 }
 .badge-inactive {
   font-size: 0.75rem;
   padding: 0.15rem 0.4rem;
   border-radius: 4px;
-  background: var(--russ-border-dark, #d1d5db);
-  color: var(--russ-text-primary, #374151);
+  background: var(--russ-border-dark, var(--russ-border-dark));
+  color: var(--russ-text-primary, var(--russ-text-secondary));
 }
 </style>
