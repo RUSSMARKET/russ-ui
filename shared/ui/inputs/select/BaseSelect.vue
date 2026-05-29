@@ -68,7 +68,7 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { Teleport } from 'vue';
 import { strictFuzzyMatch } from '../../../utils/levenshtein';
-import { computeFloatingPlacement } from '../../../utils';
+import { computeFloatingPlacement, getMobileFiltersBounds } from '../../../utils';
 const props = defineProps({
   modelValue: [String, Number, Array],
   options: {
@@ -253,13 +253,35 @@ const filteredOptions = computed(() => {
   return allOption ? [allOption, ...restOptions] : restOptions;
 });
 
+let mobileFiltersScrollEl = null;
+
+function getMobileFiltersScrollContainer() {
+  if (!containerRef.value) return null;
+  const modal = containerRef.value.closest('.mobile-filters-modal');
+  if (!modal) return null;
+  return modal.querySelector('.mobile-filters-content');
+}
+
+function attachMobileFiltersScrollListener() {
+  detachMobileFiltersScrollListener();
+  mobileFiltersScrollEl = getMobileFiltersScrollContainer();
+  if (mobileFiltersScrollEl) {
+    mobileFiltersScrollEl.addEventListener('scroll', handleResize, { passive: true });
+  }
+}
+
+function detachMobileFiltersScrollListener() {
+  if (mobileFiltersScrollEl) {
+    mobileFiltersScrollEl.removeEventListener('scroll', handleResize);
+    mobileFiltersScrollEl = null;
+  }
+}
+
 function calculateDropdownPosition() {
   if (!containerRef.value) return;
 
   const containerRect = containerRef.value.getBoundingClientRect();
-
-  const modalContainer = containerRef.value.closest('.mobile-filters-modal');
-  const modalRect = modalContainer ? modalContainer.getBoundingClientRect() : null;
+  const filtersBounds = getMobileFiltersBounds(containerRef.value);
 
   const optionsCount = filteredOptions.value.length || props.options.length;
   const estimatedDropdownHeight = Math.min(265, optionsCount * 40 + 20);
@@ -276,14 +298,32 @@ function calculateDropdownPosition() {
   const placementResult = computeFloatingPlacement(containerRect, {
     estimatedHeight: dropdownHeight,
     maxHeight: 265,
-    minHeight: 120,
     padding,
-    containerRect: modalRect,
+    containerRect: filtersBounds,
   });
 
-  openUpward.value = props.forceOpenUpward
-    ? true
-    : placementResult.placement === 'above';
+  let placementAbove = placementResult.placement === 'above';
+
+  if (!props.forceOpenUpward && filtersBounds) {
+    const midline = filtersBounds.top + filtersBounds.height * 0.5;
+    const inLowerHalf = containerRect.bottom > midline;
+    const spaceAbove = Math.max(0, containerRect.top - filtersBounds.top);
+    const spaceBelow = Math.max(0, filtersBounds.bottom - containerRect.bottom);
+    if (inLowerHalf && spaceAbove >= Math.min(dropdownHeight, 150) + padding) {
+      placementAbove = true;
+    } else if (inLowerHalf && spaceBelow < dropdownHeight + padding && spaceAbove > spaceBelow) {
+      placementAbove = true;
+    }
+  }
+
+  openUpward.value = props.forceOpenUpward ? true : placementAbove;
+
+  const boundsTop = filtersBounds?.top ?? 0;
+  const boundsBottom = filtersBounds?.bottom ?? (typeof window !== 'undefined' ? window.innerHeight : 0);
+  const spaceAbove = Math.max(0, containerRect.top - boundsTop);
+  const spaceBelow = Math.max(0, boundsBottom - containerRect.bottom);
+  const available = openUpward.value ? spaceAbove : spaceBelow;
+  const maxHeightPx = Math.min(265, Math.max(48, available - padding));
 
   const baseZIndex = 100000;
   dropdownStyles.value = {
@@ -296,7 +336,7 @@ function calculateDropdownPosition() {
     right: 'auto',
     width: `${placementResult.width}px`,
     zIndex: baseZIndex,
-    maxHeight: `${placementResult.maxHeight}px`,
+    maxHeight: `${maxHeightPx}px`,
   };
 }
 
@@ -356,6 +396,7 @@ function openDropdown() {
     if (!dropdownOpen.value) {
       dropdownOpen.value = true;
       highlightedIndex.value = -1;
+      attachMobileFiltersScrollListener();
     }
     nextTick(() => {
       calculateDropdownPosition();
@@ -383,6 +424,7 @@ function openDropdown() {
 function closeDropdown() {
   const wasOpen = dropdownOpen.value;
   dropdownOpen.value = false;
+  detachMobileFiltersScrollListener();
   highlightedIndex.value = -1;
   if (props.multiple) {
     inputValue.value = '';
@@ -398,6 +440,7 @@ function toggleDropdown() {
   if (!dropdownOpen.value) {
     dropdownOpen.value = true;
     highlightedIndex.value = -1;
+    attachMobileFiltersScrollListener();
     nextTick(() => {
       calculateDropdownPosition();
       // Дополнительная проверка после рендера для более точного расчета
@@ -535,6 +578,7 @@ onMounted(() => {
   syncSingleSelectDisplay();
 });
 onBeforeUnmount(() => {
+  detachMobileFiltersScrollListener();
   document.removeEventListener('mousedown', handleClickOutside);
   window.removeEventListener('resize', handleResize);
   window.removeEventListener('scroll', handleResize, true);

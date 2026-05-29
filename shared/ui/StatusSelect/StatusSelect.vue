@@ -87,7 +87,7 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { Teleport } from 'vue';
 import { strictFuzzyMatch } from '../../utils/levenshtein';
-import { computeFloatingPlacement } from '../../utils';
+import { computeFloatingPlacement, getMobileFiltersBounds } from '../../utils';
 
 const props = defineProps({
   modelValue: [String, Number, Array],
@@ -218,9 +218,9 @@ function calculateDropdownPosition() {
   const placementResult = computeFloatingPlacement(rect, {
     estimatedHeight: dropdownHeight,
     maxHeight: maxDropdownHeight,
-    minHeight: 120,
     padding: DROPDOWN_VIEWPORT_PADDING,
     minWidth: DROPDOWN_MIN_WIDTH,
+    containerRect: getMobileFiltersBounds(wrapperRef.value),
   });
 
   openUpward.value = props.disableAutoPosition

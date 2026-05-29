@@ -72,7 +72,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { Teleport } from 'vue';
-import { computeFloatingPlacement } from '../../utils';
+import { computeFloatingPlacement, getMobileFiltersBounds } from '../../utils';
 
 const props = defineProps({
   modelValue: {
@@ -181,8 +181,8 @@ const calculatePosition = () => {
   const placementResult = computeFloatingPlacement(rect, {
     estimatedHeight,
     maxHeight: estimatedHeight,
-    minHeight: 120,
     padding: 8,
+    containerRect: getMobileFiltersBounds(wrapperRef.value),
   });
 
   const openUpward = placementResult.placement === 'above';

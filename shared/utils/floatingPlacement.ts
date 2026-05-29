@@ -56,6 +56,19 @@ function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
 }
 
+const MOBILE_FILTERS_MODAL_SELECTOR = '.mobile-filters-modal';
+const MOBILE_FILTERS_CONTENT_SELECTOR = '.mobile-filters-content';
+
+/**
+ * Visible scroll bounds of the mobile filters bottom sheet (not the full modal chrome).
+ */
+export function getMobileFiltersBounds(anchor: Element): DOMRect | null {
+  const modal = anchor.closest(MOBILE_FILTERS_MODAL_SELECTOR);
+  if (!modal) return null;
+  const scrollEl = modal.querySelector(MOBILE_FILTERS_CONTENT_SELECTOR);
+  return (scrollEl ?? modal).getBoundingClientRect();
+}
+
 /**
  * Computes best placement (above/below) and constrained maxHeight for a fixed-position floating panel.
  * Uses VisualViewport when available to keep the panel inside the actually visible area (browser bars, keyboard).
@@ -65,7 +78,6 @@ export function computeFloatingPlacement(
   options: ComputeFloatingPlacementOptions,
 ): ComputeFloatingPlacementResult {
   const padding = options.padding ?? 8;
-  const minHeight = options.minHeight ?? 120;
   const viewport = getVisualViewportSnapshot(padding);
 
   const viewportTop = viewport.top + padding;
@@ -74,18 +86,25 @@ export function computeFloatingPlacement(
   const verticalTop = options.containerRect ? options.containerRect.top : viewportTop;
   const verticalBottom = options.containerRect ? options.containerRect.bottom : viewportBottom;
 
-  const spaceAbove = anchorRect.top - verticalTop;
-  const spaceBelow = verticalBottom - anchorRect.bottom;
+  const spaceAbove = Math.max(0, anchorRect.top - verticalTop);
+  const spaceBelow = Math.max(0, verticalBottom - anchorRect.bottom);
 
+  const needsAboveForHeight = spaceBelow < options.estimatedHeight + padding;
   const preferAbove =
-    spaceBelow < spaceAbove || spaceBelow < options.estimatedHeight + padding;
-  const placement: FloatingPlacement = preferAbove ? 'above' : 'below';
+    needsAboveForHeight || spaceBelow < spaceAbove;
+
+  let placement: FloatingPlacement = preferAbove ? 'above' : 'below';
+
+  if (placement === 'below' && spaceBelow < padding && spaceAbove > spaceBelow) {
+    placement = 'above';
+  } else if (placement === 'above' && spaceAbove < padding && spaceBelow > spaceAbove) {
+    placement = 'below';
+  }
 
   const available = placement === 'above' ? spaceAbove : spaceBelow;
-  const maxHeight = clamp(
-    available,
-    minHeight,
-    Math.max(minHeight, options.maxHeight),
+  const maxHeight = Math.min(
+    options.maxHeight,
+    Math.max(48, available - padding),
   );
 
   const viewportLeft = viewport.left + padding;

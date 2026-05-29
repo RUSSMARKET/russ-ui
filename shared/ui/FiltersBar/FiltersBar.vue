@@ -16,38 +16,40 @@
       </button>
     </div>
 
-    <!-- Mobile filters modal -->
-    <div v-if="showMobileFilters" class="mobile-filters-overlay" @click="closeMobileFilters">
-      <div class="mobile-filters-modal" @click.stop>
-        <div class="mobile-filters-header">
-          <h3>Фильтры</h3>
-          <button class="close-button" @click="closeMobileFilters">×</button>
-        </div>
-        <div class="mobile-filters-content">
-          <div class="filters-grid-mobile">
-            <FilterItem v-for="(filter, index) in filters" :key="filterItemKey(filter, index)" :filter="filter"
-              :model-value="getFilterValue(filter.key)" @update:model-value="handleFilterChange(filter.key, $event)"
-              @filter-close="(key) => emit('filter-close', key)" />
-            <slot name="actions"></slot>
-            <div v-if="showResetButton" class="filter-item-wrapper filter-item-wrapper--reset">
-              <button class="reset-filters-btn" @click="handleReset" title="Сбросить все фильтры">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round" />
-                  <path d="M21 3v5h-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round" />
-                  <path d="M3 21v-5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
-                <span>Сбросить</span>
-              </button>
+    <!-- Mobile filters modal (teleported to avoid parent overflow clipping) -->
+    <Teleport to="body">
+      <div v-if="showMobileFilters" class="mobile-filters-overlay" @click="closeMobileFilters">
+        <div class="mobile-filters-modal" @click.stop>
+          <div class="mobile-filters-header">
+            <h3>Фильтры</h3>
+            <button type="button" class="close-button" @click="closeMobileFilters">×</button>
+          </div>
+          <div class="mobile-filters-content">
+            <div class="filters-grid-mobile">
+              <FilterItem v-for="(filter, index) in filters" :key="filterItemKey(filter, index)" :filter="filter"
+                :model-value="getFilterValue(filter.key)" @update:model-value="handleFilterChange(filter.key, $event)"
+                @filter-close="(key) => emit('filter-close', key)" />
+              <slot name="actions"></slot>
+              <div v-if="showResetButton" class="filter-item-wrapper filter-item-wrapper--reset">
+                <button type="button" class="reset-filters-btn" @click="handleReset" title="Сбросить все фильтры">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M21 3v5h-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M3 21v-5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                  </svg>
+                  <span>Сбросить</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </Teleport>
 
     <!-- Desktop filters -->
     <div class="filters-container desktop-filters" :class="{ 'always-visible': !showMobileButton && isInsideModal }"
@@ -387,10 +389,13 @@ onMounted(() => {
 }
 
 .mobile-filters-modal {
+  display: flex;
+  flex-direction: column;
   background: var(--russ-bg);
   width: 100%;
   max-width: 100%;
   max-height: 80vh;
+  min-height: 0;
   border-radius: 16px 16px 0 0;
   overflow: hidden;
   animation: slideUp 0.3s ease-out;
@@ -408,6 +413,7 @@ onMounted(() => {
 
 .mobile-filters-header {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
@@ -439,9 +445,12 @@ onMounted(() => {
 }
 
 .mobile-filters-content {
+  flex: 1;
+  min-height: 0;
   padding: 20px;
-  max-height: calc(80vh - 60px);
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 /* Responsive */

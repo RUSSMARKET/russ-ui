@@ -78,7 +78,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { Teleport } from 'vue';
-import { computeFloatingPlacement } from '../../utils';
+import { computeFloatingPlacement, getMobileFiltersBounds } from '../../utils';
 
 const props = defineProps({
   modelValue: [Date, String, null],
@@ -220,8 +220,8 @@ const calculatePosition = () => {
   const placementResult = computeFloatingPlacement(rect, {
     estimatedHeight,
     maxHeight: estimatedHeight,
-    minHeight: 120,
     padding: 8,
+    containerRect: getMobileFiltersBounds(wrapperRef.value),
   });
 
   const openUpward = placementResult.placement === 'above';
@@ -232,7 +232,9 @@ const calculatePosition = () => {
     bottom: openUpward ? `${placementResult.bottom ?? (typeof window !== 'undefined' ? window.innerHeight : 0) - rect.top + 8}px` : 'auto',
     left: `${placementResult.left}px`,
     width: `${placementResult.width}px`,
-    zIndex: 100000
+    maxHeight: `${placementResult.maxHeight}px`,
+    overflowY: 'auto',
+    zIndex: 100000,
   };
 };
 

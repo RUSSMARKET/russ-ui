@@ -83,7 +83,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { TimePicker } from '../TimePicker'
-import { computeFloatingPlacement } from '../../utils'
+import { computeFloatingPlacement, getMobileFiltersBounds } from '../../utils'
 
 const props = withDefaults(defineProps<{
   modelValue?: string
@@ -215,9 +215,9 @@ function calculatePosition() {
   const placementResult = computeFloatingPlacement(rect, {
     estimatedHeight,
     maxHeight: estimatedHeight,
-    minHeight: 260,
     padding: sidePadding,
     minWidth: Math.min(340, Math.max(rect.width, 260)),
+    containerRect: getMobileFiltersBounds(wrapperRef.value),
   })
 
   const openUpward = placementResult.placement === 'above'
