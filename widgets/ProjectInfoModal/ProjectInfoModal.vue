@@ -25,6 +25,7 @@
             option-label="fullName"
             option-value="id"
             :multiple="true"
+            :max="3"
             :searchable="true"
             :disabled="staffLoading"
           />
