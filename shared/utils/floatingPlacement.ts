@@ -89,22 +89,32 @@ export function computeFloatingPlacement(
   const spaceAbove = Math.max(0, anchorRect.top - verticalTop);
   const spaceBelow = Math.max(0, verticalBottom - anchorRect.bottom);
 
-  const needsAboveForHeight = spaceBelow < options.estimatedHeight + padding;
-  const preferAbove =
-    needsAboveForHeight || spaceBelow < spaceAbove;
+  const desiredHeight = Math.min(options.estimatedHeight, options.maxHeight);
+  const minOpen = Math.min(desiredHeight, 80) + padding;
+  const fitsBelow = spaceBelow >= minOpen;
+  const fitsAbove = spaceAbove >= minOpen;
 
-  let placement: FloatingPlacement = preferAbove ? 'above' : 'below';
-
-  if (placement === 'below' && spaceBelow < padding && spaceAbove > spaceBelow) {
-    placement = 'above';
-  } else if (placement === 'above' && spaceAbove < padding && spaceBelow > spaceAbove) {
+  let placement: FloatingPlacement;
+  if (fitsBelow && fitsAbove) {
+    placement = spaceBelow >= spaceAbove ? 'below' : 'above';
+  } else if (fitsBelow) {
     placement = 'below';
+  } else if (fitsAbove) {
+    placement = 'above';
+  } else {
+    placement = spaceBelow >= spaceAbove ? 'below' : 'above';
+  }
+
+  if (placement === 'above' && spaceAbove < padding && spaceBelow > spaceAbove) {
+    placement = 'below';
+  } else if (placement === 'below' && spaceBelow < padding && spaceAbove > spaceBelow) {
+    placement = 'above';
   }
 
   const available = placement === 'above' ? spaceAbove : spaceBelow;
   const maxHeight = Math.min(
     options.maxHeight,
-    Math.max(48, available - padding),
+    Math.max(0, available - padding),
   );
 
   const viewportLeft = viewport.left + padding;
@@ -135,6 +145,50 @@ export function computeFloatingPlacement(
     left,
     width,
     top: anchorRect.bottom + padding,
+  };
+}
+
+export interface BuildFixedFloatingStylesOptions {
+  padding?: number;
+  containerRect?: DOMRect | null;
+  zIndex?: number;
+}
+
+/**
+ * Builds fixed-position inline styles for a teleported dropdown/calendar.
+ * When opening above, clamps top to the container top so the panel stays in the sheet.
+ */
+export function buildFixedFloatingStyles(
+  anchorRect: DOMRect,
+  result: ComputeFloatingPlacementResult,
+  options: BuildFixedFloatingStylesOptions = {},
+): Record<string, string | number> {
+  const padding = options.padding ?? 8;
+  const zIndex = options.zIndex ?? 100000;
+  const boundsTop = options.containerRect?.top ?? padding;
+
+  const base = {
+    position: 'fixed' as const,
+    left: `${result.left}px`,
+    width: `${result.width}px`,
+    maxHeight: `${result.maxHeight}px`,
+    overflowY: 'auto' as const,
+    zIndex,
+  };
+
+  if (result.placement === 'above') {
+    const idealTop = anchorRect.top - padding - result.maxHeight;
+    return {
+      ...base,
+      top: `${Math.max(boundsTop + padding, idealTop)}px`,
+      bottom: 'auto',
+    };
+  }
+
+  return {
+    ...base,
+    top: `${result.top ?? anchorRect.bottom + padding}px`,
+    bottom: 'auto',
   };
 }
 

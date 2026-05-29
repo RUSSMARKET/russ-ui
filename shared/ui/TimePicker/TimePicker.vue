@@ -66,7 +66,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
-import { computeFloatingPlacement, getMobileFiltersBounds } from '../../utils'
+import { buildFixedFloatingStyles, computeFloatingPlacement, getMobileFiltersBounds } from '../../utils'
 
 const props = defineProps<{
   modelValue?: string
@@ -148,24 +148,21 @@ function calculatePosition() {
   const gap = 8
   const sidePadding = 8
 
+  const filtersBounds = getMobileFiltersBounds(wrapperRef.value)
   const placementResult = computeFloatingPlacement(rect, {
     estimatedHeight,
     maxHeight: estimatedHeight,
     padding: sidePadding,
     minWidth: Math.min(300, Math.max(rect.width, 220)),
-    containerRect: getMobileFiltersBounds(wrapperRef.value),
+    containerRect: filtersBounds,
   })
 
-  const openUpward = placementResult.placement === 'above'
-
   dropdownStyles.value = {
-    position: 'fixed',
-    top: openUpward ? 'auto' : `${placementResult.top ?? rect.bottom + gap}px`,
-    bottom: openUpward ? `${placementResult.bottom ?? (typeof window !== 'undefined' ? window.innerHeight : 0) - rect.top + gap}px` : 'auto',
-    left: `${placementResult.left}px`,
+    ...buildFixedFloatingStyles(rect, placementResult, {
+      padding: gap,
+      containerRect: filtersBounds,
+    }),
     width: `${Math.min(300, placementResult.width)}px`,
-    maxHeight: `${placementResult.maxHeight}px`,
-    zIndex: 100000,
   }
 }
 

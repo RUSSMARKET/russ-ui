@@ -302,42 +302,72 @@ function calculateDropdownPosition() {
     containerRect: filtersBounds,
   });
 
-  let placementAbove = placementResult.placement === 'above';
+  const boundsTop = filtersBounds?.top ?? padding;
+  const boundsBottom =
+    filtersBounds?.bottom ??
+    (typeof window !== 'undefined' ? window.innerHeight : 0);
+  const spaceAbove = Math.max(0, containerRect.top - boundsTop);
+  const spaceBelow = Math.max(0, boundsBottom - containerRect.bottom);
+  const minOpen = Math.min(dropdownHeight, 120) + padding;
+
+  let placementAbove = props.forceOpenUpward
+    ? true
+    : placementResult.placement === 'above';
 
   if (!props.forceOpenUpward && filtersBounds) {
-    const midline = filtersBounds.top + filtersBounds.height * 0.5;
-    const inLowerHalf = containerRect.bottom > midline;
-    const spaceAbove = Math.max(0, containerRect.top - filtersBounds.top);
-    const spaceBelow = Math.max(0, filtersBounds.bottom - containerRect.bottom);
-    if (inLowerHalf && spaceAbove >= Math.min(dropdownHeight, 150) + padding) {
-      placementAbove = true;
-    } else if (inLowerHalf && spaceBelow < dropdownHeight + padding && spaceAbove > spaceBelow) {
-      placementAbove = true;
+    const contentMid = filtersBounds.top + filtersBounds.height * 0.5;
+    const inUpperHalf = containerRect.top < contentMid;
+
+    if (inUpperHalf) {
+      placementAbove =
+        spaceBelow < minOpen &&
+        spaceAbove > spaceBelow &&
+        spaceAbove >= minOpen;
+    } else {
+      placementAbove =
+        spaceBelow < dropdownHeight + padding &&
+        spaceAbove >= Math.min(dropdownHeight, 150) + padding;
     }
   }
 
-  openUpward.value = props.forceOpenUpward ? true : placementAbove;
+  if (placementAbove && spaceAbove < minOpen && spaceBelow > spaceAbove) {
+    placementAbove = false;
+  }
+  if (!placementAbove && spaceBelow < padding && spaceAbove > spaceBelow) {
+    placementAbove = true;
+  }
 
-  const boundsTop = filtersBounds?.top ?? 0;
-  const boundsBottom = filtersBounds?.bottom ?? (typeof window !== 'undefined' ? window.innerHeight : 0);
-  const spaceAbove = Math.max(0, containerRect.top - boundsTop);
-  const spaceBelow = Math.max(0, boundsBottom - containerRect.bottom);
+  openUpward.value = placementAbove;
+
   const available = openUpward.value ? spaceAbove : spaceBelow;
-  const maxHeightPx = Math.min(265, Math.max(48, available - padding));
+  const maxHeightPx = Math.min(265, Math.max(0, available - padding));
 
   const baseZIndex = 100000;
-  dropdownStyles.value = {
-    position: 'fixed',
-    top: openUpward.value ? 'auto' : `${containerRect.bottom + padding}px`,
-    bottom: openUpward.value
-      ? `${(typeof window !== 'undefined' ? window.innerHeight : 0) - containerRect.top + padding}px`
-      : 'auto',
-    left: `${placementResult.left}px`,
-    right: 'auto',
-    width: `${placementResult.width}px`,
-    zIndex: baseZIndex,
-    maxHeight: `${maxHeightPx}px`,
-  };
+  if (openUpward.value) {
+    const idealTop = containerRect.top - padding - maxHeightPx;
+    const top = Math.max(boundsTop + padding, idealTop);
+    dropdownStyles.value = {
+      position: 'fixed',
+      top: `${top}px`,
+      bottom: 'auto',
+      left: `${placementResult.left}px`,
+      right: 'auto',
+      width: `${placementResult.width}px`,
+      zIndex: baseZIndex,
+      maxHeight: `${maxHeightPx}px`,
+    };
+  } else {
+    dropdownStyles.value = {
+      position: 'fixed',
+      top: `${containerRect.bottom + padding}px`,
+      bottom: 'auto',
+      left: `${placementResult.left}px`,
+      right: 'auto',
+      width: `${placementResult.width}px`,
+      zIndex: baseZIndex,
+      maxHeight: `${maxHeightPx}px`,
+    };
+  }
 }
 
 function handleMultipleComboClick(event) {

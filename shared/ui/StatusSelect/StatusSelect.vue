@@ -87,7 +87,7 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { Teleport } from 'vue';
 import { strictFuzzyMatch } from '../../utils/levenshtein';
-import { computeFloatingPlacement, getMobileFiltersBounds } from '../../utils';
+import { buildFixedFloatingStyles, computeFloatingPlacement, getMobileFiltersBounds } from '../../utils';
 
 const props = defineProps({
   modelValue: [String, Number, Array],
@@ -215,31 +215,30 @@ function calculateDropdownPosition() {
   const maxDropdownHeight = isMobile ? 400 : 300;
   const dropdownHeight = Math.min(maxDropdownHeight, props.options.length * 50 + 100);
 
+  const filtersBounds = getMobileFiltersBounds(wrapperRef.value);
   const placementResult = computeFloatingPlacement(rect, {
     estimatedHeight: dropdownHeight,
     maxHeight: maxDropdownHeight,
     padding: DROPDOWN_VIEWPORT_PADDING,
     minWidth: DROPDOWN_MIN_WIDTH,
-    containerRect: getMobileFiltersBounds(wrapperRef.value),
+    containerRect: filtersBounds,
   });
 
   openUpward.value = props.disableAutoPosition
     ? false
     : placementResult.placement === 'above';
 
-  const baseZIndex = 1001
-  
+  const baseZIndex = 1001;
+
   if (openUpward.value) {
     dropdownStyles.value = {
-      position: 'fixed',
-      top: 'auto',
-      bottom: `${placementResult.bottom ?? (typeof window !== 'undefined' ? window.innerHeight : 0) - rect.top + DROPDOWN_VIEWPORT_PADDING}px`,
-      left: `${placementResult.left}px`,
+      ...buildFixedFloatingStyles(rect, placementResult, {
+        padding: DROPDOWN_VIEWPORT_PADDING,
+        containerRect: filtersBounds,
+        zIndex: baseZIndex,
+      }),
       right: 'auto',
-      width: `${placementResult.width}px`,
       minWidth: `${DROPDOWN_MIN_WIDTH}px`,
-      zIndex: baseZIndex,
-      maxHeight: `${placementResult.maxHeight}px`
     };
   } else {
     dropdownStyles.value = {

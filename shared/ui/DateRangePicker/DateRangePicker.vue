@@ -80,7 +80,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { Teleport } from 'vue';
-import { computeFloatingPlacement, getMobileFiltersBounds } from '../../utils';
+import { buildFixedFloatingStyles, computeFloatingPlacement, getMobileFiltersBounds } from '../../utils';
 
 const props = defineProps({
   modelValue: {
@@ -433,25 +433,18 @@ const calculatePosition = () => {
   const rect = wrapperRef.value.getBoundingClientRect();
   const estimatedHeight = 350;
 
+  const filtersBounds = getMobileFiltersBounds(wrapperRef.value);
   const placementResult = computeFloatingPlacement(rect, {
     estimatedHeight,
     maxHeight: estimatedHeight,
     padding: 8,
-    containerRect: getMobileFiltersBounds(wrapperRef.value),
+    containerRect: filtersBounds,
   });
 
-  const openUpward = placementResult.placement === 'above';
-
-  dropdownStyles.value = {
-    position: 'fixed',
-    top: openUpward ? 'auto' : `${placementResult.top ?? rect.bottom + 8}px`,
-    bottom: openUpward ? `${placementResult.bottom ?? (typeof window !== 'undefined' ? window.innerHeight : 0) - rect.top + 8}px` : 'auto',
-    left: `${placementResult.left}px`,
-    width: `${placementResult.width}px`,
-    maxHeight: `${placementResult.maxHeight}px`,
-    overflowY: 'auto',
-    zIndex: 100000,
-  };
+  dropdownStyles.value = buildFixedFloatingStyles(rect, placementResult, {
+    padding: 8,
+    containerRect: filtersBounds,
+  });
 };
 
 const handleClickOutside = (event) => {
