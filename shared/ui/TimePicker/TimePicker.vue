@@ -66,6 +66,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computeFloatingPlacement } from '../../utils'
 
 const props = defineProps<{
   modelValue?: string
@@ -143,33 +144,27 @@ function clear() {
 function calculatePosition() {
   if (!wrapperRef.value) return
   const rect = wrapperRef.value.getBoundingClientRect()
-  const viewportHeight = window.innerHeight
-  const viewportWidth = window.innerWidth
   const estimatedHeight = 420
   const gap = 8
   const sidePadding = 8
 
-  const spaceBelow = viewportHeight - rect.bottom
-  const spaceAbove = rect.top
-  const openUpward = spaceBelow < estimatedHeight && spaceAbove > spaceBelow
+  const placementResult = computeFloatingPlacement(rect, {
+    estimatedHeight,
+    maxHeight: estimatedHeight,
+    minHeight: 220,
+    padding: sidePadding,
+    minWidth: Math.min(300, Math.max(rect.width, 220)),
+  })
 
-  const maxWidth = Math.min(300, viewportWidth - sidePadding * 2)
-  const left = Math.min(
-    Math.max(sidePadding, rect.left),
-    Math.max(sidePadding, viewportWidth - maxWidth - sidePadding),
-  )
-
-  const maxHeight = openUpward
-    ? Math.max(220, rect.top - gap - sidePadding)
-    : Math.max(220, viewportHeight - rect.bottom - gap - sidePadding)
+  const openUpward = placementResult.placement === 'above'
 
   dropdownStyles.value = {
     position: 'fixed',
-    top: openUpward ? 'auto' : `${rect.bottom + gap}px`,
-    bottom: openUpward ? `${viewportHeight - rect.top + gap}px` : 'auto',
-    left: `${left}px`,
-    width: `${maxWidth}px`,
-    maxHeight: `${maxHeight}px`,
+    top: openUpward ? 'auto' : `${placementResult.top ?? rect.bottom + gap}px`,
+    bottom: openUpward ? `${placementResult.bottom ?? (typeof window !== 'undefined' ? window.innerHeight : 0) - rect.top + gap}px` : 'auto',
+    left: `${placementResult.left}px`,
+    width: `${Math.min(300, placementResult.width)}px`,
+    maxHeight: `${placementResult.maxHeight}px`,
     zIndex: 100000,
   }
 }

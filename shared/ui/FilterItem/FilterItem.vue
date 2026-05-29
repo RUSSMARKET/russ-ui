@@ -148,6 +148,39 @@ const handleSearchEnter = () => {
   font-size: var(--filter-control-font-size, 14px);
   font-weight: var(--filter-control-font-weight, 500);
   line-height: var(--filter-control-line-height, 1.2);
+  box-sizing: border-box;
+}
+
+.filter-item-wrapper :deep(.base-select-wrapper) {
+  width: 100%;
+  gap: 0;
+}
+
+.filter-item-wrapper :deep(.base-select-container) {
+  height: var(--filter-control-height, var(--ui-control-height, 40px));
+  min-height: var(--filter-control-height, var(--ui-control-height, 40px));
+}
+
+.filter-item-wrapper :deep(.base-select-combo),
+.filter-item-wrapper :deep(.base-select-combo--readonly),
+.filter-item-wrapper :deep(.base-select-search-input) {
+  height: 100% !important;
+  min-height: 0 !important;
+  box-sizing: border-box;
+}
+
+.filter-item-wrapper :deep(.date-picker-wrapper),
+.filter-item-wrapper :deep(.date-range-picker-wrapper),
+.filter-item-wrapper :deep(.date-time-picker-wrapper) {
+  width: 100%;
+}
+
+.filter-item-wrapper :deep(.date-picker-input),
+.filter-item-wrapper :deep(.date-range-picker-input),
+.filter-item-wrapper :deep(.date-time-picker__input) {
+  height: var(--filter-control-height, var(--ui-control-height, 40px));
+  min-height: var(--filter-control-height, var(--ui-control-height, 40px));
+  box-sizing: border-box;
 }
 
 .filter-label {
@@ -175,6 +208,7 @@ const handleSearchEnter = () => {
   transition: border-color 0.2s, box-shadow 0.2s;
   overflow: hidden;
   box-shadow: 0 1px 4px var(--russ-shadow-accent-light);
+  box-sizing: border-box;
   min-height: var(--filter-control-height, var(--ui-control-height, 40px));
   height: var(--filter-control-height, var(--ui-control-height, 40px));
 }

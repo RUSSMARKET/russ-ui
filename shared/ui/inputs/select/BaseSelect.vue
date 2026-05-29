@@ -14,18 +14,18 @@
               </svg>
             </div>
           </div>
-          <input :id="id" v-model="inputValue" :placeholder="multiplePlaceholder" :disabled="disabled || loading"
+          <input ref="searchInputRef" :id="id" v-model="inputValue" :placeholder="multiplePlaceholder" :disabled="disabled || loading"
             :required="required && selectedOptions.length === 0" class="base-select-search-input"
             @focus="isMobile ? null : handleFocus" @click.stop="handleFocus" @input="onInput"
             @keydown.down.prevent="highlightNext" @keydown.up.prevent="highlightPrev"
             @keydown.enter.prevent="selectHighlighted" @keydown.esc="closeDropdown" autocomplete="off"
-            :inputmode="isMobile ? 'none' : undefined" :readonly="isMobile && !dropdownOpen" />
+            :inputmode="isMobile ? (dropdownOpen ? 'search' : 'none') : undefined" :readonly="isMobile && !dropdownOpen" />
         </div>
-        <input v-else :id="id" v-model="inputValue" :placeholder="placeholder" :disabled="disabled || loading"
+        <input v-else ref="searchInputRef" :id="id" v-model="inputValue" :placeholder="placeholder" :disabled="disabled || loading"
           :required="required" class="base-select-combo" @focus="isMobile ? null : handleFocus" @click="handleFocus"
           @input="onInput" @keydown.down.prevent="highlightNext" @keydown.up.prevent="highlightPrev"
           @keydown.enter.prevent="selectHighlighted" @keydown.esc="closeDropdown" autocomplete="off"
-          :inputmode="isMobile ? 'none' : undefined" :readonly="isMobile && !dropdownOpen" :style="comboStyle" />
+          :inputmode="isMobile ? (dropdownOpen ? 'search' : 'none') : undefined" :readonly="isMobile && !dropdownOpen" :style="comboStyle" />
       </template>
       <template v-else>
         <div v-if="multiple" class="base-select-combo base-select-combo--readonly base-select-combo--multiple"
@@ -68,6 +68,7 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { Teleport } from 'vue';
 import { strictFuzzyMatch } from '../../../utils/levenshtein';
+import { computeFloatingPlacement } from '../../../utils';
 const props = defineProps({
   modelValue: [String, Number, Array],
   options: {
@@ -171,6 +172,7 @@ const highlightedIndex = ref(-1);
 const wrapperRef = ref(null);
 const containerRef = ref(null);
 const dropdownRef = ref(null);
+const searchInputRef = ref(null);
 const openUpward = ref(false);
 const dropdownStyles = ref({});
 let lastSelectedLabel = '';
@@ -255,177 +257,47 @@ function calculateDropdownPosition() {
   if (!containerRef.value) return;
 
   const containerRect = containerRef.value.getBoundingClientRect();
-  // Используем ИСХОДНУЮ высоту viewport БЕЗ учета клавиатуры для стабильности расчетов
-  // Это предотвращает изменение логики при открытии клавиатуры
-  const viewportHeight = window.innerHeight; // Всегда используем полную высоту экрана
-  const viewportWidth = window.innerWidth;
 
-  // Ищем родительское модальное окно для учета его границ
-  let modalContainer = containerRef.value.closest('.mobile-filters-modal');
-  let modalRect = null;
-  let availableHeight = viewportHeight;
-  
-  if (modalContainer) {
-    modalRect = modalContainer.getBoundingClientRect();
-    // Используем границы модального окна вместо viewport
-    availableHeight = modalRect.height;
-  }
+  const modalContainer = containerRef.value.closest('.mobile-filters-modal');
+  const modalRect = modalContainer ? modalContainer.getBoundingClientRect() : null;
 
   const optionsCount = filteredOptions.value.length || props.options.length;
   const estimatedDropdownHeight = Math.min(265, optionsCount * 40 + 20);
-  
+
   let dropdownHeight = estimatedDropdownHeight;
   if (dropdownRef.value) {
-    // Временно показываем dropdown для измерения высоты
-    const wasVisible = dropdownRef.value.style.display !== 'none';
-    if (!wasVisible) {
-      dropdownRef.value.style.visibility = 'hidden';
-      dropdownRef.value.style.display = 'block';
-      dropdownRef.value.style.position = 'fixed';
-      dropdownRef.value.style.top = '0';
-      dropdownRef.value.style.left = '0';
-    }
-    dropdownHeight = dropdownRef.value.scrollHeight || dropdownRef.value.offsetHeight || estimatedDropdownHeight;
-    if (!wasVisible) {
-      dropdownRef.value.style.visibility = '';
-      dropdownRef.value.style.display = '';
-      dropdownRef.value.style.position = '';
-      dropdownRef.value.style.top = '';
-      dropdownRef.value.style.left = '';
-    }
-  }
-  
-  // Рассчитываем доступное пространство относительно модального окна или viewport
-  let spaceBelow, spaceAbove;
-  
-  if (modalRect) {
-    // Если есть модальное окно, рассчитываем относительно его границ
-    const containerTopInModal = containerRect.top - modalRect.top;
-    const containerBottomInModal = containerRect.bottom - modalRect.top;
-    
-    // Учитываем скролл внутри модального окна
-    const modalContent = modalContainer.querySelector('.mobile-filters-content');
-    let scrollTop = 0;
-    if (modalContent) {
-      scrollTop = modalContent.scrollTop || 0;
-    }
-    
-    // Рассчитываем видимое пространство с учетом скролла
-    const visibleTop = containerTopInModal - scrollTop;
-    const visibleBottom = containerBottomInModal - scrollTop;
-    
-    spaceBelow = availableHeight - visibleBottom;
-    spaceAbove = visibleTop;
-  } else {
-    // Иначе используем viewport
-    spaceBelow = viewportHeight - containerRect.bottom;
-    spaceAbove = containerRect.top;
-  }
-  
-  // Увеличиваем минимальное пространство для мобильных устройств
-  const minSpace = window.innerWidth <= 768 ? 120 : 50;
-  
-  // Если forceOpenUpward установлен, принудительно открываем вверх
-  if (props.forceOpenUpward) {
-    openUpward.value = true;
-  } else {
-    // Улучшенная логика: открываем вверх, если:
-    // 1. Не хватает места внизу И есть достаточно места вверху
-    // 2. Или места внизу меньше, чем вверху (приоритет отдаем большему пространству)
-    // 3. Или селект находится в нижней части модального окна
-    const needsUpward = spaceBelow < dropdownHeight + minSpace;
-    const canFitUpward = spaceAbove >= dropdownHeight + minSpace;
-    
-    // Дополнительная проверка: если селект в нижней части модального окна
-    let isInLowerPart = false;
-    let isLastElement = false;
-    
-    if (modalRect) {
-      const containerBottomInModal = containerRect.bottom - modalRect.top;
-      // Если нижняя граница селекта находится в нижних 50% модального окна - считаем его в нижней части
-      isInLowerPart = containerBottomInModal > (availableHeight * 0.5);
-      
-      // Проверяем, является ли этот селект последним в списке фильтров
-      const filterItems = modalContainer.querySelectorAll('.filter-item-wrapper');
-      if (filterItems.length > 0) {
-        const lastItem = filterItems[filterItems.length - 1];
-        const currentWrapper = containerRef.value.closest('.filter-item-wrapper');
-        // Проверяем разными способами для надежности
-        isLastElement = lastItem === currentWrapper || 
-                       lastItem.contains(containerRef.value) ||
-                       (currentWrapper && lastItem.contains(currentWrapper));
-      }
-    }
-    
-    // Для мобильных устройств в модальном окне - более агрессивная логика
-    const isMobile = window.innerWidth <= 768;
-    
-    // Приоритет 1: Если это последний элемент в модальном окне на мобильном - ВСЕГДА открываем вверх (если есть хотя бы 150px вверху)
-    if (isLastElement && modalRect && isMobile && spaceAbove >= 150) {
-      openUpward.value = true;
-    }
-    // Приоритет 2: Если это последний элемент в модальном окне и есть место вверху - открываем вверх
-    else if (isLastElement && canFitUpward && modalRect) {
-      openUpward.value = true;
-    }
-    // Приоритет 2.5: Если это последний элемент в модальном окне (даже без достаточного места) - пробуем открыть вверх
-    else if (isLastElement && modalRect && spaceAbove > 50) {
-      openUpward.value = true;
-    }
-    // Приоритет 3: Если селект в нижней части модального окна и есть место вверху - открываем вверх
-    else if (isInLowerPart && canFitUpward) {
-      openUpward.value = true;
-    }
-    // Приоритет 4: Если на мобильном устройстве в модальном окне и места внизу меньше 300px - открываем вверх
-    else if (isMobile && modalRect && spaceBelow < 300 && canFitUpward) {
-      openUpward.value = true;
-    }
-    // Приоритет 5: Если не хватает места внизу, но есть место вверху - открываем вверх
-    else if (needsUpward && canFitUpward) {
-      openUpward.value = true;
-    }
-    // Приоритет 6: Если места внизу меньше, чем вверху, и вверху достаточно места - открываем вверх
-    else if (spaceBelow < spaceAbove && canFitUpward && spaceBelow < dropdownHeight + minSpace) {
-      openUpward.value = true;
-    }
-    // Приоритет 7: Если в модальном окне и места внизу меньше 250px - открываем вверх
-    else if (modalRect && spaceBelow < 250 && canFitUpward) {
-      openUpward.value = true;
-    }
-    // В остальных случаях открываем вниз
-    else {
-      openUpward.value = false;
-    }
+    dropdownHeight =
+      dropdownRef.value.scrollHeight ||
+      dropdownRef.value.offsetHeight ||
+      estimatedDropdownHeight;
   }
 
-  // Поверх BaseModal (по умолчанию 10000) и вложенных модалок (например 12000+).
-  // Согласовано с DatePicker / TimePicker в bibli (100000).
+  const padding = 8;
+  const placementResult = computeFloatingPlacement(containerRect, {
+    estimatedHeight: dropdownHeight,
+    maxHeight: 265,
+    minHeight: 120,
+    padding,
+    containerRect: modalRect,
+  });
+
+  openUpward.value = props.forceOpenUpward
+    ? true
+    : placementResult.placement === 'above';
+
   const baseZIndex = 100000;
-  const safeMaxHeight = (value) => `${Math.max(120, Math.min(value, 265))}px`;
-  
-  if (openUpward.value) {
-    dropdownStyles.value = {
-      position: 'fixed',
-      top: 'auto',
-      bottom: `${viewportHeight - containerRect.top + 8}px`,
-      left: `${containerRect.left}px`,
-      right: 'auto',
-      width: `${containerRect.width}px`,
-      zIndex: baseZIndex,
-      maxHeight: safeMaxHeight(spaceAbove - 8)
-    };
-  } else {
-    dropdownStyles.value = {
-      position: 'fixed',
-      top: `${containerRect.bottom + 8}px`,
-      bottom: 'auto',
-      left: `${containerRect.left}px`,
-      right: 'auto',
-      width: `${containerRect.width}px`,
-      zIndex: baseZIndex,
-      maxHeight: safeMaxHeight(spaceBelow - 8)
-    };
-  }
+  dropdownStyles.value = {
+    position: 'fixed',
+    top: openUpward.value ? 'auto' : `${containerRect.bottom + padding}px`,
+    bottom: openUpward.value
+      ? `${(typeof window !== 'undefined' ? window.innerHeight : 0) - containerRect.top + padding}px`
+      : 'auto',
+    left: `${placementResult.left}px`,
+    right: 'auto',
+    width: `${placementResult.width}px`,
+    zIndex: baseZIndex,
+    maxHeight: `${placementResult.maxHeight}px`,
+  };
 }
 
 function handleMultipleComboClick(event) {
@@ -497,6 +369,14 @@ function openDropdown() {
           calculateDropdownPosition();
         }, 50);
       }
+
+      if (isMobile.value && props.searchable && searchInputRef.value?.focus) {
+        try {
+          searchInputRef.value.focus({ preventScroll: true });
+        } catch {
+          searchInputRef.value.focus();
+        }
+      }
     });
   }
 }
@@ -528,6 +408,14 @@ function toggleDropdown() {
         setTimeout(() => {
           calculateDropdownPosition();
         }, 50);
+      }
+
+      if (isMobile.value && props.searchable && searchInputRef.value?.focus) {
+        try {
+          searchInputRef.value.focus({ preventScroll: true });
+        } catch {
+          searchInputRef.value.focus();
+        }
       }
     });
   } else {

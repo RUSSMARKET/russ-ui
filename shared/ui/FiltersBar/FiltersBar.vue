@@ -29,7 +29,7 @@
               :model-value="getFilterValue(filter.key)" @update:model-value="handleFilterChange(filter.key, $event)"
               @filter-close="(key) => emit('filter-close', key)" />
             <slot name="actions"></slot>
-            <div v-if="showResetButton" class="filter-item filter-item--reset">
+            <div v-if="showResetButton" class="filter-item-wrapper filter-item-wrapper--reset">
               <button class="reset-filters-btn" @click="handleReset" title="Сбросить все фильтры">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" stroke="currentColor" stroke-width="2"
@@ -57,7 +57,7 @@
           :model-value="getFilterValue(filter.key)" @update:model-value="handleFilterChange(filter.key, $event)"
           @filter-close="(key) => emit('filter-close', key)" />
         <slot name="actions"></slot>
-        <div v-if="showResetButton" class="filter-item filter-item--reset">
+        <div v-if="showResetButton" class="filter-item-wrapper filter-item-wrapper--reset">
           <button class="reset-filters-btn" @click="handleReset" title="Сбросить все фильтры">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" stroke="currentColor" stroke-width="2"
@@ -301,8 +301,16 @@ onMounted(() => {
   min-height: auto;
 }
 
-.filter-item--reset {
+.filter-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.filter-item-wrapper--reset {
   min-height: auto;
+  justify-content: flex-end;
 }
 
 .filter-item--actions {
@@ -312,13 +320,27 @@ onMounted(() => {
   width: 100%;
 }
 
+.filter-label {
+  font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--russ-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  height: 18px;
+  line-height: 18px;
+  display: flex;
+  align-items: center;
+}
+
 .reset-filters-btn {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 0 var(--filter-control-padding-x);
   background: var(--russ-bg-hover);
-  border: 1px solid var(--russ-border-dark);
+  border: 1.5px solid var(--russ-border-dark);
   border-radius: var(--filter-control-radius);
   color: var(--russ-text-tertiary);
   font-family: var(--filter-control-font-family);
@@ -328,6 +350,8 @@ onMounted(() => {
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+  box-sizing: border-box;
+  width: 100%;
   height: var(--filter-control-height);
   min-height: var(--filter-control-height);
   justify-content: center;

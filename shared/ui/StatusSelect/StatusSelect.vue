@@ -50,7 +50,7 @@
                   stroke-linecap="round" stroke-linejoin="round" />
               </svg>
             </div>
-            <input ref="searchInput" v-model="searchQuery" type="text" placeholder="Поиск..." class="search-input"
+            <input ref="searchInput" v-model="searchQuery" type="text" inputmode="search" placeholder="Поиск..." class="search-input"
               @focus="onSearchFocus" @input="onSearchInput" />
           </div>
 
@@ -87,6 +87,7 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { Teleport } from 'vue';
 import { strictFuzzyMatch } from '../../utils/levenshtein';
+import { computeFloatingPlacement } from '../../utils';
 
 const props = defineProps({
   modelValue: [String, Number, Array],
@@ -208,31 +209,23 @@ function calculateDropdownPosition() {
   if (!wrapperRef.value) return;
 
   const rect = wrapperRef.value.getBoundingClientRect();
-  const viewportHeight = window.innerHeight;
-  const viewportWidth = window.innerWidth;
+  const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 0;
   const isMobile = viewportWidth <= 768;
-  
-  const maxDropdownHeight = isMobile ? Math.min(viewportHeight * 0.6, 400) : 300;
+
+  const maxDropdownHeight = isMobile ? 400 : 300;
   const dropdownHeight = Math.min(maxDropdownHeight, props.options.length * 50 + 100);
-  const spaceBelow = viewportHeight - rect.bottom;
-  const spaceAbove = rect.top;
 
-  const minSpace = 50;
-  if (props.disableAutoPosition) {
-    openUpward.value = false;
-  } else {
-    openUpward.value = spaceBelow < dropdownHeight + minSpace && spaceAbove > dropdownHeight + minSpace;
-  }
+  const placementResult = computeFloatingPlacement(rect, {
+    estimatedHeight: dropdownHeight,
+    maxHeight: maxDropdownHeight,
+    minHeight: 120,
+    padding: DROPDOWN_VIEWPORT_PADDING,
+    minWidth: DROPDOWN_MIN_WIDTH,
+  });
 
-  let width = Math.max(rect.width, DROPDOWN_MIN_WIDTH)
-  let left = rect.left
-  if (left + width > viewportWidth - DROPDOWN_VIEWPORT_PADDING) {
-    left = viewportWidth - width - DROPDOWN_VIEWPORT_PADDING
-  }
-  if (left < DROPDOWN_VIEWPORT_PADDING) {
-    left = DROPDOWN_VIEWPORT_PADDING
-    width = Math.min(width, viewportWidth - left * 2)
-  }
+  openUpward.value = props.disableAutoPosition
+    ? false
+    : placementResult.placement === 'above';
 
   const baseZIndex = 1001
   
@@ -240,25 +233,25 @@ function calculateDropdownPosition() {
     dropdownStyles.value = {
       position: 'fixed',
       top: 'auto',
-      bottom: `${viewportHeight - rect.top + 8}px`,
-      left: `${left}px`,
+      bottom: `${placementResult.bottom ?? (typeof window !== 'undefined' ? window.innerHeight : 0) - rect.top + DROPDOWN_VIEWPORT_PADDING}px`,
+      left: `${placementResult.left}px`,
       right: 'auto',
-      width: `${width}px`,
+      width: `${placementResult.width}px`,
       minWidth: `${DROPDOWN_MIN_WIDTH}px`,
       zIndex: baseZIndex,
-      maxHeight: `${Math.min(spaceAbove - 8, maxDropdownHeight)}px`
+      maxHeight: `${placementResult.maxHeight}px`
     };
   } else {
     dropdownStyles.value = {
       position: 'fixed',
-      top: `${rect.bottom + 8}px`,
+      top: `${placementResult.top ?? rect.bottom + DROPDOWN_VIEWPORT_PADDING}px`,
       bottom: 'auto',
-      left: `${left}px`,
+      left: `${placementResult.left}px`,
       right: 'auto',
-      width: `${width}px`,
+      width: `${placementResult.width}px`,
       minWidth: `${DROPDOWN_MIN_WIDTH}px`,
       zIndex: baseZIndex,
-      maxHeight: `${Math.min(spaceBelow - 8, maxDropdownHeight)}px`
+      maxHeight: `${placementResult.maxHeight}px`
     };
   }
 }

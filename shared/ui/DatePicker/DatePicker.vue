@@ -78,6 +78,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { Teleport } from 'vue';
+import { computeFloatingPlacement } from '../../utils';
 
 const props = defineProps({
   modelValue: [Date, String, null],
@@ -214,21 +215,23 @@ const calculatePosition = () => {
   if (!wrapperRef.value) return;
   
   const rect = wrapperRef.value.getBoundingClientRect();
-  const viewportHeight = window.innerHeight;
-  const viewportWidth = window.innerWidth;
-  
-  const spaceBelow = viewportHeight - rect.bottom;
-  const spaceAbove = rect.top;
   const estimatedHeight = 350;
-  
-  const openUpward = spaceBelow < estimatedHeight && spaceAbove > estimatedHeight;
-  
+
+  const placementResult = computeFloatingPlacement(rect, {
+    estimatedHeight,
+    maxHeight: estimatedHeight,
+    minHeight: 120,
+    padding: 8,
+  });
+
+  const openUpward = placementResult.placement === 'above';
+
   dropdownStyles.value = {
     position: 'fixed',
-    top: openUpward ? 'auto' : `${rect.bottom + 8}px`,
-    bottom: openUpward ? `${viewportHeight - rect.top + 8}px` : 'auto',
-    left: `${rect.left}px`,
-    width: `${rect.width}px`,
+    top: openUpward ? 'auto' : `${placementResult.top ?? rect.bottom + 8}px`,
+    bottom: openUpward ? `${placementResult.bottom ?? (typeof window !== 'undefined' ? window.innerHeight : 0) - rect.top + 8}px` : 'auto',
+    left: `${placementResult.left}px`,
+    width: `${placementResult.width}px`,
     zIndex: 100000
   };
 };
