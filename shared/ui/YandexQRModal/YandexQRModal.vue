@@ -10,6 +10,10 @@
             <img v-if="productLogo" :src="productLogo" alt="Логотип" class="yandex-product-logo" />
             <p data-v-50f32d06=""><strong data-v-50f32d06="">Дарит 100 рублей</strong> За смену поиска на IOS </p>
           </div>
+          <div v-else-if="type === 'yandex-keyboards'" class="yandex-qr-info">
+            <img v-if="productLogo" :src="productLogo" alt="Логотип" class="yandex-product-logo" />
+            <p class="yandex-keyboards-title">Выдача</p>
+          </div>
           <div class="yandex-qr-image-container">
             <canvas ref="canvasRef" class="yandex-qr-canvas" :width="canvasSize" :height="canvasSize"></canvas>
           </div>
@@ -25,7 +29,7 @@ import { watch, nextTick, ref, onUnmounted } from 'vue';
 interface Props {
   visible: boolean;
   qrUrl?: string;
-  type?: 'yandex' | 'yandex-white';
+  type?: 'yandex' | 'yandex-white' | 'yandex-keyboards';
   productLogo?: string;
 }
 
@@ -198,6 +202,17 @@ onUnmounted(() => {
 .yandex-product-logo {
   width: 65%;
   max-width: 300px;
+}
+
+.yandex-keyboards-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: var(--russ-text-primary);
+  font-size: clamp(25px, calc(25px + (40 - 25) * ((100vw - 320px) / (600 - 320))), 40px);
+  margin: 0;
+  font-weight: 600;
 }
 
 .yandex-qr-image-container {
