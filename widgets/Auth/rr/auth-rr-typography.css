@@ -1,0 +1,58 @@
+/**
+ * Auth RR — масштаб типографики и высот контролов.
+ * До ~1920px: базовые токены (заголовок до 2xl / 32px).
+ * От 1920px: шаг вверх по шкале (--rr-font-size-* / line-height / tracking).
+ */
+
+.auth-rr-shell {
+  --auth-rr-fs-xs: var(--rr-font-size-font-size-xs);
+  --auth-rr-fs-s: var(--rr-font-size-font-size-s);
+  --auth-rr-fs-m: var(--rr-font-size-font-size-m);
+  --auth-rr-fs-2xl: var(--rr-font-size-font-size-2xl);
+
+  --auth-rr-lh-xs: var(--rr-line-height-line-height-xs);
+  --auth-rr-lh-s: var(--rr-line-height-line-height-s);
+  --auth-rr-lh-m: var(--rr-line-height-line-height-m);
+  --auth-rr-lh-2xl: var(--rr-line-height-line-height-2xl);
+
+  --auth-rr-track-s: var(--rr-tracking-tracking-s);
+  --auth-rr-track-m: var(--rr-tracking-tracking-m);
+  --auth-rr-track-2xl: var(--rr-tracking-tracking-2xl);
+
+  --auth-rr-control-h: var(--rr-size-4-xl);
+  --auth-rr-main-max: 460px;
+  --auth-rr-logo-h: 32px;
+}
+
+/* Сетка layout: одна колонка ≤960px — поля, телефон, кнопка 48px (не 64px desktop 4-xl) */
+@media (max-width: 960px) {
+  .auth-rr-shell {
+    --auth-rr-control-h: 48px;
+  }
+}
+
+@media (min-width: 961px) {
+  .auth-rr-shell {
+    --auth-rr-control-h: var(--rr-size-3-xl);
+  }
+}
+
+@media (min-width: 1920px) {
+  .auth-rr-shell {
+    --auth-rr-fs-xs: var(--rr-font-size-font-size-s);
+    --auth-rr-fs-s: var(--rr-font-size-font-size-m);
+    --auth-rr-fs-m: var(--rr-font-size-font-size-l);
+    --auth-rr-fs-2xl: var(--rr-font-size-font-size-3xl);
+
+    --auth-rr-lh-xs: var(--rr-line-height-line-height-s);
+    --auth-rr-lh-s: var(--rr-line-height-line-height-m);
+    --auth-rr-lh-m: var(--rr-line-height-line-height-l);
+    --auth-rr-lh-2xl: var(--rr-line-height-line-height-3xl);
+
+    --auth-rr-track-2xl: var(--rr-tracking-tracking-3xl);
+
+    --auth-rr-control-h: var(--rr-size-4-xl);
+    --auth-rr-main-max: 480px;
+    --auth-rr-logo-h: 40px;
+  }
+}

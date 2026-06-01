@@ -1,0 +1,326 @@
+/**
+ * Auth RR layout — только var(--rr-*).
+ * Обязательно подключать: bibli/shared/tokens/index.css
+ */
+
+@import './auth-rr-typography.css';
+
+html:has(.auth-rr-shell),
+html:has(.auth-rr-shell) body {
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+#auth-preview-app {
+  display: block;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
+.auth-rr-shell {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  padding: var(--rr-spacing-margin-4-xl) var(--rr-spacing-padding-5-xl)
+    var(--rr-spacing-margin-5-xl) var(--rr-spacing-padding-5-xl);
+  overflow: hidden;
+  background: var(--rr-backgrounds-primary);
+}
+
+.auth-rr {
+  container-type: size;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  align-items: stretch;
+  gap: var(--rr-spacing-padding-2-xl);
+  flex: 1 1 0;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+  font-family: var(--rr-font-family-font-family), system-ui, sans-serif;
+  color: var(--rr-backgrounds-neutral-primary-default);
+}
+
+.auth-rr-form {
+  min-height: 0;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.auth-rr-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.auth-rr-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rr-spacing-padding-xs, 4px);
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: var(--auth-rr-fs-s, var(--rr-font-size-font-size-s));
+  font-weight: 400;
+  line-height: var(--auth-rr-lh-s, var(--rr-line-height-line-height-s));
+  letter-spacing: var(--auth-rr-track-s, var(--rr-tracking-tracking-s));
+  color: var(--rr-labels-brand-primary);
+  cursor: pointer;
+}
+
+.auth-rr-back__icon {
+  display: flex;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.auth-rr-back:hover {
+  opacity: 0.85;
+}
+
+.auth-rr-logo-link {
+  display: inline-flex;
+  flex-shrink: 0;
+  line-height: 0;
+  text-decoration: none;
+}
+
+.auth-rr-logo {
+  display: block;
+  height: var(--auth-rr-logo-h, 32px);
+  width: auto;
+}
+
+.auth-rr-support {
+  font-family: inherit;
+  font-size: var(--auth-rr-fs-s, var(--rr-font-size-font-size-s));
+  font-weight: 400;
+  font-style: normal;
+  line-height: var(--auth-rr-lh-s, var(--rr-line-height-line-height-s));
+  letter-spacing: var(--auth-rr-track-s, var(--rr-tracking-tracking-s));
+  text-align: center;
+  color: var(--rr-labels-brand-primary);
+  text-decoration: none;
+}
+
+.auth-rr-support:hover {
+  text-decoration: underline;
+}
+
+.auth-rr-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  max-width: var(--auth-rr-main-max, 460px);
+  margin: var(--rr-spacing-margin-5-xl) auto;
+}
+
+.auth-rr-title {
+  margin: var(--rr-spacing-margin-none) var(--rr-spacing-margin-none)
+    var(--rr-spacing-margin-s);
+  font-family: inherit;
+  font-size: var(--auth-rr-fs-2xl, var(--rr-font-size-font-size-2xl));
+  font-weight: 500;
+  font-style: normal;
+  line-height: var(--auth-rr-lh-2xl, var(--rr-line-height-line-height-2xl));
+  letter-spacing: var(--auth-rr-track-2xl, var(--rr-tracking-tracking-2xl));
+  text-align: center;
+  color: var(--rr-backgrounds-neutral-primary-default);
+}
+
+.auth-rr-subtitle {
+  margin: var(--rr-spacing-margin-none) var(--rr-spacing-margin-none) 0;
+  font-family: inherit;
+  font-size: var(--auth-rr-fs-m, var(--rr-font-size-font-size-m));
+  font-weight: 400;
+  font-style: normal;
+  line-height: var(--auth-rr-lh-m, var(--rr-line-height-line-height-m));
+  letter-spacing: var(--auth-rr-track-m, var(--rr-tracking-tracking-m));
+  text-align: center;
+  color: var(--rr-backgrounds-neutral-primary-default);
+}
+
+.auth-rr-body {
+  width: 100%;
+  min-width: 0;
+}
+
+.auth-rr-subtitle--spacing-sm {
+  margin-bottom: var(--rr-spacing-padding-l, 12px);
+}
+
+.auth-rr-subtitle--spacing-lg {
+  margin-bottom: var(--rr-spacing-margin-2-xl, 24px);
+}
+
+.auth-rr-body--spacing-none {
+  margin-top: 0;
+}
+
+.auth-rr-body--spacing-sm {
+  margin-top: var(--rr-spacing-padding-l, 12px);
+}
+
+.auth-rr-body--spacing-lg {
+  margin-top: var(--rr-spacing-margin-2-xl, 24px);
+}
+
+/* При подзаголовке зазор задаёт только он */
+.auth-rr-subtitle + .auth-rr-body {
+  margin-top: 0;
+}
+
+.auth-rr-otp-sent {
+  margin: 0 0 var(--rr-spacing-margin-l, 12px);
+  font-family: var(--rr-font-family-font-family), system-ui, sans-serif;
+  font-size: var(--auth-rr-fs-m, var(--rr-font-size-font-size-m));
+  font-weight: 400;
+  font-style: normal;
+  line-height: var(--auth-rr-lh-m, var(--rr-line-height-line-height-m));
+  letter-spacing: var(--auth-rr-track-m, var(--rr-tracking-tracking-m));
+  text-align: center;
+  color: var(--rr-labels-neutral-primary, #101012);
+}
+
+.auth-rr-otp-sent__line,
+.auth-rr-otp-sent__phone {
+  display: block;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: center;
+  color: inherit;
+}
+
+.auth-rr-otp-sent__phone {
+  margin-top: 0;
+}
+
+.auth-rr-otp-resend {
+  margin: var(--rr-spacing-margin-l, 12px) 0 0;
+  font-family: inherit;
+  font-size: var(--auth-rr-fs-s, var(--rr-font-size-font-size-s));
+  font-weight: 400;
+  line-height: var(--auth-rr-lh-s, var(--rr-line-height-line-height-s));
+  letter-spacing: var(--auth-rr-track-s, var(--rr-tracking-tracking-s));
+  text-align: center;
+  color: var(--rr-labels-neutral-secondary);
+}
+
+.auth-rr-footer {
+  flex-shrink: 0;
+  margin-top: auto;
+  padding-top: var(--rr-spacing-padding-xl);
+  font-family: inherit;
+  font-size: var(--auth-rr-fs-xs, var(--rr-font-size-font-size-xs));
+  font-weight: 400;
+  font-style: normal;
+  line-height: var(--auth-rr-lh-xs, var(--rr-line-height-line-height-xs));
+  letter-spacing: var(--auth-rr-track-s, var(--rr-tracking-tracking-s));
+  color: var(--rr-labels-neutral-secondary);
+  text-align: left;
+}
+
+.auth-rr-footer a {
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--rr-labels-brand-primary);
+  text-decoration: none;
+}
+
+.auth-rr-footer a:hover {
+  color: var(--rr-labels-brand-primary);
+  text-decoration: underline;
+}
+
+/* 2085∶2739 — на всю высоту ячейки, вписывается в колонку (contain) */
+.auth-rr-hero {
+  --rr-hero-ar-w: 2085;
+  --rr-hero-ar-h: 2739;
+  align-self: stretch;
+  justify-self: center;
+  box-sizing: border-box;
+  height: 100%;
+  max-height: 100%;
+  width: auto;
+  max-width: 100%;
+  aspect-ratio: var(--rr-hero-ar-w) / var(--rr-hero-ar-h);
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: var(--rr-radius-xl);
+  background: transparent;
+}
+
+.auth-rr-hero__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.auth-rr-hero__img--mobile {
+  display: none;
+}
+
+@media (max-width: 960px) {
+  .auth-rr-shell {
+    padding: var(--rr-spacing-padding-3-xl) var(--rr-spacing-padding-xl)
+      var(--rr-spacing-padding-5-xl);
+  }
+
+  .auth-rr {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-rr-hero {
+    display: none;
+  }
+
+  .auth-rr-hero--has-mobile {
+    display: block;
+    order: -1;
+    align-self: center;
+    width: min(100%, 360px);
+    height: auto;
+    max-height: min(42vh, 360px);
+    margin: 0 auto var(--rr-spacing-margin-2-xl, 24px);
+    aspect-ratio: var(--rr-hero-mobile-ar-w) / var(--rr-hero-mobile-ar-h);
+  }
+
+  .auth-rr-hero--has-mobile .auth-rr-hero__img--desktop {
+    display: none;
+  }
+
+  .auth-rr-hero--has-mobile .auth-rr-hero__img--mobile {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: inherit;
+    object-fit: contain;
+  }
+
+  .auth-rr-main {
+    max-width: none;
+  }
+}

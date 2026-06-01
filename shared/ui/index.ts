@@ -1,4 +1,5 @@
 export * from './inputs'
+export * from './legacy'
 export * from './buttons'
 export { default as ConfirmModal } from './ConfirmModal'
 export { default as SearchInput } from './SearchInput/SearchInput.vue';

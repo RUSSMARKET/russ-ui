@@ -1,0 +1,448 @@
+/**
+ * Auth RR inputs — только var(--rr-*).
+ */
+
+.auth-rr-field {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.auth-rr-field > .auth-rr-field__label,
+.auth-rr-field__label-row .auth-rr-field__label {
+  display: block;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  font-family: 'Onest', var(--rr-font-family-font-family), system-ui, sans-serif;
+  font-size: var(--auth-rr-fs-xs, var(--rr-font-size-font-size-xs));
+  font-weight: 400;
+  font-style: normal;
+  line-height: var(--auth-rr-lh-xs, var(--rr-line-height-line-height-xs));
+  letter-spacing: var(--auth-rr-track-s, var(--rr-tracking-tracking-s));
+  color: var(--rr-labels-neutral-primary);
+}
+
+.auth-rr-field > .auth-rr-field__label {
+  margin-bottom: var(--rr-spacing-margin-m);
+}
+
+.auth-rr-field__label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rr-spacing-padding-m);
+  margin: 0 0 var(--rr-spacing-margin-m);
+}
+
+.auth-rr-field__label-link {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--rr-font-family-font-family), system-ui, sans-serif;
+  font-size: var(--auth-rr-fs-xs, var(--rr-font-size-font-size-xs));
+  font-weight: 400;
+  font-style: normal;
+  line-height: var(--auth-rr-lh-xs, var(--rr-line-height-line-height-xs));
+  letter-spacing: var(--auth-rr-track-s, var(--rr-tracking-tracking-s));
+  text-align: right;
+  color: var(--rr-labels-brand-primary);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.auth-rr-field__label-link:hover {
+  opacity: 0.85;
+}
+
+.auth-rr-field__label-link:focus-visible {
+  outline: 2px solid var(--rr-input-border-active);
+  outline-offset: 2px;
+  border-radius: var(--rr-radius-xs);
+}
+
+.auth-rr-field__control {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.auth-rr-field__error {
+  margin: 4px 0 0;
+  text-align: left;
+  font-family: var(--rr-font-family-font-family), system-ui, sans-serif;
+  font-size: var(--auth-rr-fs-xs, var(--rr-font-size-font-size-xs));
+  font-weight: 400;
+  font-style: normal;
+  line-height: var(--auth-rr-lh-xs, var(--rr-line-height-line-height-xs));
+  letter-spacing: var(--auth-rr-track-s, var(--rr-tracking-tracking-s));
+  color: var(--rr-labels-danger-primary, #dc2626);
+}
+
+.auth-rr-input__control {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: var(--auth-rr-control-h, var(--rr-size-3-xl));
+  padding: 0 var(--rr-spacing-padding-xl);
+  border: 1px solid var(--rr-input-border-default);
+  border-radius: var(--rr-radius-l);
+  background-color: var(--rr-backgrounds-primary);
+  font-family: var(--rr-font-family-font-family), system-ui, sans-serif;
+  font-size: var(--auth-rr-fs-m, var(--rr-font-size-font-size-m));
+  font-weight: 400;
+  font-style: normal;
+  line-height: var(--auth-rr-lh-m, var(--rr-line-height-line-height-m));
+  letter-spacing: var(--auth-rr-track-m, var(--rr-tracking-tracking-m));
+  text-align: center;
+  color: var(--rr-input-text-fill);
+}
+
+.auth-rr-input__control:hover:not(:disabled):not([readonly]):not(.auth-rr-input__control--error):not(
+    :focus
+  ):not(:focus-visible) {
+  border-color: var(--rr-input-border-hover);
+  background-color: var(--rr-input-background-hover);
+}
+
+.auth-rr-input__control::placeholder {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  text-align: center;
+  color: var(--rr-input-text-default);
+}
+
+.auth-rr-input__control:focus,
+.auth-rr-input__control:focus-visible {
+  outline: none;
+  border: 1px solid var(--rr-input-border-active);
+  background-color: var(--rr-backgrounds-primary);
+}
+
+.auth-rr-input__control:disabled,
+.auth-rr-input__control[readonly] {
+  border-color: var(--rr-input-border-disable);
+  background-color: var(--rr-backgrounds-primary);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.auth-rr-input__control--error,
+.auth-rr-input__control--error:hover,
+.auth-rr-input__control--error:focus,
+.auth-rr-input__control--error:focus-visible {
+  border-color: var(--rr-input-border-error);
+  background-color: var(--rr-backgrounds-primary);
+}
+
+.auth-rr-input__control--align-left {
+  text-align: left;
+}
+
+.auth-rr-input__control--align-left::placeholder {
+  text-align: left;
+}
+
+.auth-rr-input__control:-webkit-autofill,
+.auth-rr-input__control:-webkit-autofill:hover {
+  -webkit-text-fill-color: var(--rr-input-text-fill);
+  caret-color: var(--rr-input-text-fill);
+  border: 1px solid var(--rr-input-border-default);
+  box-shadow: 0 0 0 1000px var(--rr-backgrounds-primary) inset;
+  transition: background-color 99999s ease-out 0s;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+}
+
+.auth-rr-input__control:-webkit-autofill:focus,
+.auth-rr-input__control:-webkit-autofill:focus-visible {
+  -webkit-text-fill-color: var(--rr-input-text-fill);
+  caret-color: var(--rr-input-text-fill);
+  border: 1px solid var(--rr-input-border-active);
+  box-shadow: 0 0 0 1000px var(--rr-backgrounds-primary) inset;
+}
+
+.auth-rr-input-phone {
+  --auth-rr-phone-h: var(--auth-rr-control-h, var(--rr-size-4-xl));
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  height: var(--auth-rr-phone-h);
+  min-height: var(--auth-rr-phone-h);
+  max-height: var(--auth-rr-phone-h);
+  border: 1px solid var(--rr-input-border-default);
+  border-radius: var(--rr-radius-l);
+  background-color: var(--rr-backgrounds-primary);
+  overflow: hidden;
+}
+
+.auth-rr-input-phone:hover:not(.auth-rr-input-phone--error):not(:focus-within) {
+  border-color: var(--rr-input-border-hover);
+  background-color: var(--rr-input-background-hover);
+}
+
+.auth-rr-input-phone:focus-within:not(.auth-rr-input-phone--error) {
+  border-color: var(--rr-input-border-active);
+  background-color: var(--rr-backgrounds-primary);
+}
+
+.auth-rr-input-phone--error,
+.auth-rr-input-phone--error:hover,
+.auth-rr-input-phone--error:focus-within {
+  border-color: var(--rr-input-border-error);
+  background-color: var(--rr-backgrounds-primary);
+}
+
+.auth-rr-input-phone__editor,
+.auth-rr-input-phone__value,
+.auth-rr-input-phone__local,
+.auth-rr-input-phone__mirror,
+.auth-rr-input-phone__flag {
+  background: transparent;
+}
+
+.auth-rr-input-phone__flag {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  margin: 0 0 0 var(--rr-spacing-padding-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--rr-radius-s);
+}
+
+.auth-rr-input-phone__flag img {
+  display: block;
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+}
+
+.auth-rr-input-phone__editor {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: flex-start;
+  align-self: stretch;
+  min-width: 0;
+  height: 100%;
+  padding: 0 var(--rr-spacing-padding-s) 0 0;
+}
+
+.auth-rr-input-phone--clearable .auth-rr-input-phone__editor {
+  padding-right: 0;
+}
+
+.auth-rr-input-phone__clear {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin: 0 var(--rr-spacing-padding-m) 0 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--rr-input-text-default);
+  cursor: pointer;
+}
+
+.auth-rr-input-phone__clear:focus-visible {
+  outline: 2px solid var(--rr-input-border-active);
+  outline-offset: 2px;
+  border-radius: var(--rr-radius-xs);
+}
+
+.auth-rr-input-phone__clear img {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.auth-rr-input-phone__value {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  text-align: left;
+}
+
+.auth-rr-input-phone__prefix,
+.auth-rr-input-phone__mirror,
+.auth-rr-input-phone__input {
+  font-family: 'Onest', var(--rr-font-family-font-family), system-ui, sans-serif;
+  font-size: var(--auth-rr-fs-m, var(--rr-font-size-font-size-m));
+  font-weight: 400;
+  font-style: normal;
+  line-height: var(--auth-rr-lh-m, var(--rr-line-height-line-height-m));
+  letter-spacing: var(--auth-rr-track-m, var(--rr-tracking-tracking-m));
+}
+
+.auth-rr-input-phone__prefix {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  color: var(--rr-input-text-fill);
+  user-select: none;
+}
+
+.auth-rr-input-phone__local {
+  position: relative;
+  flex: 1 1 auto;
+  align-self: stretch;
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  cursor: text;
+}
+
+.auth-rr-input-phone__mirror {
+  display: block;
+  box-sizing: border-box;
+  min-width: 100%;
+  margin: 0;
+  padding: calc((var(--auth-rr-phone-h) - var(--auth-rr-lh-m, var(--rr-line-height-line-height-m))) / 2) 0;
+  white-space: pre;
+  line-height: var(--auth-rr-lh-m, var(--rr-line-height-line-height-m));
+  pointer-events: none;
+}
+
+.auth-rr-input-phone__typed {
+  color: var(--rr-input-text-fill);
+}
+
+.auth-rr-input-phone__ghost {
+  color: var(--rr-input-text-default);
+}
+
+.auth-rr-input-phone__input {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: calc((var(--auth-rr-phone-h) - var(--auth-rr-lh-m, var(--rr-line-height-line-height-m))) / 2) 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  white-space: pre;
+  line-height: var(--auth-rr-lh-m, var(--rr-line-height-line-height-m));
+  color: transparent;
+  caret-color: var(--rr-input-text-fill);
+}
+
+.auth-rr-input-phone__input:focus,
+.auth-rr-input-phone__input:focus-visible {
+  outline: none;
+  box-shadow: none;
+  border: none;
+}
+
+@keyframes auth-rr-phone-autofill-start {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Autofill: без синего/жёлтого фона, цифры рисует mirror под прозрачным input */
+.auth-rr-input-phone__input:-webkit-autofill,
+.auth-rr-input-phone__input:-webkit-autofill:hover,
+.auth-rr-input-phone__input:-webkit-autofill:focus,
+.auth-rr-input-phone__input:-webkit-autofill:active,
+.auth-rr-input-phone__input:autofill,
+.auth-rr-input-phone__input:-internal-autofill-selected {
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+  caret-color: var(--rr-input-text-fill);
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  font-family: 'Onest', var(--rr-font-family-font-family), system-ui, sans-serif !important;
+  font-size: var(--auth-rr-fs-m, var(--rr-font-size-font-size-m)) !important;
+  font-weight: 400 !important;
+  line-height: var(--auth-rr-lh-m, var(--rr-line-height-line-height-m)) !important;
+  letter-spacing: var(--auth-rr-track-m, var(--rr-tracking-tracking-m)) !important;
+  animation: auth-rr-phone-autofill-start 0.001s;
+  transition: background-color 99999s ease-out 0s;
+}
+
+.auth-rr-input-password {
+  position: relative;
+  width: 100%;
+}
+
+.auth-rr-input-password .auth-rr-input__control {
+  padding-right: calc(var(--rr-spacing-padding-xl) + var(--rr-size-xl));
+}
+
+.auth-rr-input-password__toggle {
+  position: absolute;
+  right: var(--rr-spacing-padding-m);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--rr-input-text-default);
+  cursor: pointer;
+}
+
+.auth-rr-input-password__toggle:focus-visible {
+  outline: 2px solid var(--rr-input-border-active);
+  outline-offset: 2px;
+  border-radius: var(--rr-radius-xs);
+}
+
+.auth-rr-input-password__toggle img {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+/* Пока фокус в другом поле — соседний hover не подсвечивается серым */
+.auth-rr-body:has(
+    .auth-rr-input-phone:focus-within,
+    .auth-rr-input__control:focus,
+    .auth-rr-input__control:focus-visible
+  )
+  .auth-rr-input-phone:not(:focus-within):hover:not(.auth-rr-input-phone--error),
+.auth-rr-body:has(
+    .auth-rr-input-phone:focus-within,
+    .auth-rr-input__control:focus,
+    .auth-rr-input__control:focus-visible
+  )
+  .auth-rr-input__control:not(:focus):not(:focus-visible):hover:not(
+    .auth-rr-input__control--error
+  ) {
+  border-color: var(--rr-input-border-default);
+  background-color: var(--rr-backgrounds-primary);
+}
