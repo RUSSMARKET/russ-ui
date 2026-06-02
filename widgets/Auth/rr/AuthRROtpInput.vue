@@ -1,5 +1,5 @@
 <template>
-  <div class="auth-rr-otp">
+  <div class="auth-rr-otp" :class="{ 'auth-rr-otp--error': props.invalid }">
     <input
       ref="inputRef"
       class="auth-rr-otp__code-input"
@@ -28,7 +28,7 @@
         }"
         @mousedown="onCellPointer(index, $event)"
       >
-        <span v-if="!cells[index]" class="auth-rr-otp__placeholder">—</span>
+        <span v-if="!cells[index]" class="auth-rr-otp__placeholder"></span>
         <span v-else class="auth-rr-otp__digit">{{ cells[index] }}</span>
       </div>
     </div>
@@ -42,9 +42,11 @@ import './auth-rr-otp.css';
 const props = withDefaults(
   defineProps<{
     modelValue?: string;
+    invalid?: boolean;
   }>(),
   {
     modelValue: '',
+    invalid: false,
   },
 );
 

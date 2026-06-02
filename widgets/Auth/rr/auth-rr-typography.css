@@ -1,7 +1,7 @@
 /**
  * Auth RR — масштаб типографики и высот контролов.
- * До ~1920px: базовые токены (заголовок до 2xl / 32px).
- * От 1920px: шаг вверх по шкале (--rr-font-size-* / line-height / tracking).
+ * Типографика фиксированная: без изменения по ширине окна.
+ * Меняем только размеры контролов/контейнера на больших экранах.
  */
 
 .auth-rr-shell {
@@ -19,7 +19,7 @@
   --auth-rr-track-m: var(--rr-tracking-tracking-m);
   --auth-rr-track-2xl: var(--rr-tracking-tracking-2xl);
 
-  --auth-rr-control-h: var(--rr-size-4-xl);
+  --auth-rr-control-h: 48px;
   --auth-rr-main-max: 460px;
   --auth-rr-logo-h: 32px;
 }
@@ -33,11 +33,19 @@
 
 @media (min-width: 961px) {
   .auth-rr-shell {
-    --auth-rr-control-h: var(--rr-size-3-xl);
+    --auth-rr-control-h: 48px;
   }
 }
 
-@media (min-width: 1920px) {
+@media (min-width: 1440px) {
+  .auth-rr-shell {
+    --auth-rr-control-h: 48px;
+    --auth-rr-main-max: clamp(480px, 32vw, 840px);
+    --auth-rr-logo-h: 40px;
+  }
+}
+
+@media (min-width: 2560px) {
   .auth-rr-shell {
     --auth-rr-fs-xs: var(--rr-font-size-font-size-s);
     --auth-rr-fs-s: var(--rr-font-size-font-size-m);
@@ -51,8 +59,8 @@
 
     --auth-rr-track-2xl: var(--rr-tracking-tracking-3xl);
 
-    --auth-rr-control-h: var(--rr-size-4-xl);
-    --auth-rr-main-max: 480px;
-    --auth-rr-logo-h: 40px;
+    --auth-rr-control-h: 48px;
+    --auth-rr-main-max: clamp(840px, 36vw, 1040px);
+    --auth-rr-logo-h: 48px;
   }
 }
