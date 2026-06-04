@@ -350,7 +350,7 @@ const filterConfigs = computed((): FilterConfig[] => {
                 options: userOptions.value,
                 optionLabel: 'name',
                 optionValue: 'id',
-                searchable: false,
+                searchable: true,
                 disabled: isLoadingData.value || isLoadingAgents.value,
             }
         );
