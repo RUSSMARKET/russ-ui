@@ -341,6 +341,20 @@ watch(() => filters.value.options, (newOptions) => {
     }
 });
 
+const isValidId = (val: unknown): val is number => {
+    if (val === null || val === undefined) return false;
+    if (typeof val === 'string') {
+        const trimmed = val.trim().toLowerCase();
+        if (trimmed === '' || trimmed === 'undefined' || trimmed === 'null') return false;
+        const num = Number(val);
+        return Number.isFinite(num) && num > 0;
+    }
+    if (typeof val === 'number') {
+        return Number.isFinite(val) && val > 0;
+    }
+    return false;
+};
+
 const formatDateForAPI = (date: Date | undefined): string | undefined => {
     if (!date) return undefined;
     const normalized = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -382,11 +396,11 @@ const handleExport = async () => {
         }
         // Проект обязателен
         params.project = filters.value.project;
-        if (filters.value.point !== undefined) {
-            params.point = filters.value.point;
+        if (isValidId(filters.value.point)) {
+            params.point = Number(filters.value.point);
         }
-        if (filters.value.user_id !== undefined) {
-            params.user_id = filters.value.user_id;
+        if (isValidId(filters.value.user_id)) {
+            params.user_id = Number(filters.value.user_id);
         }
         if (filters.value.options !== undefined) {
             params.options = filters.value.options;
