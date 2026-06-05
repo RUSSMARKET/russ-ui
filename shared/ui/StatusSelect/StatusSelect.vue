@@ -389,7 +389,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('mousedown', handleClickOutside);
   document.removeEventListener('keydown', handleKeydown);
   window.removeEventListener('resize', handleResize);
-  window.removeEventListener('scroll', handleResize);
+  window.removeEventListener('scroll', handleResize, true);
 });
 
 watch(() => props.modelValue, () => {
