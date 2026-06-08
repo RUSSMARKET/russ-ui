@@ -6,11 +6,29 @@ import { applyTheme, resolveThemeColors } from './utils'
 const STORAGE_THEME = 'russ-ui-theme'
 const STORAGE_SCHEME = 'russ-ui-color-scheme'
 
+function safeGetItem(key: string): string | null {
+  if (typeof window === 'undefined') return null
+  try {
+    return localStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+
+function safeSetItem(key: string, value: string): void {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem(key, value)
+  } catch {
+    // iOS restricted WebView / private mode
+  }
+}
+
 function readStoredScheme(): ColorScheme {
   if (typeof window === 'undefined') {
     return 'light'
   }
-  const raw = localStorage.getItem(STORAGE_SCHEME)
+  const raw = safeGetItem(STORAGE_SCHEME)
   return raw === 'dark' ? 'dark' : 'light'
 }
 
@@ -21,7 +39,7 @@ export function useTheme(initialTheme?: ThemeName) {
   let startTheme: ThemeName = 'fintech'
   let startScheme: ColorScheme = 'light'
   if (typeof window !== 'undefined') {
-    const savedTheme = localStorage.getItem(STORAGE_THEME)
+    const savedTheme = safeGetItem(STORAGE_THEME)
     startTheme = (initialTheme || savedTheme || 'fintech') as ThemeName
     startScheme = readStoredScheme()
   } else if (initialTheme) {
@@ -41,17 +59,13 @@ export function useTheme(initialTheme?: ThemeName) {
     currentThemeName.value = themeName
     currentTheme.value = theme
     applyTheme(theme, colorScheme.value)
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_THEME, themeName)
-    }
+    safeSetItem(STORAGE_THEME, themeName)
   }
 
   const setColorScheme = (scheme: ColorScheme) => {
     colorScheme.value = scheme
     applyTheme(currentTheme.value, scheme)
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_SCHEME, scheme)
-    }
+    safeSetItem(STORAGE_SCHEME, scheme)
   }
 
   const toggleColorScheme = () => {
@@ -60,7 +74,7 @@ export function useTheme(initialTheme?: ThemeName) {
 
   onMounted(() => {
     if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem(STORAGE_THEME)
+      const savedTheme = safeGetItem(STORAGE_THEME)
       if (savedTheme && savedTheme !== currentThemeName.value) {
         const theme = getTheme(savedTheme)
         currentThemeName.value = savedTheme as ThemeName
