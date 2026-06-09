@@ -376,6 +376,14 @@ function handleMultipleComboClick(event) {
   toggleDropdown();
 }
 
+/** Перед открытием searchable-селекта сбрасываем отображаемую метку, иначе список фильтруется как поиск. */
+function prepareSearchableOpen() {
+  if (!props.searchable || props.multiple) return;
+  if (inputValue.value && inputValue.value === lastSelectedLabel) {
+    inputValue.value = '';
+  }
+}
+
 function handleFocus(event) {
   if (props.multiple) {
     openDropdown();
@@ -396,10 +404,7 @@ function handleFocus(event) {
     const scrollY = window.scrollY;
     const scrollX = window.scrollX;
     
-    // Открываем dropdown
-    if (inputValue.value && inputValue.value === lastSelectedLabel) {
-      inputValue.value = '';
-    }
+    prepareSearchableOpen();
     openDropdown();
     
     // Восстанавливаем позицию прокрутки после небольшой задержки
@@ -414,10 +419,7 @@ function handleFocus(event) {
     return;
   }
   
-  // Если поле содержит выбранное значение (не пустое и не является поисковым запросом), очищаем его
-  if (inputValue.value && inputValue.value === lastSelectedLabel) {
-    inputValue.value = '';
-  }
+  prepareSearchableOpen();
   openDropdown();
 }
 
@@ -468,29 +470,8 @@ function closeDropdown() {
 function toggleDropdown() {
   if (props.loading) return;
   if (!dropdownOpen.value) {
-    dropdownOpen.value = true;
-    highlightedIndex.value = -1;
-    attachMobileFiltersScrollListener();
-    nextTick(() => {
-      calculateDropdownPosition();
-      // Дополнительная проверка после рендера для более точного расчета
-      if (dropdownRef.value) {
-        setTimeout(() => {
-          calculateDropdownPosition();
-        }, 0);
-        setTimeout(() => {
-          calculateDropdownPosition();
-        }, 50);
-      }
-
-      if (isMobile.value && props.searchable && searchInputRef.value?.focus) {
-        try {
-          searchInputRef.value.focus({ preventScroll: true });
-        } catch {
-          searchInputRef.value.focus();
-        }
-      }
-    });
+    prepareSearchableOpen();
+    openDropdown();
   } else {
     closeDropdown();
   }
