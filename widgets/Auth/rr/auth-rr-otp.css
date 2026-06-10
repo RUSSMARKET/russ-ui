@@ -8,7 +8,7 @@
   --auth-rr-otp-cell: 50px;
 }
 
-@media (min-width: 961px) {
+@media (min-width: 1440px) {
   .auth-rr-otp,
   .auth-rr-shell {
     --auth-rr-otp-cell: 70px;

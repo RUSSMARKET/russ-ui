@@ -30,6 +30,7 @@
               :name="name"
               :readonly="readonly"
               aria-label="Номер телефона"
+              @beforeinput="handleBeforeInput"
               @input="handleInput"
               @focus="handleFocus"
               @blur="handleBlur"
@@ -37,6 +38,7 @@
               @keydown="handleKeydown"
               @change="syncFromInputElement"
               @animationstart="onAutofillAnimation"
+              @animationend="onAutofillAnimation"
             />
           </div>
         </div>
@@ -96,10 +98,12 @@ const {
   handleFocus,
   handleBlur,
   handleInput,
+  handleBeforeInput,
   handlePaste,
   handleKeydown,
   clear,
   syncFromInputElement,
+  scheduleAutofillSync,
 } = useRuPhoneMask(props, emit);
 
 const maskTail = computed(() => {
@@ -114,6 +118,7 @@ const displayError = computed(() => props.error || errorMessage.value);
 function onAutofillAnimation(event: AnimationEvent) {
   if (event.animationName === 'auth-rr-phone-autofill-start') {
     syncFromInputElement();
+    scheduleAutofillSync();
   }
 }
 

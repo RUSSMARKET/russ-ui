@@ -39,7 +39,8 @@ export function formatLocalPart(digits) {
 }
 
 /**
- * Локальная часть номера (10 цифр): убирает +7 / 8 / 7 в начале при вставке и автозаполнении.
+ * Локальная часть номера (10 цифр): убирает код страны +7 / 8 при вставке и автозаполнении.
+ * Лишнюю ведущую 7/8 на 10 цифрах не срезаем — иначе ломается посимвольный ввод из менеджера паролей.
  */
 export function normalizeRuPhoneDigits(raw) {
   let digits = String(raw || '').replace(/\D/g, '');
@@ -48,18 +49,6 @@ export function normalizeRuPhoneDigits(raw) {
   }
 
   while (digits.length > 10 && (digits[0] === '7' || digits[0] === '8')) {
-    digits = digits.slice(1);
-  }
-
-  if (digits.length === 11 && (digits[0] === '7' || digits[0] === '8')) {
-    digits = digits.slice(1);
-  }
-
-  if (
-    digits.length === 10 &&
-    (digits[0] === '7' || digits[0] === '8') &&
-    digits[1] === '9'
-  ) {
     digits = digits.slice(1);
   }
 
@@ -108,11 +97,52 @@ export function useRuPhoneMask(props, emit) {
   const isFocused = ref(false);
   const inputRef = ref(null);
   const localValue = ref('');
+  let autofillSyncTimer = null;
 
   function emitFull(digits) {
     const full = digits.length > 0 ? formatRuPhone(digits) : '';
     emit('update:modelValue', full);
     return full;
+  }
+
+  function applyDigits(digits, el, cursorDigits = digits.length) {
+    const formatted = formatLocalPart(digits);
+    localValue.value = formatted;
+    emitFull(digits);
+    if (el) {
+      el.value = formatted;
+      const cursorPos = cursorAfterDigits(formatted, cursorDigits);
+      requestAnimationFrame(() => el.setSelectionRange(cursorPos, cursorPos));
+    }
+    return formatted;
+  }
+
+  function clearField(el) {
+    localValue.value = '';
+    emitFull('');
+    if (el) {
+      el.value = '';
+      requestAnimationFrame(() => el.setSelectionRange(0, 0));
+    }
+  }
+
+  function scheduleAutofillSync() {
+    if (autofillSyncTimer) {
+      clearTimeout(autofillSyncTimer);
+    }
+    const run = () => {
+      if (!inputRef.value) {
+        return;
+      }
+      const domDigits = normalizeRuPhoneDigits(inputRef.value.value || '');
+      const currentDigits = extractUserDigits(`${PREFIX}${localValue.value}`);
+      if (domDigits !== currentDigits) {
+        applyDigits(domDigits, inputRef.value);
+      }
+    };
+    requestAnimationFrame(run);
+    autofillSyncTimer = setTimeout(run, 50);
+    setTimeout(run, 200);
   }
 
   function syncFromModel(newValue) {
@@ -138,6 +168,7 @@ export function useRuPhoneMask(props, emit) {
   const handleFocus = () => {
     isFocused.value = true;
     errorMessage.value = '';
+    scheduleAutofillSync();
   };
 
   const handleBlur = () => {
@@ -156,6 +187,19 @@ export function useRuPhoneMask(props, emit) {
     const el = event.target;
     const oldCursorPos = el.selectionStart ?? 0;
     const oldRaw = el.value || '';
+    const inputType = event.inputType || '';
+    const prevDigits = extractUserDigits(`${PREFIX}${localValue.value}`);
+    const rawDigits = oldRaw.replace(/\D/g, '');
+    const isBulkInsert =
+      inputType === 'insertFromPaste' ||
+      inputType === 'insertReplacementText' ||
+      inputType === 'insertFromDrop' ||
+      rawDigits.length - prevDigits.length > 1;
+
+    if (isBulkInsert) {
+      applyDigits(normalizeRuPhoneDigits(oldRaw), el);
+      return;
+    }
 
     let digitsBeforeCursor = 0;
     for (let i = 0; i < Math.min(oldCursorPos, oldRaw.length); i++) {
@@ -164,18 +208,27 @@ export function useRuPhoneMask(props, emit) {
       }
     }
 
-    const digits = normalizeRuPhoneDigits(oldRaw);
+    applyDigits(normalizeRuPhoneDigits(oldRaw), el, digitsBeforeCursor);
+  };
 
-    const formatted = formatLocalPart(digits);
-    const newCursorPos = cursorAfterDigits(formatted, digitsBeforeCursor);
+  const handleBeforeInput = (event) => {
+    const inputType = event.inputType || '';
+    if (
+      inputType !== 'insertReplacementText' &&
+      inputType !== 'insertFromPaste' &&
+      inputType !== 'insertFromDrop'
+    ) {
+      return;
+    }
 
-    localValue.value = formatted;
-    emitFull(digits);
+    const text = event.data || '';
+    if (!/\d/.test(text)) {
+      return;
+    }
 
-    requestAnimationFrame(() => {
-      el.value = formatted;
-      el.setSelectionRange(newCursorPos, newCursorPos);
-    });
+    event.preventDefault();
+    const el = event.target;
+    applyDigits(normalizeRuPhoneDigits(text), el);
   };
 
   const handlePaste = (event) => {
@@ -186,17 +239,22 @@ export function useRuPhoneMask(props, emit) {
       return;
     }
     event.preventDefault();
-
-    const digits = normalizeRuPhoneDigits(pasted);
-
-    const formatted = formatLocalPart(digits);
-    localValue.value = formatted;
-    emitFull(digits);
-    el.value = formatted;
-    requestAnimationFrame(() => el.setSelectionRange(formatted.length, formatted.length));
+    applyDigits(normalizeRuPhoneDigits(pasted), el);
   };
 
   const handleKeydown = (event) => {
+    const el = event.target;
+    const selectionStart = el.selectionStart ?? 0;
+    const selectionEnd = el.selectionEnd ?? 0;
+    const value = el.value || '';
+    const isFullSelection = selectionStart === 0 && selectionEnd === value.length && value.length > 0;
+
+    if ((event.key === 'Backspace' || event.key === 'Delete') && isFullSelection) {
+      event.preventDefault();
+      clearField(el);
+      return;
+    }
+
     const allowed = [
       'Tab', 'Shift', 'Control', 'Alt', 'Meta',
       'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End',
@@ -235,11 +293,7 @@ export function useRuPhoneMask(props, emit) {
   });
 
   const clear = () => {
-    localValue.value = '';
-    if (inputRef.value) {
-      inputRef.value.value = '';
-    }
-    emitFull('');
+    clearField(inputRef.value);
     requestAnimationFrame(() => inputRef.value?.focus());
   };
 
@@ -250,9 +304,11 @@ export function useRuPhoneMask(props, emit) {
     handleFocus,
     handleBlur,
     handleInput,
+    handleBeforeInput,
     handlePaste,
     handleKeydown,
     clear,
     syncFromInputElement,
+    scheduleAutofillSync,
   };
 }

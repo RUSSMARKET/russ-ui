@@ -2,5 +2,6 @@
  * Russ Redesign (RR) — полный набор токенов из Figma.
  * После обновления JSON: npm run tokens:build в корне bibli.
  */
+@import './adaptives.css';
 @import './generated/index.css';
 @import './bridge/legacy-russ.css';
