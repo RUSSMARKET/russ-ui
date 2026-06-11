@@ -9,20 +9,22 @@ html:has(.auth-rr-shell),
 html:has(.auth-rr-shell) body {
   height: 100%;
   max-height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 #auth-preview-app {
   display: block;
-  height: 100vh;
-  height: 100dvh;
-  max-height: 100vh;
-  max-height: 100dvh;
+  height: calc(var(--vvh, 1dvh) * 100);
+  max-height: calc(var(--vvh, 1dvh) * 100);
   overflow: hidden;
 }
 
 .auth-rr-shell {
+  --auth-rr-shell-pad-block-start: var(--rr-spacing-margin-4-xl);
+  --auth-rr-shell-pad-block-end: var(--rr-spacing-margin-5-xl);
+  --auth-rr-shell-pad-inline: var(--rr-spacing-padding-5-xl);
+  --auth-rr-main-margin-block: var(--rr-spacing-margin-5-xl);
+
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -30,17 +32,16 @@ html:has(.auth-rr-shell) body {
   height: 100%;
   max-height: 100%;
   min-height: 0;
-  padding: var(--rr-spacing-margin-4-xl) var(--rr-spacing-padding-5-xl)
-    var(--rr-spacing-margin-5-xl) var(--rr-spacing-padding-5-xl);
-  overflow-x: hidden;
-  overflow-y: auto;
+  padding: var(--auth-rr-shell-pad-block-start) var(--auth-rr-shell-pad-inline)
+    var(--auth-rr-shell-pad-block-end);
+  overflow: hidden;
   background: var(--rr-backgrounds-primary);
 }
 
 .auth-rr {
   container-type: size;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
   align-items: stretch;
   gap: var(--rr-spacing-padding-2-xl);
@@ -53,15 +54,20 @@ html:has(.auth-rr-shell) body {
   color: var(--rr-backgrounds-neutral-primary-default);
 }
 
+:root[data-rr-layout='split'] .auth-rr {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
 .auth-rr-form {
   min-height: 0;
   min-width: 0;
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
-  overflow-y: visible;
+  overflow: hidden;
   box-sizing: border-box;
+  transform: translateY(var(--auth-rr-shift-y, 0));
+  transition: transform 0.15s ease;
 }
 
 .auth-rr-header {
@@ -130,11 +136,13 @@ html:has(.auth-rr-shell) body {
 
 .auth-rr-main {
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
   justify-content: center;
   width: 100%;
+  min-height: 0;
   max-width: var(--auth-rr-main-max, 460px);
-  margin: var(--rr-spacing-margin-5-xl) auto;
+  margin: var(--auth-rr-main-margin-block) auto;
 }
 
 .auth-rr-title {
@@ -258,6 +266,7 @@ html:has(.auth-rr-shell) body {
 .auth-rr-hero {
   --rr-hero-ar-w: 2085;
   --rr-hero-ar-h: 2739;
+  display: none;
   align-self: stretch;
   justify-self: center;
   box-sizing: border-box;
@@ -273,6 +282,10 @@ html:has(.auth-rr-shell) body {
   background: transparent;
 }
 
+:root[data-rr-layout='split'] .auth-rr-hero {
+  display: block;
+}
+
 .auth-rr-hero__img {
   display: block;
   width: 100%;
@@ -285,44 +298,85 @@ html:has(.auth-rr-shell) body {
   display: none;
 }
 
-@media (max-width: 960px) {
+/* Ниже split-min (1024) — stacked, компактные отступы shell */
+@media (max-width: 1023px) {
   .auth-rr-shell {
-    padding: var(--rr-spacing-padding-3-xl) var(--rr-spacing-padding-xl)
-      var(--rr-spacing-padding-5-xl);
-  }
-
-  .auth-rr {
-    grid-template-columns: 1fr;
-  }
-
-  .auth-rr-hero {
-    display: none;
-  }
-
-  .auth-rr-hero--has-mobile {
-    display: block;
-    order: -1;
-    align-self: center;
-    width: min(100%, 360px);
-    height: auto;
-    max-height: min(42vh, 360px);
-    margin: 0 auto var(--rr-spacing-margin-2-xl, 24px);
-    aspect-ratio: var(--rr-hero-mobile-ar-w) / var(--rr-hero-mobile-ar-h);
-  }
-
-  .auth-rr-hero--has-mobile .auth-rr-hero__img--desktop {
-    display: none;
-  }
-
-  .auth-rr-hero--has-mobile .auth-rr-hero__img--mobile {
-    display: block;
-    width: 100%;
-    height: auto;
-    max-height: inherit;
-    object-fit: contain;
+    --auth-rr-shell-pad-block-start: var(--rr-spacing-padding-3-xl);
+    --auth-rr-shell-pad-block-end: var(--rr-spacing-padding-5-xl);
+    --auth-rr-shell-pad-inline: var(--rr-spacing-padding-xl);
   }
 
   .auth-rr-main {
     max-width: none;
   }
+}
+
+:root[data-rr-layout='stacked'] .auth-rr-hero--has-mobile {
+  display: block;
+  order: -1;
+  align-self: center;
+  width: min(100%, var(--rr-adaptives-width-mobile, 390px));
+  height: auto;
+  max-height: min(28dvh, 240px);
+  margin: 0 auto var(--rr-spacing-margin-2-xl, 24px);
+  aspect-ratio: var(--rr-hero-mobile-ar-w) / var(--rr-hero-mobile-ar-h);
+}
+
+:root[data-rr-layout='stacked'] .auth-rr-hero--has-mobile .auth-rr-hero__img--desktop {
+  display: none;
+}
+
+:root[data-rr-layout='stacked'] .auth-rr-hero--has-mobile .auth-rr-hero__img--mobile {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: inherit;
+  object-fit: contain;
+}
+
+/* Progressive compact — без скролла на низких экранах и при zoom 110% */
+:root[data-rr-compact='1'] .auth-rr-shell {
+  --auth-rr-shell-pad-block-start: var(--rr-spacing-padding-2-xl);
+  --auth-rr-shell-pad-block-end: var(--rr-spacing-padding-3-xl);
+  --auth-rr-main-margin-block: var(--rr-spacing-margin-2-xl);
+}
+
+:root[data-rr-compact='2'] .auth-rr-shell {
+  --auth-rr-shell-pad-block-start: var(--rr-spacing-padding-xl);
+  --auth-rr-shell-pad-block-end: var(--rr-spacing-padding-2-xl);
+  --auth-rr-main-margin-block: var(--rr-spacing-margin-l);
+}
+
+:root[data-rr-compact='3'] .auth-rr-shell {
+  --auth-rr-shell-pad-block-start: var(--rr-spacing-padding-l);
+  --auth-rr-shell-pad-block-end: var(--rr-spacing-padding-xl);
+  --auth-rr-main-margin-block: var(--rr-spacing-margin-s);
+}
+
+:root[data-rr-compact='4'] .auth-rr-shell {
+  --auth-rr-shell-pad-block-start: var(--rr-spacing-padding-m);
+  --auth-rr-shell-pad-block-end: var(--rr-spacing-padding-l);
+  --auth-rr-main-margin-block: var(--rr-spacing-margin-xs);
+}
+
+:root[data-rr-compact='2'] .auth-rr-main,
+:root[data-rr-compact='3'] .auth-rr-main,
+:root[data-rr-compact='4'] .auth-rr-main,
+:root[data-rr-keyboard='open'] .auth-rr-main {
+  justify-content: flex-start;
+}
+
+:root[data-rr-compact='3'] .auth-rr-footer,
+:root[data-rr-compact='4'] .auth-rr-footer,
+:root[data-rr-keyboard='open'] .auth-rr-footer {
+  display: none;
+}
+
+:root[data-rr-compact='2'] .auth-rr-footer {
+  padding-top: var(--rr-spacing-padding-m);
+}
+
+:root[data-rr-keyboard='open'] .auth-rr-shell {
+  --auth-rr-shell-pad-block-end: var(--rr-spacing-padding-l);
+  --auth-rr-main-margin-block: var(--rr-spacing-margin-s);
 }

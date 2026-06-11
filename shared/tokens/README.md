@@ -38,6 +38,20 @@ document.documentElement.toggleAttribute('data-rr', true);
 document.documentElement.dataset.colorMode = 'light'; // | dark
 ```
 
+## Брейкпоинты (Adaptives)
+
+| Назначение | Токен / константа | Значение |
+|------------|-------------------|----------|
+| Mobile artboard | `--rr-adaptives-width-mobile` | `390px` |
+| Desktop artboard | `--rr-adaptives-width-desktop` | `1440px` |
+| Split layout (форма + hero) | `--rr-adaptives-layout-split-min` | `1024px` |
+
+Файлы: `adaptives.css`, `adaptives.js`.
+
+- `data-rr-viewport="mobile"` — ширина &lt; 1024px (или клавиатура).
+- `data-rr-layout="split"` — ширина ≥ 1024px (если влезает по высоте).
+- CSS desktop-only (main-max, OTP 70px) — `min-width: 1440px`.
+
 ## Слои
 
 | Файл | Содержимое |

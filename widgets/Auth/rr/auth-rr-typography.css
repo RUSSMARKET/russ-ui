@@ -24,19 +24,7 @@
   --auth-rr-logo-h: 32px;
 }
 
-/* Сетка layout: одна колонка ≤960px — поля, телефон, кнопка 48px (не 64px desktop 4-xl) */
-@media (max-width: 960px) {
-  .auth-rr-shell {
-    --auth-rr-control-h: 48px;
-  }
-}
-
-@media (min-width: 961px) {
-  .auth-rr-shell {
-    --auth-rr-control-h: 48px;
-  }
-}
-
+/* Adaptives.Width: mobile 390px, desktop 1440px — bibli/shared/tokens/adaptives.css */
 @media (min-width: 1440px) {
   .auth-rr-shell {
     --auth-rr-control-h: 48px;
