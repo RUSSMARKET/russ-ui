@@ -68,7 +68,12 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { Teleport } from 'vue';
 import { strictFuzzyMatch } from '../../../utils/levenshtein';
-import { buildFixedFloatingStyles, computeFloatingPlacement, getMobileFiltersBounds } from '../../../utils';
+import {
+  buildFixedFloatingStyles,
+  computeFloatingPlacement,
+  getFloatingScrollContainer,
+  getMobileFiltersBounds,
+} from '../../../utils';
 const props = defineProps({
   modelValue: [String, Number, Array],
   options: {
@@ -255,16 +260,11 @@ const filteredOptions = computed(() => {
 
 let mobileFiltersScrollEl = null;
 
-function getMobileFiltersScrollContainer() {
-  if (!containerRef.value) return null;
-  const modal = containerRef.value.closest('.mobile-filters-modal');
-  if (!modal) return null;
-  return modal.querySelector('.mobile-filters-content');
-}
-
 function attachMobileFiltersScrollListener() {
   detachMobileFiltersScrollListener();
-  mobileFiltersScrollEl = getMobileFiltersScrollContainer();
+  mobileFiltersScrollEl = containerRef.value
+    ? getFloatingScrollContainer(containerRef.value)
+    : null;
   if (mobileFiltersScrollEl) {
     mobileFiltersScrollEl.addEventListener('scroll', handleResize, { passive: true });
   }

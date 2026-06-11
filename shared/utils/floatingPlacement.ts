@@ -56,17 +56,35 @@ function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
 }
 
-const MOBILE_FILTERS_MODAL_SELECTOR = '.mobile-filters-modal';
-const MOBILE_FILTERS_CONTENT_SELECTOR = '.mobile-filters-content';
+const FLOATING_SCROLL_CONTAINERS: ReadonlyArray<{
+  root: string;
+  scroll: string;
+}> = [
+  { root: '.mobile-filters-modal', scroll: '.mobile-filters-content' },
+  { root: '.ruchnik-drawer', scroll: '.ruchnik-drawer-body' },
+];
+
+function findFloatingScrollElement(anchor: Element): Element | null {
+  for (const { root, scroll } of FLOATING_SCROLL_CONTAINERS) {
+    const container = anchor.closest(root);
+    if (!container) continue;
+    const scrollEl = container.querySelector(scroll);
+    return scrollEl ?? container;
+  }
+  return null;
+}
 
 /**
- * Visible scroll bounds of the mobile filters bottom sheet (not the full modal chrome).
+ * Visible scroll bounds of a constrained overlay (mobile filters sheet, drawer body, etc.).
  */
 export function getMobileFiltersBounds(anchor: Element): DOMRect | null {
-  const modal = anchor.closest(MOBILE_FILTERS_MODAL_SELECTOR);
-  if (!modal) return null;
-  const scrollEl = modal.querySelector(MOBILE_FILTERS_CONTENT_SELECTOR);
-  return (scrollEl ?? modal).getBoundingClientRect();
+  const scrollEl = findFloatingScrollElement(anchor);
+  return scrollEl?.getBoundingClientRect() ?? null;
+}
+
+/** Scroll container to listen for reposition while a floating panel is open. */
+export function getFloatingScrollContainer(anchor: Element): Element | null {
+  return findFloatingScrollElement(anchor);
 }
 
 /**

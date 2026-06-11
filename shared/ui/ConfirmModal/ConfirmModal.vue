@@ -23,7 +23,6 @@
 
 <script setup lang="ts">
 import { BaseModal } from '@/shared/ui';
-import { withDefaults } from 'vue';
 
 interface Props {
   visible: boolean;

@@ -1,266 +1,509 @@
 <!--
-  RuchnikBlockRequests - Компонент для управления ручниками на странице requests
-  Для клиентов: только поиск и просмотр (без правой колонки)
-  Для менеджеров: полный функционал
+  RuchnikBlockRequests — управление ID заявок на странице requests.
+  Список на всю ширину + drawer для добавления / массового переноса / редактирования.
 -->
 
 <template>
-  <div class="ruchnik-block" :class="{ 'ruchnik-block--modal-embed': embedInModal }">
-    <div class="ruchnik-container" :class="{ 'ruchnik-container-client': !canManage }">
-      <div class="ruchnik-list-column" :class="{ 'ruchnik-list-column-full': !canManage }">
-        <h4 v-if="!embedInModal" class="ruchnik-section-title">Заявки агентов</h4>
-        <div ref="filtersContainerRef" class="ruchnik-filters-container">
-          <div v-if="singleRuchnikType" class="ruchnik-filter-type-chip-row">
-            <span class="ruchnik-filter-type-label">Тип ручника</span>
-            <span class="ruchnik-chip-static">
-              <Chip :label="singleRuchnikTypeDisplay" selected />
-            </span>
-          </div>
-          <FiltersBar
-            :filters="ruchnikFilters"
-            :model-value="filterModelSnapshot"
-            :show-reset-button="hasActiveFilters"
-            :show-mobile-button="false"
-            @update:model-value="applyFilterModel"
-          />
+  <div
+    class="ruchnik-block"
+    :class="{
+      'ruchnik-block--modal-embed': embedInModal,
+      'ruchnik-block--full-page': fullPage,
+    }"
+  >
+    <div class="ruchnik-main">
+      <h4 v-if="!embedInModal" class="ruchnik-section-title">ID заявок</h4>
+
+      <div
+        class="ruchnik-toolbar"
+        :class="{ 'ruchnik-toolbar--filters-open': mobileFiltersOpen }"
+      >
+        <div v-if="$slots['toolbar-leading']" class="ruchnik-toolbar-leading">
+          <slot name="toolbar-leading" />
         </div>
 
-        <div class="ruchnik-content">
-          <div
-            class="ruchnik-list-area"
-            :class="{ 'ruchnik-list-area--busy': loading && items.length > 0 }"
-          >
-            <div v-if="loading && !items.length" class="ruchnik-loading">
-              <span class="loader"></span>
-              <span>Загрузка заявок...</span>
+        <div class="ruchnik-toolbar-controls">
+          <div class="ruchnik-toolbar-controls-top">
+            <input
+              v-model="localSearchQuery"
+              type="search"
+              enterkeyhint="search"
+              autocomplete="off"
+              class="ruchnik-toolbar-input ruchnik-toolbar-search"
+              :placeholder="searchRequiresTypeChoice ? 'Сначала выберите тип' : 'Поиск по коду...'"
+              :readonly="searchRequiresTypeChoice"
+              @focus="onSearchFilterInputFocus"
+              @input="onSearchInput"
+            />
+
+            <button
+              v-if="showMobileFilterToggle"
+              type="button"
+              class="ruchnik-toolbar-filters-btn"
+              :class="{ 'ruchnik-toolbar-filters-btn--active': filtersButtonActive }"
+              :aria-label="filtersButtonAriaLabel"
+              :aria-expanded="mobileFiltersOpen"
+              @click="mobileFiltersOpen = !mobileFiltersOpen"
+            >
+              <i class="pi pi-filter" aria-hidden="true"></i>
+            </button>
+
+            <button
+              v-if="canManage && !showMobileFilterToggle"
+              type="button"
+              class="ruchnik-add-btn ruchnik-toolbar-add ruchnik-toolbar-add--inline"
+              :disabled="loading"
+              @click="openAddDrawer"
+            >
+              <i class="pi pi-plus" aria-hidden="true"></i>
+              Добавить
+            </button>
+          </div>
+
+          <div class="ruchnik-toolbar-filters">
+            <div v-if="singleRuchnikType" class="ruchnik-filter-item ruchnik-toolbar-type">
+              <span class="ruchnik-filter-label">Тип</span>
+              <Chip :label="singleRuchnikTypeDisplay" selected />
             </div>
+            <div v-else-if="showTypeFilterSelect" class="ruchnik-filter-item">
+              <span class="ruchnik-filter-label">Тип</span>
+              <BaseSelect
+                v-model="localSelectedType"
+                class="ruchnik-select ruchnik-toolbar-field"
+                height=""
+                :options="typeSelectOptions"
+                option-label="name"
+                option-value="id"
+                placeholder="Все типы"
+                :searchable="true"
+                :disabled="typesLoading"
+                :loading="typesLoading"
+                @update:model-value="onToolbarTypeChange"
+              />
+            </div>
+            <div v-if="canManage" class="ruchnik-filter-item">
+              <span class="ruchnik-filter-label">Агент</span>
+              <BaseSelect
+                v-model="localSelectedUserId"
+                class="ruchnik-select ruchnik-toolbar-field"
+                height=""
+                :options="agentSelectOptions"
+                option-label="name"
+                option-value="id"
+                placeholder="Все агенты"
+                :searchable="true"
+                :disabled="agentsLoading"
+                :loading="agentsLoading"
+                @update:model-value="onToolbarAgentChange"
+              />
+            </div>
+            <div v-if="hasActiveFilters" class="ruchnik-filter-item ruchnik-filter-item--reset">
+              <span class="ruchnik-filter-label ruchnik-filter-label--spacer" aria-hidden="true">&nbsp;</span>
+              <button type="button" class="ruchnik-toolbar-reset-btn" @click="resetFilters">
+                <i class="pi pi-filter-slash" aria-hidden="true"></i>
+                <span class="ruchnik-toolbar-reset-label">Сбросить</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            <template v-else>
-          <div v-if="items.length > 0" class="ruchnik-list">
-            <div v-for="item in items" :key="item.id" class="ruchnik-card">
-              <div class="ruchnik-card-content">
-                <div class="ruchnik-info">
-                  <div>
-                    <div class="ruchnik-code">{{ item.code }}</div>
+      <div class="ruchnik-content">
+        <div
+          class="ruchnik-list-area"
+          :class="{ 'ruchnik-list-area--busy': loading && items.length > 0 }"
+        >
+          <div v-if="loading && !items.length" class="ruchnik-loading">
+            <span class="loader"></span>
+            <span>Загрузка заявок...</span>
+          </div>
 
-                    <div class="ruchnik-user">
-                      <template v-if="item.user && item.report && item.report.fio">
-                        {{ formatUser(item.user) }} / {{ formatFio(item.report.fio) }}
-                      </template>
-                      <template v-else-if="item.user">
-                        {{ formatUser(item.user) }}
-                      </template>
-                      <template v-else-if="item.report && item.report.fio">
-                        {{ formatFio(item.report.fio) }}
-                      </template>
-                      <template v-else>
-                        —
-                      </template>
-                    </div>
-                    <div class="ruchnik-status">
-                      <span class="status-indicator" :class="{
-                        'status-confirmed': getStatus(item) === 'confirmed',
-                        'status-pending': getStatus(item) === 'pending',
-                        'status-not-confirmed': getStatus(item) === 'rejected'
-                      }">
-                        {{ getStatusText(item) }}
-                      </span>
-                      <span v-if="item.report && (item.report.type !== undefined && item.report.type !== null)"
-                        class="status-meta status-type">
-                        {{ item.report.type === '' ? 'Пустая' : item.report.type }}
-                      </span>
-                      <span v-if="item.report && item.report.date" class="status-meta status-date">
-                        {{ formatReportDate(item.report.date) }}
-                      </span>
-                    </div>
+          <template v-else>
+            <div v-if="items.length > 0" class="ruchnik-list">
+              <div class="ruchnik-list-head" aria-hidden="true">
+                <span class="ruchnik-list-head-code">ID заявки</span>
+                <span class="ruchnik-list-head-agent">Агент</span>
+                <span v-if="showRowStatus" class="ruchnik-list-head-status">Статус</span>
+                <span v-if="canManage" class="ruchnik-list-head-actions"></span>
+              </div>
+              <div class="ruchnik-list-body">
+              <div
+                v-for="item in items"
+                :key="item.id"
+                class="ruchnik-row"
+                :title="getRowTooltip(item)"
+              >
+                <div class="ruchnik-row-main">
+                  <span class="ruchnik-row-code">{{ item.code }}</span>
+                  <span class="ruchnik-row-agent">{{ formatRowAgent(item) }}</span>
+                </div>
+                <span
+                  v-if="showRowStatus"
+                  class="status-indicator ruchnik-row-status"
+                  :class="{
+                    'status-confirmed': getStatus(item) === 'confirmed',
+                    'status-pending': getStatus(item) === 'pending',
+                    'status-not-confirmed': getStatus(item) === 'rejected',
+                  }"
+                >
+                  <span class="status-text-full">{{ getStatusText(item) }}</span>
+                  <span class="status-text-short">{{ getStatusTextShort(item) }}</span>
+                </span>
+                <div v-if="canManage" class="ruchnik-row-actions">
+                  <button
+                    type="button"
+                    class="ruchnik-edit-btn"
+                    title="Редактировать"
+                    :disabled="loading"
+                    @click="handleEdit(item)"
+                  >
+                    <i class="pi pi-pencil" aria-hidden="true"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="ruchnik-remove-btn"
+                    title="Удалить"
+                    :disabled="loading"
+                    @click="handleRemove(item)"
+                  >
+                    <i class="pi pi-trash" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+              </div>
+              <div v-if="showPagination" class="ruchnik-list-footer">
+                <div class="pagination-compact">
+                  <div class="pagination-info-compact">
+                    <span class="page-info-text">{{ currentPage }} / {{ totalPages }}</span>
+                    <span class="total-info-text">{{ total }} шт.</span>
                   </div>
-
-                  <div v-if="showReportDetails && item.report" class="ruchnik-report">
-                    <div class="report-row">
-                      <i class="pi pi-user"></i>
-                      <span>{{ formatFio(item.report.fio) }}</span>
-                    </div>
-                    <div class="report-row">
-                      <i class="pi pi-tag"></i>
-                      <span>{{ item.report.type === '' ? 'Пустая' : (item.report.type || '—') }}</span>
-                    </div>
-                    <div class="report-row">
-                      <i class="pi pi-calendar"></i>
-                      <span>{{ formatReportDate(item.report.date) }}</span>
-                    </div>
+                  <div class="pagination-controls-compact">
+                    <select
+                      v-model.number="localPerPage"
+                      class="pagination-select-compact"
+                      :disabled="loading"
+                      @change="handlePerPageChange"
+                    >
+                      <option :value="5">5</option>
+                      <option :value="10">10</option>
+                      <option :value="20">20</option>
+                      <option :value="50">50</option>
+                    </select>
+                    <button
+                      type="button"
+                      class="page-btn-compact"
+                      :disabled="loading || currentPage <= 1"
+                      aria-label="Предыдущая страница"
+                      @click="handlePageChange(currentPage - 1)"
+                    >
+                      <i class="pi pi-angle-left" aria-hidden="true"></i>
+                    </button>
+                    <button
+                      type="button"
+                      class="page-btn-compact"
+                      :disabled="loading || currentPage >= totalPages"
+                      aria-label="Следующая страница"
+                      @click="handlePageChange(currentPage + 1)"
+                    >
+                      <i class="pi pi-angle-right" aria-hidden="true"></i>
+                    </button>
                   </div>
                 </div>
               </div>
-              <div v-if="canManage" class="ruchnik-actions">
-                <button
-                  class="ruchnik-edit-btn"
-                  title="Редактировать"
-                  type="button"
-                  :disabled="loading"
-                  @click="handleEdit(item)"
-                >
-                  <i class="pi pi-pencil"></i>
-                </button>
-                <button
-                  class="ruchnik-remove-btn"
-                  title="Удалить ручник"
-                  type="button"
-                  :disabled="loading"
-                  @click="handleRemove(item)"
-                >
-                  <i class="pi pi-trash"></i>
-                </button>
-              </div>
             </div>
-          </div>
 
-          <div v-else class="ruchnik-empty">
-            <div class="ruchnik-empty-text">Нет заявок</div>
-            <div class="ruchnik-empty-subtext">Заявки агентов не найдены</div>
-          </div>
+            <div v-else class="ruchnik-empty">
+              <div class="ruchnik-empty-text">Нет заявок</div>
+              <div class="ruchnik-empty-subtext">ID заявок не найдены</div>
+            </div>
 
-              <div
-                v-if="loading && items.length"
-                class="ruchnik-loading-overlay"
-                role="status"
-                aria-live="polite"
-              >
-                <span class="loader"></span>
-                <span>Обновление списка…</span>
+            <div
+              v-if="loading && items.length"
+              class="ruchnik-loading-overlay"
+              role="status"
+              aria-live="polite"
+            >
+              <span class="loader"></span>
+              <span>Обновление списка…</span>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <Teleport to="body" :disabled="!fullPage">
+        <div
+          v-if="drawerOpen"
+          class="ruchnik-drawer-overlay"
+          :class="{ 'ruchnik-drawer-overlay--full-page': fullPage }"
+          @click.self="closeDrawerIfAllowed"
+        >
+          <aside class="ruchnik-drawer" role="dialog" :aria-label="drawerTitle">
+          <div class="ruchnik-drawer-body">
+            <template v-if="drawerMode === 'add'">
+              <div class="bulk-agents-section">
+                <span class="bulk-agents-label">Режим</span>
+                <div class="bulk-agents-modes" role="tablist" aria-label="Режим добавления">
+                  <label
+                    class="bulk-agents-mode-option"
+                    :class="{ 'bulk-agents-mode-option--active': addMode === 'single' }"
+                  >
+                    <input
+                      v-model="addMode"
+                      type="radio"
+                      name="ruchnik-add-mode"
+                      value="single"
+                      :disabled="drawerBusy"
+                    />
+                    Один ID
+                  </label>
+                  <label
+                    class="bulk-agents-mode-option"
+                    :class="{ 'bulk-agents-mode-option--active': addMode === 'bulk' }"
+                  >
+                    <input
+                      v-model="addMode"
+                      type="radio"
+                      name="ruchnik-add-mode"
+                      value="bulk"
+                      :disabled="drawerBusy"
+                    />
+                    Массово
+                  </label>
+                </div>
+              </div>
+
+              <div class="bulk-agents-section">
+                <span class="bulk-agents-label">Тип ручника</span>
+                <div v-if="singleRuchnikType" class="ruchnik-chip-static">
+                  <Chip :label="singleRuchnikTypeDisplay" selected />
+                </div>
+                <BaseSelect
+                  v-else
+                  v-model="drawerTypeSlug"
+                  class="ruchnik-select"
+                  :options="typeSelectOptions"
+                  option-label="name"
+                  option-value="id"
+                  placeholder="Выберите тип"
+                  :searchable="true"
+                  :disabled="typesLoading || drawerBusy"
+                  :loading="typesLoading"
+                />
+              </div>
+
+              <div class="bulk-agents-section">
+                <span class="bulk-agents-label">Агент-получатель</span>
+                <BaseSelect
+                  v-model="drawerUserId"
+                  class="ruchnik-select"
+                  :options="agentSelectOptions"
+                  option-label="name"
+                  option-value="id"
+                  placeholder="Выберите агента"
+                  :searchable="true"
+                  :disabled="agentsLoading || drawerBusy"
+                  :loading="agentsLoading"
+                />
+              </div>
+
+              <div v-if="addMode === 'single'" class="bulk-agents-section">
+                <label class="bulk-agents-label" for="ruchnik-drawer-code">Код заявки</label>
+                <input
+                  id="ruchnik-drawer-code"
+                  v-model="newRuchnikCode"
+                  type="text"
+                  class="ruchnik-drawer-input"
+                  :class="{ 'ruchnik-drawer-input--conflict': !!singleCodeConflict }"
+                  :placeholder="drawerCodeInputAllowed ? 'Введите код...' : 'Сначала выберите тип'"
+                  :readonly="!drawerCodeInputAllowed"
+                  :disabled="drawerBusy"
+                  @focus="onDrawerCodeFocus"
+                  @input="onDrawerCodeInput"
+                />
+                <div
+                  v-if="singleCodeLookupLoading"
+                  class="ruchnik-code-conflict ruchnik-code-conflict--loading"
+                  role="status"
+                >
+                  <span class="loader"></span>
+                  <span>Проверяем ID…</span>
+                </div>
+                <div
+                  v-else-if="singleCodeConflict"
+                  class="ruchnik-code-conflict"
+                  :class="{
+                    'ruchnik-code-conflict--same': isSameAgentConflict,
+                    'ruchnik-code-conflict--replace': !isSameAgentConflict,
+                  }"
+                >
+                  <div class="ruchnik-code-conflict-icon" aria-hidden="true">
+                    <i :class="isSameAgentConflict ? 'pi pi-check-circle' : 'pi pi-arrows-h'"></i>
+                  </div>
+                  <div class="ruchnik-code-conflict-body">
+                    <p class="ruchnik-code-conflict-title">
+                      {{ isSameAgentConflict ? "Уже назначен этому агенту" : "ID уже назначен другому агенту" }}
+                    </p>
+                    <p class="ruchnik-code-conflict-text">
+                      <span class="ruchnik-code-conflict-code">{{ singleCodeConflict.code }}</span>
+                      <span class="ruchnik-code-conflict-arrow" aria-hidden="true">→</span>
+                      <span class="ruchnik-code-conflict-agent">{{ singleCodeConflict.agentName }}</span>
+                    </p>
+                    <p v-if="!isSameAgentConflict && selectedDrawerAgentName" class="ruchnik-code-conflict-hint">
+                      Можно перенести на <strong>{{ selectedDrawerAgentName }}</strong>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <template v-else>
+                <div class="bulk-agents-section">
+                  <label class="bulk-agents-label" for="ruchnik-bulk-codes">ID заявок</label>
+                  <div class="ruchnik-drawer-textarea-wrap">
+                    <textarea
+                      id="ruchnik-bulk-codes"
+                      v-model="bulkCodesText"
+                      class="ruchnik-drawer-textarea"
+                      rows="10"
+                      placeholder="Вставьте ID — по одному на строку или через запятую"
+                      :disabled="drawerBusy"
+                    />
+                  </div>
+                  <div class="bulk-agents-meta">
+                    <span>Распознано: {{ parsedBulkCodes.valid.length }}</span>
+                    <span v-if="parsedBulkCodes.invalid.length > 0" class="ruchnik-bulk-meta--warn">
+                      Некорректных: {{ parsedBulkCodes.invalid.length }}
+                    </span>
+                  </div>
+                  <details v-if="parsedBulkCodes.invalid.length > 0" class="ruchnik-bulk-invalid">
+                    <summary>Некорректные коды</summary>
+                    <ul>
+                      <li v-for="code in parsedBulkCodes.invalid" :key="code">{{ code }}</li>
+                    </ul>
+                  </details>
+                </div>
+              </template>
+            </template>
+
+            <template v-else-if="drawerMode === 'edit'">
+              <div class="bulk-agents-section">
+                <span class="bulk-agents-label">Тип ручника</span>
+                <div v-if="singleRuchnikType" class="ruchnik-chip-static">
+                  <Chip :label="singleRuchnikTypeDisplay" selected />
+                </div>
+                <BaseSelect
+                  v-else
+                  v-model="editRuchnikTypeSlug"
+                  class="ruchnik-select"
+                  :options="typeSelectOptions"
+                  option-label="name"
+                  option-value="id"
+                  placeholder="Выберите тип"
+                  :searchable="true"
+                  :disabled="typesLoading || editLoading"
+                  :loading="typesLoading"
+                />
+              </div>
+
+              <div class="bulk-agents-section">
+                <span class="bulk-agents-label">Агент</span>
+                <BaseSelect
+                  v-model="editUserId"
+                  class="ruchnik-select"
+                  :options="agentSelectOptions"
+                  option-label="name"
+                  option-value="id"
+                  placeholder="Выберите агента"
+                  :searchable="true"
+                  :disabled="agentsLoading || editLoading"
+                  :loading="agentsLoading"
+                />
+              </div>
+
+              <div class="bulk-agents-section">
+                <label class="bulk-agents-label" for="ruchnik-edit-code">Код заявки</label>
+                <input
+                  id="ruchnik-edit-code"
+                  v-model="editCode"
+                  type="text"
+                  class="ruchnik-drawer-input"
+                  :placeholder="editCodeInputAllowed ? 'Введите код...' : 'Сначала выберите тип'"
+                  :readonly="!editCodeInputAllowed"
+                  :disabled="editLoading"
+                  @focus="onEditCodeFocus"
+                  @input="onEditCodeInput"
+                />
               </div>
             </template>
           </div>
 
-          <!-- Пагинация: внутри .ruchnik-content, чтобы flex оставлял её внизу, список скроллился выше -->
-          <div v-if="showPagination" class="ruchnik-pagination">
-            <div class="pagination-compact">
-              <div class="pagination-info-compact">
-                <span class="page-info-text">{{ currentPage }} / {{ totalPages }}</span>
-                <span class="total-info-text">{{ total }} шт.</span>
-              </div>
-              <div class="pagination-controls-compact">
-                <select
-                  v-model.number="localPerPage"
-                  class="pagination-select-compact"
-                  :disabled="loading"
-                  @change="handlePerPageChange"
-                >
-                  <option :value="5">5</option>
-                  <option :value="10">10</option>
-                  <option :value="20">20</option>
-                  <option :value="50">50</option>
-                </select>
-                <button
-                  type="button"
-                  class="page-btn-compact"
-                  :disabled="loading || currentPage <= 1"
-                  aria-label="Предыдущая страница"
-                  @click="handlePageChange(currentPage - 1)"
-                >
-                  <i class="pi pi-angle-left" aria-hidden="true"></i>
-                </button>
-                <button
-                  type="button"
-                  class="page-btn-compact"
-                  :disabled="loading || currentPage >= totalPages"
-                  aria-label="Следующая страница"
-                  @click="handlePageChange(currentPage + 1)"
-                >
-                  <i class="pi pi-angle-right" aria-hidden="true"></i>
-                </button>
-              </div>
+          <footer class="ruchnik-drawer-footer">
+            <div class="form-actions">
+              <button
+                type="button"
+                class="ruchnik-cancel-btn"
+                :disabled="drawerBusy"
+                @click="closeDrawerIfAllowed"
+              >
+                Отмена
+              </button>
+              <button
+                v-if="drawerMode === 'add' && addMode === 'single'"
+                type="button"
+                class="ruchnik-add-btn ruchnik-drawer-submit"
+                :class="{ 'ruchnik-add-btn--reassign': singleCodeConflict && !isSameAgentConflict }"
+                :disabled="!canSubmitSingleAdd"
+                @click="handleAdd"
+              >
+                <span v-if="addLoading || bulkLoading" class="loader"></span>
+                <span v-else-if="isSameAgentConflict">Уже назначен</span>
+                <span v-else-if="singleCodeConflict">Перенести</span>
+                <span v-else>Добавить</span>
+              </button>
+              <button
+                v-else-if="drawerMode === 'add' && addMode === 'bulk'"
+                type="button"
+                class="ruchnik-add-btn ruchnik-drawer-submit"
+                :disabled="!canSubmitBulk || bulkLoading || addLoading"
+                @click="handleBulkAssign"
+              >
+                <span v-if="bulkLoading" class="loader"></span>
+                <span v-else>Перенести {{ parsedBulkCodes.valid.length }} ID</span>
+              </button>
+              <button
+                v-else-if="drawerMode === 'edit'"
+                type="button"
+                class="ruchnik-add-btn ruchnik-drawer-submit"
+                :disabled="!editCode.trim() || editLoading"
+                @click="saveEdit"
+              >
+                <span v-if="editLoading" class="loader"></span>
+                <span v-else>Сохранить</span>
+              </button>
             </div>
-          </div>
+          </footer>
+          </aside>
         </div>
-      </div>
-      <div v-if="canManage" class="ruchnik-add-column">
-        <h4 v-if="!isEditing" class="ruchnik-section-title">Добавить ручник</h4>
+      </Teleport>
 
-        <div class="ruchnik-add-form">
-          <div v-if="isEditing" class="ruchnik-edit-mode">
-            <div class="edit-header">
-              <div class="edit-header-main">
-                <div class="edit-header-icon" aria-hidden="true">
-                  <i class="pi pi-pencil"></i>
-                </div>
-                <div class="edit-header-text">
-                  <span class="edit-header-title">Редактирование</span>
-                  <span class="edit-header-code">{{ editingRuchnik?.code }}</span>
-                </div>
-              </div>
-              <div class="edit-header-actions">
-                <button type="button" class="ruchnik-cancel-btn ruchnik-cancel-btn--toolbar" :disabled="editLoading" @click="cancelEdit">
-                  Отмена
-                </button>
-                <button
-                  type="button"
-                  class="ruchnik-save-btn ruchnik-save-btn--toolbar"
-                  :disabled="!editCode.trim() || editLoading"
-                  @click="saveEdit"
-                >
-                  <span v-if="editLoading" class="loader"></span>
-                  <i v-else class="pi pi-check"></i>
-                  {{ editLoading ? 'Сохранение...' : 'Сохранить' }}
-                </button>
-              </div>
-            </div>
-
-            <div ref="editFormFiltersContainerRef" class="ruchnik-filters-container ruchnik-edit-filters">
-              <div v-if="singleRuchnikType" class="ruchnik-filter-type-chip-row">
-                <span class="ruchnik-filter-type-label">Тип ручника</span>
-                <span class="ruchnik-chip-static">
-                  <Chip :label="singleRuchnikTypeDisplay" selected />
-                </span>
-              </div>
-              <FiltersBar
-                :filters="editRuchnikFilters"
-                :model-value="editFormModelSnapshot"
-                :show-reset-button="false"
-                :show-mobile-button="false"
-                @update:model-value="applyEditFormModel"
-              />
-            </div>
-          </div>
-
-          <div v-if="!isEditing" ref="addFormFiltersContainerRef" class="ruchnik-filters-container">
-            <div v-if="singleRuchnikType" class="ruchnik-filter-type-chip-row">
-              <span class="ruchnik-filter-type-label">Тип ручника</span>
-              <span class="ruchnik-chip-static">
-                <Chip :label="singleRuchnikTypeDisplay" selected />
-              </span>
-            </div>
-            <FiltersBar
-              :filters="addRuchnikFilters"
-              :model-value="addFormModelSnapshot"
-              :show-reset-button="false"
-              :show-mobile-button="false"
-              @update:model-value="applyAddFormModel"
-            />
-          </div>
-
-          <button v-if="!isEditing" class="ruchnik-add-btn"
-            :disabled="!newRuchnikCode.trim() || addLoading" @click="handleAdd">
-            <span v-if="addLoading" class="loader"></span>
-            <i v-else class="pi pi-plus"></i>
-            <span v-if="addLoading">
-              {{ editingRuchnik ? 'Обновление...' : 'Добавление...' }}
-            </span>
-            <span v-else>
-              {{ editingRuchnik ? 'Обновить ручник' : 'Добавить ручник' }}
-            </span>
-          </button>
-        </div>
-      </div>
+      <button
+        v-if="fullPage && canManage"
+        type="button"
+        class="ruchnik-fab"
+        aria-label="Добавить ID заявок"
+        :disabled="loading || drawerOpen"
+        @click="openAddDrawer"
+      >
+        <i class="pi pi-plus" aria-hidden="true"></i>
+      </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, nextTick } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useToast } from "bibli/shared/ui";
-import { FiltersBar, Chip, type FilterConfig } from "@/shared/ui";
+import { Chip, BaseSelect } from "@/shared/ui";
 
-/** Тип ручника (передаётся со страницы или из shared api). */
 export interface RuchnikType {
   id: number;
   name?: string;
@@ -302,7 +545,6 @@ interface Agent {
   is_attached: boolean;
 }
 
-/** Функции API ручников — передаются со страницы (requests), чтобы bibli не зависел от @/pages. */
 export type GetAgentsFn = () => Promise<Agent[]>;
 export type UpdateRuchnikFn = (
   id: number,
@@ -312,16 +554,21 @@ export type UpdateRuchnikFn = (
   typeSlug?: string
 ) => Promise<void>;
 
+export type FindRuchnikByCodeFn = (
+  code: string,
+  typeSlug?: string | null
+) => Promise<Ruchnik | null>;
+
 interface Props {
   items: Ruchnik[];
-  /** Загрузка списка агентов — передаётся со страницы (например из pages/requests/api или shared/api/ruchnik). */
   getAgents: GetAgentsFn;
-  /** Обновление ручника — передаётся со страницы. */
   updateRuchnik: UpdateRuchnikFn;
+  findRuchnikByCode?: FindRuchnikByCodeFn;
   loading?: boolean;
   canManage?: boolean;
   searchQuery?: string;
   addLoading?: boolean;
+  bulkLoading?: boolean;
   showReportDetails?: boolean;
   showPagination?: boolean;
   currentPage?: number;
@@ -332,8 +579,9 @@ interface Props {
   selectedType?: string | null;
   typesLoading?: boolean;
   selectedUserId?: number | null;
-  /** Заголовок «Заявки агентов» снаружи (например в шапке BaseModal) — не дублировать внутри блока. */
   embedInModal?: boolean;
+  /** Полноэкранная страница — mobile-first: FAB, bottom sheet, сворачиваемые фильтры. */
+  fullPage?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -341,6 +589,7 @@ const props = withDefaults(defineProps<Props>(), {
   canManage: false,
   searchQuery: "",
   addLoading: false,
+  bulkLoading: false,
   showReportDetails: false,
   showPagination: false,
   currentPage: 1,
@@ -351,11 +600,13 @@ const props = withDefaults(defineProps<Props>(), {
   selectedType: null,
   typesLoading: false,
   selectedUserId: null,
-  embedInModal: false
+  embedInModal: false,
+  fullPage: false,
 });
 
 const emit = defineEmits([
   "add",
+  "bulk-assign",
   "remove",
   "edit",
   "search",
@@ -363,10 +614,26 @@ const emit = defineEmits([
   "page-change",
   "per-page-change",
   "type-change",
-  "user-change"
+  "user-change",
 ]);
 
+type DrawerMode = null | "add" | "edit";
+
+const drawerMode = ref<DrawerMode>(null);
+const addMode = ref<"single" | "bulk">("single");
 const newRuchnikCode = ref("");
+const singleCodeConflict = ref<{
+  id: number;
+  code: string;
+  userId: number;
+  agentName: string;
+} | null>(null);
+const singleCodeLookupLoading = ref(false);
+let singleCodeLookupTimer: ReturnType<typeof setTimeout> | null = null;
+let singleCodeLookupRequestId = 0;
+const bulkCodesText = ref("");
+const drawerUserId = ref<number | null>(null);
+const drawerTypeSlug = ref<string | null>(props.selectedType || null);
 const editingRuchnik = ref<Ruchnik | null>(null);
 const localSearchQuery = ref(props.searchQuery || "");
 const localSelectedType = ref<string | null>(props.selectedType || null);
@@ -375,16 +642,36 @@ const agents = ref<Agent[]>([]);
 const agentsLoading = ref(false);
 const editCode = ref("");
 const editUserId = ref<number | null>(null);
-const newUserId = ref<number | null>(null);
 const editRuchnikTypeSlug = ref<string | null>(null);
-const newRuchnikTypeSlug = ref<string | null>(props.selectedType || null);
-const isEditing = ref(false);
 const editLoading = ref(false);
 const toast = useToast();
-
 const localPerPage = ref(props.perPage);
+
+const drawerOpen = computed(() => drawerMode.value !== null);
+const drawerBusy = computed(
+  () => props.addLoading || props.bulkLoading || editLoading.value
+);
+/** Временно скрыт бейдж статуса в строке списка. */
+const showRowStatus = false;
+
+const mobileFiltersOpen = ref(false);
+const showMobileFilterToggle = computed(
+  () =>
+    props.fullPage &&
+    (showTypeFilterSelect.value || props.canManage || !!singleRuchnikType.value)
+);
+
+const drawerTitle = computed(() => {
+  if (drawerMode.value === "edit" && editingRuchnik.value) {
+    return `Редактирование · ${editingRuchnik.value.code}`;
+  }
+  if (drawerMode.value === "add") {
+    return "Добавить ID заявок";
+  }
+  return "";
+});
+
 const typeOptions = computed(() => props.ruchnikTypes || []);
-/** Несколько типов — показываем выпадающий список; один — только подпись без выбора. */
 const showTypeFilterSelect = computed(() => typeOptions.value.length !== 1);
 const singleRuchnikType = computed(() =>
   typeOptions.value.length === 1 ? typeOptions.value[0] : null
@@ -396,16 +683,15 @@ const singleRuchnikTypeDisplay = computed(() => {
   return name || String(t.slug ?? "");
 });
 
-/** Пока не выбран тип в фильтре (несколько типов) — поле кода поиска только для чтения. */
 const searchRequiresTypeChoice = computed(
   () => showTypeFilterSelect.value && !localSelectedType.value
 );
 
-const newCodeInputAllowed = computed(() => {
+const drawerCodeInputAllowed = computed(() => {
   const types = typeOptions.value;
   if (types.length === 0) return false;
   if (types.length === 1) return true;
-  return !!newRuchnikTypeSlug.value;
+  return !!drawerTypeSlug.value;
 });
 
 const editCodeInputAllowed = computed(() => {
@@ -415,15 +701,16 @@ const editCodeInputAllowed = computed(() => {
   return !!editRuchnikTypeSlug.value;
 });
 
-const filtersContainerRef = ref<HTMLElement | null>(null);
-const addFormFiltersContainerRef = ref<HTMLElement | null>(null);
-const editFormFiltersContainerRef = ref<HTMLElement | null>(null);
+const typeSelectOptions = computed(() =>
+  typeOptions.value.map((t) => ({
+    id: t.slug,
+    name: (t.name && String(t.name).trim()) || String(t.slug ?? ""),
+  }))
+);
 
-/** Только цифры, макс. 11 для OTP. */
 const sanitizeRuchnikDigits = (value: string, maxLen = 11) =>
   String(value || "").replace(/\D/g, "").slice(0, maxLen);
 
-/** OTP: XXXXXX-X-XX..XXXX (6 цифр, дефис, 1 цифра, дефис, 2–4 цифры). */
 const formatOtpCode = (digits: string): string => {
   const limited = sanitizeRuchnikDigits(digits, 11);
   const part1 = limited.slice(0, 6);
@@ -435,7 +722,6 @@ const formatOtpCode = (digits: string): string => {
   return formatted;
 };
 
-/** Форматирование по типу: alfa — 7 цифр, otp — маска XXXXXX-X-XX..XXXX, иначе только [0-9-]. */
 const formatCodeByType = (raw: string, typeSlug: string | null): string => {
   const slug = (typeSlug || "").toLowerCase();
   if (slug.includes("alfa")) {
@@ -447,431 +733,467 @@ const formatCodeByType = (raw: string, typeSlug: string | null): string => {
   return String(raw || "").replace(/[^0-9-]/g, "");
 };
 
+const resolveTypeSlug = (
+  explicitSlug: string | null | undefined,
+  fallbackSlug: string | null | undefined = props.selectedType
+): string | null => {
+  if (explicitSlug) return explicitSlug;
+  if (singleRuchnikType.value?.slug) return String(singleRuchnikType.value.slug);
+  return fallbackSlug ? String(fallbackSlug) : null;
+};
+
+const validateRuchnikCodeByType = (value: string, typeSlug: string | null) => {
+  const slug = (typeSlug || "").toLowerCase();
+  const digits = sanitizeRuchnikDigits(value, slug.includes("alfa") ? 7 : 11);
+
+  if (slug.includes("alfa")) {
+    const normalized = digits.slice(0, 7);
+    return {
+      normalized,
+      valid: /^\d{7}$/.test(normalized),
+      error: "Для Альфа-Банк введите 7 цифр без разделителей",
+    };
+  }
+
+  if (slug.includes("otp")) {
+    const normalized = formatOtpCode(digits);
+    return {
+      normalized,
+      valid: /^\d{6}-\d-\d{2,4}$/.test(normalized),
+      error: "Для ОТП используйте формат: 251102-2-26",
+    };
+  }
+
+  const normalized = String(value || "").trim();
+  return {
+    normalized,
+    valid: normalized.length === 7 || /^\d{6}-\d-\d{2,4}$/.test(normalized),
+    error: "Введите 7 цифр (Альфа) или формат ОТП: 251102-2-26",
+  };
+};
+
+const parseBulkCodes = (text: string, typeSlug: string | null) => {
+  const parts = text
+    .split(/[\s,;]+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  const valid: string[] = [];
+  const invalid: string[] = [];
+  const seen = new Set<string>();
+
+  for (const part of parts) {
+    const result = validateRuchnikCodeByType(part, typeSlug);
+    if (result.valid && result.normalized) {
+      if (!seen.has(result.normalized)) {
+        seen.add(result.normalized);
+        valid.push(result.normalized);
+      }
+      continue;
+    }
+    invalid.push(part);
+  }
+
+  return { valid, invalid };
+};
+
+const parsedBulkCodes = computed(() =>
+  parseBulkCodes(bulkCodesText.value, resolveTypeSlug(drawerTypeSlug.value))
+);
+
+const bulkInputAllowed = computed(() => {
+  const types = typeOptions.value;
+  if (types.length === 0) return false;
+  if (types.length === 1) return true;
+  return !!drawerTypeSlug.value;
+});
+
+const canSubmitBulk = computed(
+  () =>
+    bulkInputAllowed.value &&
+    !!drawerUserId.value &&
+    parsedBulkCodes.value.valid.length > 0
+);
+
+const selectedDrawerAgentName = computed(() => {
+  if (!drawerUserId.value) return "";
+  const agent = agentSelectOptions.value.find((item) => item.id === drawerUserId.value);
+  return agent?.name || `Агент #${drawerUserId.value}`;
+});
+
+const isSameAgentConflict = computed(
+  () =>
+    !!singleCodeConflict.value &&
+    !!drawerUserId.value &&
+    singleCodeConflict.value.userId === drawerUserId.value
+);
+
+const canSubmitSingleAdd = computed(() => {
+  if (!newRuchnikCode.value.trim() || props.addLoading || props.bulkLoading) return false;
+  if (singleCodeLookupLoading.value) return false;
+  if (isSameAgentConflict.value) return false;
+  if (singleCodeConflict.value && !drawerUserId.value) return false;
+  return true;
+});
+
+const findLocalRuchnikByCode = (normalizedCode: string) =>
+  props.items.find((item) => item.code === normalizedCode);
+
+const scheduleSingleCodeLookup = () => {
+  if (singleCodeLookupTimer) clearTimeout(singleCodeLookupTimer);
+  singleCodeLookupTimer = setTimeout(() => {
+    void lookupSingleCodeConflict();
+  }, 400);
+};
+
+const lookupSingleCodeConflict = async () => {
+  const typeSlug = resolveTypeSlug(drawerTypeSlug.value);
+  const raw = newRuchnikCode.value.trim();
+
+  if (!raw || addMode.value !== "single" || drawerMode.value !== "add") {
+    singleCodeConflict.value = null;
+    singleCodeLookupLoading.value = false;
+    return;
+  }
+
+  const validation = validateRuchnikCodeByType(raw, typeSlug);
+  if (!validation.valid) {
+    singleCodeConflict.value = null;
+    singleCodeLookupLoading.value = false;
+    return;
+  }
+
+  const normalized = validation.normalized;
+  const requestId = ++singleCodeLookupRequestId;
+
+  let found = findLocalRuchnikByCode(normalized);
+
+  if (props.findRuchnikByCode) {
+    singleCodeLookupLoading.value = true;
+    try {
+      const remote = await props.findRuchnikByCode(normalized, typeSlug);
+      if (requestId !== singleCodeLookupRequestId) return;
+      if (remote) {
+        found = remote;
+      } else if (!findLocalRuchnikByCode(normalized)) {
+        found = undefined;
+      }
+    } catch {
+      if (requestId !== singleCodeLookupRequestId) return;
+      found = findLocalRuchnikByCode(normalized);
+    } finally {
+      if (requestId === singleCodeLookupRequestId) {
+        singleCodeLookupLoading.value = false;
+      }
+    }
+  }
+
+  if (requestId !== singleCodeLookupRequestId) return;
+
+  if (!found?.user_id) {
+    singleCodeConflict.value = null;
+    return;
+  }
+
+  singleCodeConflict.value = {
+    id: found.id,
+    code: found.code,
+    userId: found.user_id,
+    agentName: formatRowAgent(found),
+  };
+};
+
 const sanitizeRuchnikValue = (value: string) => value.replace(/[^0-9-]/g, "");
 
-function focusFilterTypeSelect() {
-  if (!showTypeFilterSelect.value) return;
-  nextTick(() => {
-    const root = filtersContainerRef.value;
-    const combo = root?.querySelector(
-      ".filters-grid .filter-item-wrapper:first-child .base-select-combo"
-    ) as HTMLElement | undefined;
-    combo?.focus?.();
-    combo?.click?.();
-  });
+const getStatus = (item: Ruchnik): "confirmed" | "pending" | "rejected" => {
+  const hasReport = !!item.report;
+  if (hasReport) return "confirmed";
+  if (item.date_match === true) return "pending";
+  return "rejected";
+};
+
+const getStatusText = (item: Ruchnik): string => {
+  const s = getStatus(item);
+  if (s === "confirmed") return "Подтверждено";
+  if (s === "pending") return "Ожидает";
+  return "Не подтверждено";
+};
+
+const getStatusTextShort = (item: Ruchnik): string => {
+  const s = getStatus(item);
+  if (s === "confirmed") return "OK";
+  if (s === "pending") return "Ждёт";
+  return "Нет";
+};
+
+const formatReportDate = (dateStr: string) => {
+  if (!dateStr) return "—";
+  const d = new Date(dateStr.replace(" ", "T"));
+  if (isNaN(d.getTime())) return dateStr;
+  return d.toLocaleString();
+};
+
+const formatFio = (fio: string) => {
+  if (!fio || typeof fio !== "string") return "—";
+  const parts = fio
+    .split(" ")
+    .map((p) => p.trim())
+    .filter(Boolean);
+  if (parts.length === 0) return "—";
+  const surname = parts[0];
+  const nameInitial = parts[1] ? parts[1].charAt(0) + "." : "";
+  const patronymicInitial = parts[2] ? parts[2].charAt(0) + "." : "";
+  return `${surname} ${nameInitial}${patronymicInitial}`.trim();
+};
+
+const formatUser = (user: { surname: string; name: string; patronymic?: string | null }) => {
+  if (!user) return "—";
+  const surname = user.surname || "";
+  const nameInitial = user.name ? user.name.charAt(0) + "." : "";
+  const patronymicInitial = user.patronymic ? user.patronymic.charAt(0) + "." : "";
+  return `${surname} ${nameInitial}${patronymicInitial}`.trim();
+};
+
+const formatRowAgent = (item: Ruchnik) => {
+  if (item.user) return formatUser(item.user);
+  if (item.report?.fio) return formatFio(item.report.fio);
+  return "—";
+};
+
+const getRowTooltip = (item: Ruchnik) => {
+  const parts: string[] = [];
+  if (item.ruchnik_type?.name) parts.push(String(item.ruchnik_type.name));
+  if (item.report?.type !== undefined && item.report?.type !== null) {
+    parts.push(item.report.type === "" ? "Пустая" : item.report.type);
+  }
+  if (item.report?.date) parts.push(formatReportDate(item.report.date));
+  return parts.length ? parts.join(" · ") : "";
+};
+
+const agentOptions = computed(() =>
+  agents.value.map((agent) => {
+    const fullName = [agent.surname, agent.name, agent.patronymic].filter(Boolean).join(" ");
+    return {
+      ...agent,
+      name: fullName || `Агент #${agent.id}`,
+    };
+  })
+);
+
+const agentSelectOptions = computed(() =>
+  agentOptions.value.map((a) => ({ id: a.id, name: a.name }))
+);
+
+function onToolbarTypeChange(value: string | null) {
+  const normalized = value || null;
+  if (normalized !== localSelectedType.value) {
+    localSelectedType.value = normalized;
+    emit("type-change", normalized);
+    emit("page-change", 1);
+  }
 }
 
-function focusNewRuchnikTypeSelect() {
-  if (!showTypeFilterSelect.value) return;
-  nextTick(() => {
-    const root = addFormFiltersContainerRef.value;
-    const combo = root?.querySelector(
-      ".filters-grid .filter-item-wrapper:first-child .base-select-combo"
-    ) as HTMLElement | undefined;
-    combo?.focus?.();
-    combo?.click?.();
-  });
+function onToolbarAgentChange(value: number | null) {
+  const normalized = value ?? null;
+  if (normalized !== localSelectedUserId.value) {
+    localSelectedUserId.value = normalized;
+    emit("user-change", normalized);
+    emit("page-change", 1);
+  }
 }
 
-function focusEditRuchnikTypeSelect() {
-  if (!showTypeFilterSelect.value) return;
-  nextTick(() => {
-    const root = editFormFiltersContainerRef.value;
-    const combo = root?.querySelector(
-      ".filters-grid .filter-item-wrapper:first-child .base-select-combo"
-    ) as HTMLElement | undefined;
-    combo?.focus?.();
-    combo?.click?.();
-  });
+function onSearchInput() {
+  const slug = localSelectedType.value;
+  const formatted = slug
+    ? formatCodeByType(localSearchQuery.value, slug)
+    : sanitizeRuchnikValue(localSearchQuery.value);
+  if (formatted !== localSearchQuery.value) {
+    localSearchQuery.value = formatted;
+  }
+  emit("search", localSearchQuery.value);
+  emit("page-change", 1);
 }
 
 function onSearchFilterInputFocus(e: FocusEvent) {
   if (!searchRequiresTypeChoice.value) return;
   e.preventDefault();
   (e.target as HTMLInputElement).blur();
-  focusFilterTypeSelect();
 }
 
-function onNewCodeFocus(e: FocusEvent) {
-  if (newCodeInputAllowed.value) return;
+function onDrawerCodeFocus(e: FocusEvent) {
+  if (drawerCodeInputAllowed.value) return;
   e.preventDefault();
   (e.target as HTMLInputElement).blur();
-  focusNewRuchnikTypeSelect();
 }
 
 function onEditCodeFocus(e: FocusEvent) {
   if (editCodeInputAllowed.value) return;
   e.preventDefault();
   (e.target as HTMLInputElement).blur();
-  focusEditRuchnikTypeSelect();
 }
 
-const getStatus = (item: Ruchnik): 'confirmed' | 'pending' | 'rejected' => {
-  const hasReport = !!item.report;
-  if (hasReport) return 'confirmed';
-  if (item.date_match === true) return 'pending';
-  return 'rejected';
-};
+function onDrawerCodeInput() {
+  const slug = resolveTypeSlug(drawerTypeSlug.value);
+  const next = slug
+    ? formatCodeByType(newRuchnikCode.value, slug)
+    : sanitizeRuchnikValue(newRuchnikCode.value);
+  if (next !== newRuchnikCode.value) newRuchnikCode.value = next;
+}
 
-const getStatusText = (item: Ruchnik): string => {
-  const s = getStatus(item);
-  if (s === 'confirmed') return 'Подтверждено';
-  if (s === 'pending') return 'Ожидает';
-  return 'Не подтверждено';
-};
+function onEditCodeInput() {
+  const slug = resolveTypeSlug(editRuchnikTypeSlug.value);
+  const next = slug
+    ? formatCodeByType(editCode.value, slug)
+    : sanitizeRuchnikValue(editCode.value);
+  if (next !== editCode.value) editCode.value = next;
+}
 
-const formatReportDate = (dateStr: string) => {
-  if (!dateStr) return '—';
-  const d = new Date(dateStr.replace(' ', 'T'));
-  if (isNaN(d.getTime())) return dateStr;
-  return d.toLocaleString();
-};
-
-const formatFio = (fio: string) => {
-  if (!fio || typeof fio !== 'string') return '—';
-  const parts = fio
-    .split(' ')
-    .map(p => p.trim())
-    .filter(Boolean);
-  if (parts.length === 0) return '—';
-  const surname = parts[0];
-  const nameInitial = parts[1] ? parts[1].charAt(0) + '.' : '';
-  const patronymicInitial = parts[2] ? parts[2].charAt(0) + '.' : '';
-  return `${surname} ${nameInitial}${patronymicInitial}`.trim();
-};
-
-const formatUser = (user: { surname: string; name: string; patronymic?: string | null }) => {
-  if (!user) return '—';
-  const surname = user.surname || '';
-  const nameInitial = user.name ? user.name.charAt(0) + '.' : '';
-  const patronymicInitial = user.patronymic ? user.patronymic.charAt(0) + '.' : '';
-  return `${surname} ${nameInitial}${patronymicInitial}`.trim();
-};
-
-const agentOptions = computed(() => {
-  return agents.value.map(agent => {
-    const surname = agent.surname || '';
-    const name = agent.name || '';
-    const patronymic = agent.patronymic || '';
-
-    const fullName = [surname, name, patronymic].filter(Boolean).join(' ');
-
-    return {
-      ...agent,
-      name: fullName || `Агент #${agent.id}`,
-      displayName: fullName || `Агент #${agent.id}`
-    };
-  });
-});
-
-const ruchnikFilters = computed<FilterConfig[]>(() => {
-  const items: FilterConfig[] = [];
-  if (showTypeFilterSelect.value) {
-    items.push({
-      key: "typeSlug",
-      type: "select",
-      label: "Тип ручника",
-      placeholder: "Все типы",
-      options: typeOptions.value.map((t) => ({
-        id: t.slug,
-        name: (t.name && String(t.name).trim()) || String(t.slug ?? ""),
-      })),
-      optionLabel: "name",
-      optionValue: "id",
-      searchable: true,
-      disabled: props.typesLoading,
-    });
-  }
-  items.push({
-    key: "search",
-    type: "input",
-    label: "Поиск по коду",
-    placeholder: searchRequiresTypeChoice.value
-      ? "Сначала выберите тип ручника"
-      : "Введите код ручника...",
-    readonly: searchRequiresTypeChoice.value,
-    onInputFocus: onSearchFilterInputFocus,
-  });
+function resetFilters() {
+  localSearchQuery.value = "";
+  emit("search", "");
   if (props.canManage) {
-    items.push({
-      key: "agentId",
-      type: "select",
-      label: "Агент",
-      placeholder: "Все агенты",
-      options: agentOptions.value.map((a) => ({
-        id: a.id,
-        name: a.name,
-      })),
-      optionLabel: "name",
-      optionValue: "id",
-      searchable: true,
-      disabled: agentsLoading.value,
-      loading: agentsLoading.value,
-    });
+    localSelectedUserId.value = null;
+    emit("user-change", null);
   }
-  return items;
+  if (showTypeFilterSelect.value) {
+    localSelectedType.value = null;
+    emit("type-change", null);
+  }
+  emit("page-change", 1);
+}
+
+const hasActiveFilters = computed(() => {
+  const search = !!localSearchQuery.value;
+  const user = !!localSelectedUserId.value;
+  const typeChosen = showTypeFilterSelect.value && !!localSelectedType.value;
+  return search || user || typeChosen;
 });
 
-const filterModelSnapshot = computed(() => {
-  const m: Record<string, unknown> = {
-    search: localSearchQuery.value,
-  };
-  if (showTypeFilterSelect.value) {
-    m.typeSlug = localSelectedType.value ?? undefined;
-  }
-  if (props.canManage) {
-    m.agentId = localSelectedUserId.value ?? undefined;
-  }
-  return m;
+const activeFilterFieldsCount = computed(() => {
+  let count = 0;
+  if (localSelectedUserId.value) count += 1;
+  if (showTypeFilterSelect.value && localSelectedType.value) count += 1;
+  return count;
 });
 
-function applyFilterModel(v: Record<string, unknown>) {
-  const slugForFormat = showTypeFilterSelect.value
-    ? ((v.typeSlug as string | undefined) ?? null)
-    : localSelectedType.value;
-  const rawSearch = String(v.search ?? "");
-  const formattedSearch = slugForFormat
-    ? formatCodeByType(rawSearch, slugForFormat)
-    : sanitizeRuchnikValue(rawSearch);
+const filtersButtonAriaLabel = computed(() => {
+  const count = activeFilterFieldsCount.value;
+  return count > 0 ? `Фильтры, активно: ${count}` : "Фильтры";
+});
 
-  if (formattedSearch !== localSearchQuery.value) {
-    localSearchQuery.value = formattedSearch;
-    emit("search", formattedSearch);
-    emit("page-change", 1);
-  }
+const filtersButtonActive = computed(() => activeFilterFieldsCount.value > 0);
 
-  if (showTypeFilterSelect.value) {
-    const raw = v.typeSlug;
-    const normalized =
-      raw === undefined || raw === null || raw === ""
-        ? null
-        : String(raw);
-    if (normalized !== localSelectedType.value) {
-      localSelectedType.value = normalized;
-      emit("type-change", normalized);
-      emit("page-change", 1);
-    }
-  }
+watch(
+  activeFilterFieldsCount,
+  (count) => {
+    if (count > 0) mobileFiltersOpen.value = true;
+  },
+  { immediate: true }
+);
 
-  if (props.canManage) {
-    const raw = v.agentId;
-    const aid =
-      raw === undefined || raw === null || raw === ""
-        ? null
-        : Number(raw);
-    const aidNorm = aid === null || Number.isNaN(aid) ? null : aid;
-    if (aidNorm !== localSelectedUserId.value) {
-      localSelectedUserId.value = aidNorm;
-      emit("user-change", aidNorm);
-      emit("page-change", 1);
-    }
+function openAddDrawer() {
+  drawerMode.value = "add";
+  addMode.value = "single";
+  drawerTypeSlug.value =
+    localSelectedType.value ||
+    (singleRuchnikType.value?.slug ? String(singleRuchnikType.value.slug) : null) ||
+    props.selectedType ||
+    null;
+  drawerUserId.value = localSelectedUserId.value;
+  singleCodeConflict.value = null;
+  singleCodeLookupLoading.value = false;
+  loadAgents();
+}
+
+function closeDrawer() {
+  drawerMode.value = null;
+  editingRuchnik.value = null;
+  editCode.value = "";
+  editUserId.value = null;
+  editRuchnikTypeSlug.value = null;
+  newRuchnikCode.value = "";
+  singleCodeConflict.value = null;
+  singleCodeLookupLoading.value = false;
+  if (singleCodeLookupTimer) {
+    clearTimeout(singleCodeLookupTimer);
+    singleCodeLookupTimer = null;
   }
 }
 
-const addRuchnikFilters = computed<FilterConfig[]>(() => {
-  const items: FilterConfig[] = [];
-  if (showTypeFilterSelect.value) {
-    items.push({
-      key: "typeSlug",
-      type: "select",
-      label: "Тип ручника",
-      placeholder: "Все типы",
-      options: typeOptions.value.map((t) => ({
-        id: t.slug,
-        name: (t.name && String(t.name).trim()) || String(t.slug ?? ""),
-      })),
-      optionLabel: "name",
-      optionValue: "id",
-      searchable: true,
-      disabled: props.typesLoading,
-    });
-  }
-  items.push({
-    key: "code",
-    type: "input",
-    label: "Введите код",
-    placeholder: !newCodeInputAllowed.value
-      ? "Сначала выберите тип ручника"
-      : "Введите код ручника...",
-    readonly: !newCodeInputAllowed.value,
-    onInputFocus: onNewCodeFocus,
-  });
-  items.push({
-    key: "agentId",
-    type: "select",
-    label: "Агент",
-    placeholder: "Все агенты",
-    options: agentOptions.value.map((a) => ({
-      id: a.id,
-      name: a.name,
-    })),
-    optionLabel: "name",
-    optionValue: "id",
-    searchable: true,
-    disabled: agentsLoading.value,
-    loading: agentsLoading.value,
-  });
-  return items;
-});
-
-const addFormModelSnapshot = computed(() => {
-  const m: Record<string, unknown> = {
-    code: newRuchnikCode.value,
-    agentId: newUserId.value ?? undefined,
-  };
-  if (showTypeFilterSelect.value) {
-    m.typeSlug = newRuchnikTypeSlug.value ?? undefined;
-  }
-  return m;
-});
-
-function applyAddFormModel(v: Record<string, unknown>) {
-  let slugForFormat: string | null = null;
-
-  if (showTypeFilterSelect.value) {
-    const raw = v.typeSlug;
-    const normalized =
-      raw === undefined || raw === null || raw === ""
-        ? null
-        : String(raw);
-    if (normalized !== newRuchnikTypeSlug.value) {
-      newRuchnikTypeSlug.value = normalized;
-    }
-    slugForFormat = newRuchnikTypeSlug.value || props.selectedType || null;
-  } else if (singleRuchnikType.value?.slug) {
-    slugForFormat = String(singleRuchnikType.value.slug);
-  } else {
-    slugForFormat = props.selectedType ? String(props.selectedType) : null;
-  }
-
-  const rawCode = String(v.code ?? "");
-  const formattedCode = slugForFormat
-    ? formatCodeByType(rawCode, slugForFormat)
-    : sanitizeRuchnikValue(rawCode);
-
-  if (formattedCode !== newRuchnikCode.value) {
-    newRuchnikCode.value = formattedCode;
-  }
-
-  const rawAgent = v.agentId;
-  const aid =
-    rawAgent === undefined || rawAgent === null || rawAgent === ""
-      ? null
-      : Number(rawAgent);
-  const aidNorm = aid === null || Number.isNaN(aid) ? null : aid;
-  if (aidNorm !== newUserId.value) {
-    newUserId.value = aidNorm;
-  }
+function closeDrawerIfAllowed() {
+  if (drawerBusy.value) return;
+  closeDrawer();
 }
 
-const editRuchnikFilters = computed<FilterConfig[]>(() => {
-  const items: FilterConfig[] = [];
-  if (showTypeFilterSelect.value) {
-    items.push({
-      key: "typeSlug",
-      type: "select",
-      label: "Тип ручника",
-      placeholder: "Все типы",
-      options: typeOptions.value.map((t) => ({
-        id: t.slug,
-        name: (t.name && String(t.name).trim()) || String(t.slug ?? ""),
-      })),
-      optionLabel: "name",
-      optionValue: "id",
-      searchable: true,
-      disabled: props.typesLoading,
-    });
-  }
-  items.push({
-    key: "code",
-    type: "input",
-    label: "Введите код",
-    placeholder: !editCodeInputAllowed.value
-      ? "Сначала выберите тип ручника"
-      : "Введите код ручника...",
-    readonly: !editCodeInputAllowed.value,
-    onInputFocus: onEditCodeFocus,
+const handleReassignSingle = () => {
+  const typeSlug = resolveTypeSlug(drawerTypeSlug.value);
+  if (!typeSlug || !drawerUserId.value || !singleCodeConflict.value) return;
+
+  const validation = validateRuchnikCodeByType(newRuchnikCode.value.trim(), typeSlug);
+  if (!validation.valid) return;
+
+  emit("bulk-assign", {
+    codes: [validation.normalized],
+    userId: drawerUserId.value,
+    ruchnikTypeSlug: typeSlug,
+    agentName: selectedDrawerAgentName.value,
+    previousAgentName: singleCodeConflict.value.agentName,
   });
-  items.push({
-    key: "agentId",
-    type: "select",
-    label: "Агент",
-    placeholder: "Все агенты",
-    options: agentOptions.value.map((a) => ({
-      id: a.id,
-      name: a.name,
-    })),
-    optionLabel: "name",
-    optionValue: "id",
-    searchable: true,
-    disabled: agentsLoading.value,
-    loading: agentsLoading.value,
-  });
-  return items;
-});
-
-const editFormModelSnapshot = computed(() => {
-  const m: Record<string, unknown> = {
-    code: editCode.value,
-    agentId: editUserId.value ?? undefined,
-  };
-  if (showTypeFilterSelect.value) {
-    m.typeSlug = editRuchnikTypeSlug.value ?? undefined;
-  }
-  return m;
-});
-
-function applyEditFormModel(v: Record<string, unknown>) {
-  let slugForFormat: string | null = null;
-
-  if (showTypeFilterSelect.value) {
-    const raw = v.typeSlug;
-    const normalized =
-      raw === undefined || raw === null || raw === ""
-        ? null
-        : String(raw);
-    if (normalized !== editRuchnikTypeSlug.value) {
-      editRuchnikTypeSlug.value = normalized;
-    }
-    slugForFormat = editRuchnikTypeSlug.value || props.selectedType || null;
-  } else if (singleRuchnikType.value?.slug) {
-    slugForFormat = String(singleRuchnikType.value.slug);
-  } else {
-    slugForFormat = props.selectedType ? String(props.selectedType) : null;
-  }
-
-  const rawCode = String(v.code ?? "");
-  const formattedCode = slugForFormat
-    ? formatCodeByType(rawCode, slugForFormat)
-    : sanitizeRuchnikValue(rawCode);
-
-  if (formattedCode !== editCode.value) {
-    editCode.value = formattedCode;
-  }
-
-  const rawAgent = v.agentId;
-  const aid =
-    rawAgent === undefined || rawAgent === null || rawAgent === ""
-      ? null
-      : Number(rawAgent);
-  const aidNorm = aid === null || Number.isNaN(aid) ? null : aid;
-  if (aidNorm !== editUserId.value) {
-    editUserId.value = aidNorm;
-  }
-}
+};
 
 const handleAdd = () => {
-  if (newRuchnikCode.value.trim()) {
-    emit("add", {
-      code: newRuchnikCode.value.trim(),
-      userId: newUserId.value || undefined,
-      ruchnikTypeSlug: newRuchnikTypeSlug.value || undefined,
-      editingRuchnik: editingRuchnik.value || undefined
-    });
-    newRuchnikCode.value = "";
-    newUserId.value = null;
-    newRuchnikTypeSlug.value = props.selectedType || null;
+  if (!newRuchnikCode.value.trim()) return;
+  if (singleCodeConflict.value && !isSameAgentConflict.value) {
+    handleReassignSingle();
+    return;
   }
+  emit("add", {
+    code: newRuchnikCode.value.trim(),
+    userId: drawerUserId.value || undefined,
+    ruchnikTypeSlug: resolveTypeSlug(drawerTypeSlug.value) || undefined,
+  });
+};
+
+const handleBulkAssign = () => {
+  const typeSlug = resolveTypeSlug(drawerTypeSlug.value);
+  const { valid } = parseBulkCodes(bulkCodesText.value, typeSlug);
+
+  if (!typeSlug) {
+    toast.add({
+      severity: "warn",
+      summary: "Тип ручника не выбран",
+      detail: "Сначала выберите тип ручника",
+      life: 3000,
+    });
+    return;
+  }
+
+  if (!drawerUserId.value) {
+    toast.add({
+      severity: "warn",
+      summary: "Агент не выбран",
+      detail: "Выберите агента для назначения",
+      life: 3000,
+    });
+    return;
+  }
+
+  if (valid.length === 0) {
+    toast.add({
+      severity: "warn",
+      summary: "Нет кодов",
+      detail: "Вставьте корректные ID заявок",
+      life: 3000,
+    });
+    return;
+  }
+
+  emit("bulk-assign", {
+    codes: valid,
+    userId: drawerUserId.value,
+    ruchnikTypeSlug: typeSlug,
+    agentName: selectedDrawerAgentName.value,
+  });
 };
 
 const handleRemove = (ruchnik: Ruchnik) => {
@@ -883,7 +1205,8 @@ const handleEdit = (ruchnik: Ruchnik) => {
   editCode.value = ruchnik.code;
   editUserId.value = ruchnik.user_id || null;
   editRuchnikTypeSlug.value = ruchnik.ruchnik_type?.slug || null;
-  isEditing.value = true;
+  drawerMode.value = "edit";
+  emit("edit", ruchnik);
   loadAgents();
 };
 
@@ -891,14 +1214,13 @@ const loadAgents = async () => {
   if (agentsLoading.value) return;
   agentsLoading.value = true;
   try {
-    const agentsData = await props.getAgents();
-    agents.value = agentsData;
+    agents.value = await props.getAgents();
   } catch (error) {
-    console.error('Ошибка загрузки агентов:', error);
+    console.error("Ошибка загрузки агентов:", error);
     toast.add({
-      severity: 'error',
-      summary: 'Ошибка',
-      detail: 'Не удалось загрузить список агентов',
+      severity: "error",
+      summary: "Ошибка",
+      detail: "Не удалось загрузить список агентов",
       life: 3000,
     });
   } finally {
@@ -920,9 +1242,9 @@ const saveEdit = async () => {
     );
 
     toast.add({
-      severity: 'success',
-      summary: 'Успешно',
-      detail: 'Ручник обновлен',
+      severity: "success",
+      summary: "Успешно",
+      detail: "ID заявки обновлено",
       life: 3000,
     });
 
@@ -931,32 +1253,22 @@ const saveEdit = async () => {
       code: editCode.value,
       user_id: editUserId.value || undefined,
       ruchnik_type: editRuchnikTypeSlug.value
-        ? typeOptions.value.find(type => type.slug === editRuchnikTypeSlug.value) || null
-        : null
+        ? typeOptions.value.find((type) => type.slug === editRuchnikTypeSlug.value) || null
+        : null,
     };
     emit("update", updatedRuchnik);
-
-    cancelEdit();
+    closeDrawer();
   } catch (error) {
-    console.error('Ошибка сохранения ручника:', error);
+    console.error("Ошибка сохранения:", error);
     toast.add({
-      severity: 'error',
-      summary: 'Ошибка',
-      detail: 'Не удалось сохранить ручник',
+      severity: "error",
+      summary: "Ошибка",
+      detail: "Не удалось сохранить",
       life: 3000,
     });
   } finally {
     editLoading.value = false;
   }
-};
-
-const cancelEdit = () => {
-  isEditing.value = false;
-  editingRuchnik.value = null;
-  editCode.value = "";
-  editUserId.value = null;
-  newRuchnikCode.value = "";
-  editRuchnikTypeSlug.value = null;
 };
 
 const handlePageChange = (page: number) => {
@@ -969,21 +1281,19 @@ const handlePerPageChange = () => {
   emit("per-page-change", localPerPage.value);
 };
 
-const hasActiveFilters = computed(() => {
-  const search = !!localSearchQuery.value;
-  const user = !!localSelectedUserId.value;
-  const multiType = typeOptions.value.length > 1;
-  const typeChosen = multiType && !!localSelectedType.value;
-  return search || user || typeChosen;
-});
+watch(
+  () => props.searchQuery,
+  (newValue) => {
+    localSearchQuery.value = newValue || "";
+  }
+);
 
-watch(() => props.searchQuery, (newValue) => {
-  localSearchQuery.value = newValue || "";
-});
-
-watch(() => props.perPage, (newValue) => {
-  localPerPage.value = newValue;
-});
+watch(
+  () => props.perPage,
+  (newValue) => {
+    localPerPage.value = newValue;
+  }
+);
 
 watch(
   () => [props.ruchnikTypes, props.selectedType] as const,
@@ -996,23 +1306,35 @@ watch(
           localSelectedType.value = slug;
           emit("type-change", slug);
         }
-        if (!newRuchnikTypeSlug.value) {
-          newRuchnikTypeSlug.value = slug;
+        if (!drawerTypeSlug.value) {
+          drawerTypeSlug.value = slug;
         }
       }
       return;
     }
     localSelectedType.value = selected || null;
-    if (!newRuchnikTypeSlug.value) {
-      newRuchnikTypeSlug.value = selected || null;
+    if (!drawerTypeSlug.value) {
+      drawerTypeSlug.value = selected || null;
     }
   },
   { deep: true, immediate: true }
 );
 
-watch(() => props.selectedUserId, (newValue) => {
-  localSelectedUserId.value = newValue || null;
-});
+watch(
+  () => props.selectedUserId,
+  (newValue) => {
+    localSelectedUserId.value = newValue || null;
+  }
+);
+
+watch(
+  () => props.selectedType,
+  (newValue) => {
+    if (!drawerTypeSlug.value) {
+      drawerTypeSlug.value = newValue || null;
+    }
+  }
+);
 
 watch(localSelectedType, (slug) => {
   const q = localSearchQuery.value;
@@ -1024,42 +1346,53 @@ watch(localSelectedType, (slug) => {
   }
 });
 
-watch(newRuchnikTypeSlug, (slug) => {
+watch(
+  [newRuchnikCode, drawerTypeSlug, drawerUserId, addMode, drawerMode],
+  () => {
+    scheduleSingleCodeLookup();
+  }
+);
+
+watch(drawerTypeSlug, (slug) => {
   const q = newRuchnikCode.value;
   if (!q) return;
   const next = slug ? formatCodeByType(q, slug) : sanitizeRuchnikValue(q);
-  if (next !== q) {
-    newRuchnikCode.value = next;
-  }
+  if (next !== q) newRuchnikCode.value = next;
 });
 
 watch(editRuchnikTypeSlug, (slug) => {
-  if (!isEditing.value) return;
+  if (drawerMode.value !== "edit") return;
   const q = editCode.value;
   if (!q) return;
   const next = slug ? formatCodeByType(q, slug) : sanitizeRuchnikValue(q);
-  if (next !== q) {
-    editCode.value = next;
-  }
+  if (next !== q) editCode.value = next;
 });
 
 onMounted(() => {
-  if (props.canManage) {
-    loadAgents();
-  }
+  if (props.canManage) loadAgents();
 });
 
-// Загружаем агентов при монтировании, если нужен фильтр
-watch(() => props.canManage, (canManage) => {
-  if (canManage && agents.value.length === 0) {
-    loadAgents();
-  }
-}, { immediate: true });
+watch(
+  () => props.canManage,
+  (canManage) => {
+    if (canManage && agents.value.length === 0) loadAgents();
+  },
+  { immediate: true }
+);
+
+const resetBulkForm = () => {
+  bulkCodesText.value = "";
+};
+
+defineExpose({ resetBulkForm, closeDrawer });
 </script>
 
 <style scoped>
 .ruchnik-block {
-  --ruchnik-list-viewport-min: 365px;
+  --ruchnik-list-viewport-min: 280px;
+  --ruchnik-toolbar-control-height: 36px;
+  --base-select-height: 40px;
+  --base-select-radius: 10px;
   width: 100%;
   max-height: 650px;
   min-height: 0;
@@ -1069,42 +1402,34 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .ruchnik-block--modal-embed {
-  /* flex-basis: 0 - fill modal, scroll inside list */
   flex: 1 1 0%;
   min-height: 0;
   max-height: none;
   overflow: hidden;
 }
 
-.ruchnik-block--modal-embed .ruchnik-add-form {
+.ruchnik-block--modal-embed .ruchnik-list-area {
+  flex: 1 1 0%;
+  min-height: 0;
+}
+
+.ruchnik-block--modal-embed .ruchnik-list {
+  flex: 1 1 0%;
+  min-height: 0;
+}
+
+.ruchnik-block--modal-embed .ruchnik-list-body {
   flex: 1 1 0%;
   min-height: 0;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
-.ruchnik-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: minmax(0, 1fr);
-  align-content: stretch;
-  gap: 32px;
-  flex: 1 1 0%;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.ruchnik-container-client {
-  grid-template-columns: 1fr;
-  grid-template-rows: minmax(0, 1fr);
-}
-
-.ruchnik-list-column {
+.ruchnik-main {
+  position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  max-height: 100%;
   flex: 1 1 0%;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -1113,9 +1438,178 @@ watch(() => props.canManage, (canManage) => {
   font-size: 18px;
   font-weight: 700;
   color: var(--russ-text-primary);
-  margin: 0 0 20px 0;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--russ-border);
+  margin: 0 0 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--russ-border);
+}
+
+.ruchnik-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 0;
+  flex-shrink: 0;
+}
+
+.ruchnik-toolbar-leading {
+  display: none;
+}
+
+.ruchnik-toolbar-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  width: 100%;
+}
+
+.ruchnik-toolbar-controls-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+}
+
+.ruchnik-toolbar-search {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.ruchnik-toolbar-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px 12px;
+  min-width: 0;
+  width: 100%;
+}
+
+.ruchnik-toolbar-filters-btn {
+  display: none;
+}
+
+.ruchnik-filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ruchnik-filter-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--russ-text-tertiary);
+  line-height: 1.2;
+}
+
+.ruchnik-filter-label--spacer {
+  visibility: hidden;
+  user-select: none;
+}
+
+.ruchnik-filter-item--reset {
+  flex-shrink: 0;
+}
+
+.ruchnik-toolbar-field {
+  width: 100%;
+  min-width: 0;
+}
+
+.ruchnik-toolbar-type {
+  flex: 0 0 auto;
+}
+
+.ruchnik-toolbar-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: var(--ruchnik-toolbar-control-height);
+  padding: 0 12px;
+  border: 1px solid var(--russ-border);
+  border-radius: 10px;
+  background: var(--russ-bg-secondary);
+  color: var(--russ-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ruchnik-toolbar-reset-btn:hover {
+  background: var(--russ-bg-hover);
+  color: var(--russ-text-primary);
+}
+
+.ruchnik-toolbar-input {
+  width: 100%;
+  height: var(--ruchnik-toolbar-control-height);
+  padding: 0 12px;
+  border: 1px solid var(--russ-border);
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--russ-text-primary);
+  background: var(--russ-bg-secondary);
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.ruchnik-toolbar-input:focus {
+  outline: none;
+  border-color: var(--russ-secondary-dark);
+}
+
+.ruchnik-toolbar-add--inline {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.ruchnik-fab {
+  display: none;
+}
+
+.ruchnik-select :deep(.base-select-combo) {
+  height: var(--base-select-height);
+  border-radius: var(--base-select-radius);
+  background: var(--russ-bg-secondary);
+  border: 1px solid var(--russ-border);
+}
+
+.ruchnik-select :deep(.base-select-combo--readonly) {
+  background: var(--russ-bg-secondary);
+  border: 1px solid var(--russ-border);
+}
+
+.ruchnik-toolbar-field.ruchnik-select {
+  --base-select-min-height: 0;
+  --base-select-padding: 0 36px 0 12px;
+  --base-select-font-size: 13px;
+}
+
+.ruchnik-toolbar-field.ruchnik-select :deep(.base-select-container) {
+  min-height: 0;
+  height: auto;
+}
+
+.ruchnik-toolbar-field.ruchnik-select :deep(.base-select-combo) {
+  height: auto;
+  min-height: 0;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  line-height: 1.2;
+}
+
+.ruchnik-toolbar-field.ruchnik-select :deep(.base-select-arrow) {
+  right: 12px;
+  width: 16px;
+  height: 16px;
+  background-size: 16px;
 }
 
 .ruchnik-content {
@@ -1129,11 +1623,12 @@ watch(() => props.canManage, (canManage) => {
 
 .ruchnik-list-area {
   position: relative;
-  flex: 1 1 0%;
+  flex: 0 1 auto;
   min-height: var(--ruchnik-list-viewport-min);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  width: 100%;
 }
 
 .ruchnik-list-area--busy .ruchnik-list {
@@ -1149,7 +1644,7 @@ watch(() => props.canManage, (canManage) => {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  border-radius: 12px;
+  border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
   color: var(--russ-text-secondary);
@@ -1165,7 +1660,7 @@ watch(() => props.canManage, (canManage) => {
   color: var(--russ-text-primary);
   justify-content: center;
   background: var(--russ-bg-secondary);
-  border-radius: 12px;
+  border-radius: 10px;
   border: 1px dashed var(--russ-border-dark);
   flex: 1 1 0%;
   min-height: 0;
@@ -1176,134 +1671,117 @@ watch(() => props.canManage, (canManage) => {
 .ruchnik-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  flex: 1 1 0%;
+  flex: 0 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+.ruchnik-list-head {
+  display: none;
+}
+
+.ruchnik-list-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 0 1 auto;
   overflow-y: auto;
   min-height: 0;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--russ-text-muted) 42%, transparent) transparent;
-  max-height: 450px;
+  scrollbar-color: var(--russ-border-dark) var(--russ-bg-secondary);
 }
 
-.ruchnik-list::-webkit-scrollbar {
-  width: 5px;
+.ruchnik-list-body::-webkit-scrollbar,
+.ruchnik-drawer-body::-webkit-scrollbar {
+  width: 8px;
 }
 
-.ruchnik-list::-webkit-scrollbar-track {
-  background: transparent;
-  border-radius: 999px;
-}
-
-.ruchnik-list::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--russ-text-muted) 38%, transparent);
-  border-radius: 999px;
-  border: 1px solid transparent;
-  background-clip: padding-box;
-}
-
-.ruchnik-list::-webkit-scrollbar-thumb:hover {
-  background: color-mix(in srgb, var(--russ-text-muted) 58%, transparent);
-}
-
-.ruchnik-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.ruchnik-list-body::-webkit-scrollbar-track,
+.ruchnik-drawer-body::-webkit-scrollbar-track {
   background: var(--russ-bg-secondary);
-  border-radius: 12px;
-  padding: 16px;
-  border: 1px solid var(--russ-border-light);
-  gap: 10px;
+  border-radius: 4px;
 }
 
-.ruchnik-card:hover {
-  background: var(--russ-bg-tertiary);
-  border-color: var(--russ-border-dark);
+.ruchnik-list-body::-webkit-scrollbar-thumb,
+.ruchnik-drawer-body::-webkit-scrollbar-thumb {
+  background: var(--russ-border-dark);
+  border-radius: 4px;
+  border: 2px solid var(--russ-bg-secondary);
 }
 
-.ruchnik-card-content {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: 1;
+.ruchnik-list-body::-webkit-scrollbar-thumb:hover,
+.ruchnik-drawer-body::-webkit-scrollbar-thumb:hover {
+  background: var(--russ-text-tertiary);
 }
 
-.ruchnik-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #6b9eff;
-  color: var(--russ-text-inverse);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.ruchnik-info {
-  display: flex;
-  gap: 20px;
-}
-
-.ruchnik-code {
-  font-weight: 600;
-  color: var(--russ-text-primary);
-  font-size: 15px;
-}
-
-.ruchnik-user {
-  color: var(--russ-text-muted);
-  font-size: 13px;
-}
-
-.ruchnik-status {
-  margin-top: 4px;
-}
-
-.status-meta {
-  display: inline-flex;
-  align-items: center;
-  margin-left: 8px;
-  padding: 2px 6px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--russ-text-secondary);
-  background: var(--russ-bg-light);
-  border: 1px solid var(--russ-border-dark);
-}
-
-.status-type {
-  color: var(--russ-text-dark);
-}
-
-.status-date {
-  color: var(--russ-text-dark);
-}
-
-.ruchnik-report {
-  background: var(--russ-bg);
-  border: 1px solid var(--russ-border);
-  border-radius: 8px;
-  padding: 8px 10px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 6px;
-}
-
-.report-row {
+.ruchnik-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--russ-text-secondary);
-  font-size: 13px;
+  padding: 7px 8px 7px 10px;
+  min-height: 40px;
+  background: var(--russ-bg-secondary);
+  border: 1px solid var(--russ-border);
+  border-radius: 8px;
+  touch-action: manipulation;
 }
 
-.report-row i {
-  color: var(--russ-text-tertiary);
+.ruchnik-row:hover {
+  background: var(--russ-bg-tertiary);
+}
+
+.ruchnik-row-main {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ruchnik-row-code {
+  flex: 0 1 auto;
+  max-width: 52%;
+  font-weight: 600;
   font-size: 13px;
+  color: var(--russ-text-primary);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.ruchnik-row-agent {
+  flex: 1 1 0;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--russ-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ruchnik-row-agent::before {
+  content: "·";
+  margin-right: 8px;
+  color: var(--russ-border-dark);
+  font-weight: 700;
+}
+
+.ruchnik-row-status {
+  flex-shrink: 0;
+}
+
+.ruchnik-row-actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.status-text-short {
+  display: none;
 }
 
 .status-indicator {
@@ -1321,30 +1799,36 @@ watch(() => props.canManage, (canManage) => {
   border: 1px solid var(--russ-success-border);
 }
 
+.status-pending {
+  background-color: var(--russ-warning-light, var(--russ-bg-blue-lighter));
+  color: var(--russ-warning-text, var(--russ-accent-dark));
+  border: 1px solid var(--russ-warning-border, var(--russ-info-border));
+}
+
 .status-not-confirmed {
   background-color: var(--russ-error-light);
   color: var(--russ-error-text);
   border: 1px solid var(--russ-error-light);
 }
 
-.ruchnik-actions {
-  display: flex;
-  gap: 8px;
+.ruchnik-edit-btn,
+.ruchnik-remove-btn {
+  border-radius: 8px;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  font-size: 13px;
+  touch-action: manipulation;
 }
 
 .ruchnik-edit-btn {
   background: var(--russ-info-light);
   border: 1px solid var(--russ-info-border);
-  border-radius: 8px;
-  padding: 8px 12px;
   color: var(--russ-info-dark);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 40px;
-  height: 40px;
 }
 
 .ruchnik-edit-btn:hover:not(:disabled) {
@@ -1352,31 +1836,20 @@ watch(() => props.canManage, (canManage) => {
   color: var(--russ-accent-dark);
 }
 
+.ruchnik-remove-btn {
+  background: var(--russ-error-light);
+  border: 1px solid var(--russ-error-light);
+  color: var(--russ-error-dark);
+}
+
+.ruchnik-remove-btn:hover:not(:disabled) {
+  border-color: var(--russ-error);
+}
+
 .ruchnik-edit-btn:disabled,
 .ruchnik-remove-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
-  pointer-events: none;
-}
-
-.ruchnik-remove-btn {
-  background: var(--russ-error-light);
-  border: 1px solid var(--russ-error-light);
-  border-radius: 8px;
-  padding: 8px 12px;
-  color: var(--russ-error-dark);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 40px;
-  height: 40px;
-}
-
-.ruchnik-remove-btn:hover:not(:disabled) {
-  background: var(--russ-error-light);
-  border-color: var(--russ-error);
-  color: var(--russ-error-dark);
 }
 
 .ruchnik-empty {
@@ -1384,9 +1857,6 @@ watch(() => props.canManage, (canManage) => {
   padding: 40px 20px;
   color: var(--russ-text-muted);
   flex: 1 1 0%;
-  min-height: 0;
-  width: 100%;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1405,445 +1875,66 @@ watch(() => props.canManage, (canManage) => {
   color: var(--russ-text-tertiary);
 }
 
-.ruchnik-add-column {
-  background: var(--russ-bg);
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  max-height: 100%;
-  flex: 1 1 0%;
-  overflow: hidden;
-  position: relative;
-  z-index: 1;
-}
-
-.ruchnik-add-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  flex: 1;
-  overflow: visible;
-  min-height: 0;
-}
-
-.ruchnik-add-form .ruchnik-filters-container {
-  margin-bottom: 0;
-}
-
-.ruchnik-edit-mode {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  border-radius: 16px;
-  border: 1px solid var(--russ-border-light);
-  background: var(--russ-bg-secondary);
-  overflow: visible;
-  margin-bottom: 0;
-}
-
-.edit-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  padding: 12px 14px;
-  background: var(--russ-bg-secondary);
-  border-bottom: 1px solid var(--russ-border-light);    
-  border-radius: 20px 20px 0 0;
-}
-
-.edit-header-main {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-
-.edit-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.edit-header-icon {
-  flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--russ-bg-blue-lighter);
-  border: 1px solid var(--russ-info-border);
-  color: var(--russ-accent);
-  font-size: 18px;
-}
-
-.edit-header-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.edit-header-title {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--russ-text-secondary);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.edit-header-code {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--russ-text-primary);
-  font-variant-numeric: tabular-nums;
-  line-height: 1.35;
-  word-break: break-all;
-}
-
-.ruchnik-edit-filters {
-  margin-bottom: 0;
-  padding: 12px;
-  box-sizing: border-box;
-}
-
-.ruchnik-cancel-edit-btn {
-  background: var(--russ-bg);
-  border: 1px solid var(--russ-border-dark);
-  color: var(--russ-text-secondary);
-  cursor: pointer;
-  padding: 12px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-}
-
-.ruchnik-cancel-edit-btn:hover {
-  background: var(--russ-bg-tertiary);
-}
-
-.required {
-  color: var(--russ-error);
-  font-weight: 700;
-}
-
-.optional {
-  color: var(--russ-text-tertiary);
-  font-weight: 400;
-  font-size: 12px;
-}
-
-.input-wrapper {
-  position: relative;
-}
-
-.input-counter {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 12px;
-  color: var(--russ-text-tertiary);
-  font-weight: 500;
-  background: var(--russ-overlay-light);
-  padding: 2px 6px;
-  border-radius: 4px;
-  pointer-events: none;
-}
-
-.ruchnik-select {
-  width: 100%;
-  position: relative;
-  z-index: 1000;
-  --base-select-height: 40px;
-  --base-select-min-height: 40px;
-  --base-select-padding: 0 14px;
-  --base-select-border: 2px solid var(--russ-input-border);
-  --base-select-radius: 10px;
-  --base-select-font-size: 14px;
-  --base-select-bg: var(--russ-bg);
-  --base-select-focus-border: var(--russ-border-dark);
-  --base-select-focus-shadow: none;
-}
-
-.edit-hint {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--russ-text-tertiary);
-  font-style: italic;
-  margin-top: 4px;
-}
-
-.edit-hint i {
-  color: var(--russ-accent);
-  font-size: 12px;
-}
-
-.ruchnik-cancel-btn {
-  padding: 12px 24px;
-  background: var(--russ-bg-secondary);
-  border: 1px solid var(--russ-border-light);
-  border-radius: 8px;
-  color: var(--russ-text-tertiary);
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 14px;
-}
-
-.ruchnik-cancel-btn--toolbar {
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  background: var(--russ-bg-secondary);
-}
-
-.ruchnik-cancel-btn:hover:not([disabled]) {
-  background: var(--russ-bg-tertiary);
-  border-color: var(--russ-border-dark);
-  color: var(--russ-text-secondary);
-}
-
-.ruchnik-cancel-btn[disabled] {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.ruchnik-save-btn {
-  padding: 12px 24px;
-  background: var(--russ-success);
-  border: 1px solid var(--russ-success-dark);
-  color: var(--russ-text-inverse);
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 14px;
-}
-
-.ruchnik-save-btn--toolbar {
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.ruchnik-save-btn[disabled] {
-  background: var(--russ-neutral-light);
-  border-color: var(--russ-border-dark);
-  color: var(--russ-text-tertiary);
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-.loader {
-  width: 14px;
-  height: 14px;
-  border: 2px solid var(--russ-text-muted);
-  border-radius: 50%;
-  opacity: 0.75;
-}
-
-.ruchnik-save-btn .loader,
-.ruchnik-add-btn .loader {
-  border-color: color-mix(in srgb, var(--russ-text-inverse) 70%, transparent);
-  opacity: 0.95;
-}
-
-.error-message {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--russ-error);
-  font-size: 12px;
-  font-weight: 500;
-  margin-top: 6px;
-  padding: 8px 12px;
-  background: var(--russ-error-light);
-  border: 1px solid var(--russ-error-light);
-  border-radius: 8px;
-}
-
-.error-message i {
-  font-size: 14px;
-  color: var(--russ-error);
-}
-
-.ruchnik-input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.ruchnik-label {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--russ-text-secondary);
-}
-
-.ruchnik-input {
-  padding: 0 14px;
-  border: 1px solid var(--russ-border-dark);
-  border-radius: 8px;
-  font-size: 14px;
-  background: var(--russ-bg);
-  color: var(--russ-text-primary);
-  min-height: 40px;
-  height: 40px;
-  box-sizing: border-box;
-}
-
-.ruchnik-input:focus {
-  outline: none;
-  border-color: var(--russ-input-border-focus);
-}
-
-.ruchnik-input--needs-type,
-.ruchnik-input[readonly] {
-  background: var(--russ-input-bg-disabled, var(--russ-bg-quaternary));
-  color: var(--russ-text-quaternary);
-  cursor: pointer;
-  opacity: 0.9;
-}
-
-.ruchnik-input--needs-type:focus,
-.ruchnik-input[readonly]:focus {
-  border-color: var(--russ-border-dark);
-}
-
-.ruchnik-input-error {
-  border-color: var(--russ-error);
-}
-
-.ruchnik-error-message {
-  color: var(--russ-error);
-  font-size: 12px;
-  font-weight: 500;
-}
-
 .ruchnik-add-btn {
   background: var(--russ-accent);
   color: var(--russ-text-inverse);
-  border: 1px solid var(--russ-accent-dark);
-  border-radius: 8px;
+  border: none;
+  border-radius: 10px;
   padding: 0 16px;
+  height: 40px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
-  min-height: 40px;
-  height: 40px;
+  transition: background 0.2s ease;
 }
 
-.ruchnik-add-btn:hover:not([disabled]) {
+.ruchnik-add-btn:hover:not(:disabled) {
   background: var(--russ-accent-dark);
-  border-color: var(--russ-accent-dark);
 }
 
-.ruchnik-add-btn[disabled] {
-  background: var(--russ-neutral-light);
-  border-color: var(--russ-border-dark);
-  color: var(--russ-text-tertiary);
+.ruchnik-add-btn:disabled {
+  opacity: 0.55;
   cursor: not-allowed;
-  opacity: 0.65;
 }
 
-.ruchnik-add-btn .loader {
-  width: 16px;
-  height: 16px;
-  border-width: 2px;
-  margin: 0;
-}
-
-.ruchnik-filters-container {
-  margin-bottom: 16px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* Только колонка списка: резерв под чип + FiltersBar + сброс */
-.ruchnik-list-column > .ruchnik-filters-container {
-  flex-shrink: 0;
-}
-
-.ruchnik-filters-container :deep(.filters-bar-wrapper) {
-  width: 100%;
-}
-
-.ruchnik-filter-type-chip-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-}
-
-.ruchnik-filter-type-label {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--russ-text-secondary);
-}
-
-.ruchnik-chip-static {
-  pointer-events: none;
-}
-
-/* Стили для пагинации */
-.ruchnik-pagination {
-  margin-top: 0;
-  padding: 12px 16px;
-  background: var(--russ-bg-secondary);
+.ruchnik-cancel-btn {
+  background: var(--russ-bg-hover);
+  color: var(--russ-text-tertiary);
+  border: none;
   border-radius: 8px;
-  border: 1px solid var(--russ-border-light);
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ruchnik-cancel-btn:hover:not(:disabled) {
+  background: var(--russ-border);
+}
+
+.ruchnik-list-footer {
   flex-shrink: 0;
+  padding: 8px 0 0;
+  margin-top: 2px;
 }
 
 .pagination-compact {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
+  padding: 0;
+  width: 100%;
 }
 
 .pagination-info-compact {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  gap: 10px;
   font-size: 13px;
-  font-weight: 500;
   color: var(--russ-text-secondary);
-}
-
-.page-info-text {
-  color: var(--russ-accent);
-  font-weight: 600;
-  background: var(--russ-bg-blue-lighter);
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 12px;
-}
-
-.total-info-text {
-  color: var(--russ-text-tertiary);
-  font-size: 12px;
 }
 
 .pagination-controls-compact {
@@ -1853,318 +1944,1081 @@ watch(() => props.canManage, (canManage) => {
 }
 
 .pagination-select-compact {
-  padding: 4px 6px;
-  border-radius: 4px;
-  border: 1px solid var(--russ-border-dark);
-  background: var(--russ-bg);
-  color: var(--russ-text-secondary);
-  font-size: 12px;
-  font-weight: 500;
-  outline: none;
-  min-width: 50px;
-  height: 28px;
-}
-
-.pagination-select-compact:focus {
-  border-color: var(--russ-accent);
+  height: 32px;
+  border: 1px solid var(--russ-border);
+  border-radius: 8px;
+  padding: 0 8px;
+  font-size: 13px;
+  background: var(--russ-bg-secondary);
+  color: var(--russ-text-primary);
 }
 
 .page-btn-compact {
-  background: var(--russ-bg);
-  border: 1px solid var(--russ-border-dark);
-  border-radius: 4px;
-  padding: 4px 8px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--russ-border);
+  border-radius: 8px;
+  background: var(--russ-bg-secondary);
   color: var(--russ-text-secondary);
-  font-weight: 500;
   cursor: pointer;
-  min-width: 28px;
-  height: 28px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  touch-action: manipulation;
 }
 
-.page-btn-compact:hover:not([disabled]) {
-  background: var(--russ-bg-blue-light);
-  border-color: var(--russ-accent);
-  color: var(--russ-accent);
+.page-btn-compact:hover:not(:disabled) {
+  background: var(--russ-bg-tertiary);
 }
 
-.page-btn-compact[disabled] {
-  background: var(--russ-bg-secondary);
-  color: var(--russ-text-muted);
+.page-btn-compact:disabled {
+  opacity: 0.45;
   cursor: not-allowed;
-  opacity: 0.6;
 }
 
-@media (max-width: 700px) {
-  .ruchnik-block {
-    --ruchnik-list-viewport-min: 280px;
-    height: auto;
-    min-height: 0;
-    overflow: visible;
+/* Drawer */
+.ruchnik-drawer-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--russ-bg) 40%, transparent);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ruchnik-drawer {
+  width: min(380px, 100%);
+  height: 100%;
+  background: var(--russ-bg);
+  border-left: 1px solid var(--russ-border);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -4px 0 24px var(--russ-shadow, rgba(0, 0, 0, 0.08));
+}
+
+.ruchnik-drawer-body {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--russ-border-dark) var(--russ-bg-secondary);
+}
+
+.ruchnik-drawer-footer {
+  flex-shrink: 0;
+  padding: 12px 16px;
+  border-top: 1px solid var(--russ-border);
+}
+
+.bulk-agents-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bulk-agents-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--russ-text-primary);
+}
+
+.bulk-agents-modes {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  background: var(--russ-bg-secondary);
+  border: 1px solid var(--russ-border);
+  border-radius: 6px;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.bulk-agents-mode-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 4px 10px;
+  min-height: 26px;
+  color: var(--russ-text-secondary);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.bulk-agents-mode-option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.bulk-agents-mode-option--active {
+  border-color: var(--russ-border);
+  background: var(--russ-bg);
+  color: var(--russ-text-primary);
+  box-shadow: 0 1px 1px var(--russ-shadow-color);
+}
+
+.bulk-agents-meta {
+  font-size: 12px;
+  color: var(--russ-text-secondary);
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ruchnik-bulk-meta--warn {
+  color: var(--russ-error-dark);
+}
+
+.ruchnik-bulk-invalid {
+  font-size: 12px;
+  color: var(--russ-text-secondary);
+}
+
+.ruchnik-bulk-invalid ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.ruchnik-drawer-body .ruchnik-select {
+  --base-select-radius: 10px;
+  width: 100%;
+}
+
+.ruchnik-drawer-body .ruchnik-select :deep(.base-select-container) {
+  border-radius: var(--base-select-radius);
+}
+
+.ruchnik-drawer-body .ruchnik-select :deep(.base-select-combo) {
+  border: 1px solid var(--russ-border);
+  border-radius: var(--base-select-radius);
+  background: var(--russ-bg-secondary);
+  box-shadow: none;
+  font-family: inherit;
+}
+
+.ruchnik-drawer-body .ruchnik-select :deep(.base-select-combo:focus) {
+  border-color: var(--russ-secondary-dark);
+  box-shadow: none;
+  background: var(--russ-bg-secondary);
+}
+
+.ruchnik-drawer-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--russ-border);
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--russ-text-primary);
+  background: var(--russ-bg-secondary);
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.ruchnik-drawer-input:focus {
+  outline: none;
+  border-color: var(--russ-secondary-dark);
+}
+
+.ruchnik-drawer-input--conflict {
+  border-color: var(--russ-warning-border, var(--russ-info-border));
+}
+
+.ruchnik-code-conflict {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--russ-border);
+  background: var(--russ-bg-secondary);
+}
+
+.ruchnik-code-conflict--loading {
+  align-items: center;
+  color: var(--russ-text-tertiary);
+  font-size: 13px;
+}
+
+.ruchnik-code-conflict--replace {
+  border-color: var(--russ-info-border);
+  background: var(--russ-info-light);
+}
+
+.ruchnik-code-conflict--same {
+  border-color: var(--russ-success-border);
+  background: var(--russ-success-light);
+}
+
+.ruchnik-code-conflict-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--russ-bg);
+  flex-shrink: 0;
+}
+
+.ruchnik-code-conflict--replace .ruchnik-code-conflict-icon {
+  color: var(--russ-info-dark);
+}
+
+.ruchnik-code-conflict--same .ruchnik-code-conflict-icon {
+  color: var(--russ-success-text);
+}
+
+.ruchnik-code-conflict-body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ruchnik-code-conflict-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--russ-text-primary);
+  line-height: 1.3;
+}
+
+.ruchnik-code-conflict-text {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--russ-text-secondary);
+  line-height: 1.4;
+}
+
+.ruchnik-code-conflict-code {
+  font-weight: 600;
+  color: var(--russ-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.ruchnik-code-conflict-arrow {
+  color: var(--russ-text-tertiary);
+  font-weight: 600;
+}
+
+.ruchnik-code-conflict-agent {
+  font-weight: 600;
+  color: var(--russ-text-primary);
+}
+
+.ruchnik-code-conflict-hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--russ-text-tertiary);
+  line-height: 1.4;
+}
+
+.ruchnik-code-conflict-hint strong {
+  color: var(--russ-text-secondary);
+  font-weight: 600;
+}
+
+.ruchnik-add-btn--reassign {
+  background: var(--russ-info-dark, var(--russ-accent));
+}
+
+.ruchnik-add-btn--reassign:hover:not(:disabled) {
+  background: var(--russ-accent-dark);
+}
+
+.ruchnik-drawer-textarea-wrap {
+  width: 100%;
+  border: 1px solid var(--russ-border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--russ-bg-secondary);
+  transition: border-color 0.2s ease;
+}
+
+.ruchnik-drawer-textarea-wrap:focus-within {
+  border-color: var(--russ-secondary-dark);
+}
+
+.ruchnik-drawer-textarea-wrap .ruchnik-drawer-textarea {
+  display: block;
+  width: 100%;
+  min-height: 160px;
+  max-height: 280px;
+  padding: 12px 4px 12px 12px;
+  border: none;
+  border-radius: 0;
+  font-size: 14px;
+  color: var(--russ-text-primary);
+  background: transparent;
+  box-sizing: border-box;
+  font-family: inherit;
+  resize: vertical;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--russ-border-dark) transparent;
+}
+
+.ruchnik-drawer-textarea-wrap .ruchnik-drawer-textarea:focus {
+  outline: none;
+}
+
+.ruchnik-drawer-textarea-wrap .ruchnik-drawer-textarea::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ruchnik-drawer-textarea-wrap .ruchnik-drawer-textarea::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 8px 2px;
+}
+
+.ruchnik-drawer-textarea-wrap .ruchnik-drawer-textarea::-webkit-scrollbar-thumb {
+  background: var(--russ-border-dark);
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+.ruchnik-drawer-textarea-wrap .ruchnik-drawer-textarea::-webkit-scrollbar-thumb:hover {
+  background: var(--russ-text-tertiary);
+  background-clip: padding-box;
+}
+
+.ruchnik-drawer-textarea-wrap .ruchnik-drawer-textarea:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.ruchnik-chip-static {
+  display: inline-flex;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  align-items: center;
+}
+
+.ruchnik-drawer-submit {
+  min-width: 120px;
+  justify-content: center;
+}
+
+/* --- Полноэкранная страница --- */
+.ruchnik-block--full-page {
+  --ruchnik-list-viewport-min: 0;
+  max-height: none;
+  overflow: visible;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.ruchnik-block--full-page .ruchnik-main {
+  overflow: visible;
+}
+
+.ruchnik-block--full-page .ruchnik-toolbar {
+  gap: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.ruchnik-block--full-page .ruchnik-toolbar-leading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  padding: 14px 16px 10px;
+}
+
+.ruchnik-block--full-page .ruchnik-toolbar-controls {
+  gap: 12px;
+  padding: 12px 16px 14px;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.ruchnik-block--full-page .ruchnik-toolbar-controls-top {
+  gap: 10px;
+}
+
+.ruchnik-block--full-page .ruchnik-toolbar-search {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: none;
+}
+
+.ruchnik-block--full-page .ruchnik-toolbar-filters {
+  gap: 12px 14px;
+}
+
+.ruchnik-block--full-page .ruchnik-filter-item:not(.ruchnik-toolbar-type):not(.ruchnik-filter-item--reset) {
+  flex: 0 0 168px;
+  width: 168px;
+}
+
+.ruchnik-block--full-page .ruchnik-toolbar-field.ruchnik-select {
+  --base-select-padding: 0 36px 0 12px;
+  --base-select-font-size: 13px;
+}
+
+.ruchnik-block--full-page .ruchnik-toolbar-field.ruchnik-select :deep(.base-select-combo) {
+  height: var(--ruchnik-toolbar-control-height);
+  min-height: var(--ruchnik-toolbar-control-height);
+  padding-top: 0;
+  padding-bottom: 0;
+  border: 1px solid var(--russ-border);
+  border-radius: 10px;
+  box-shadow: none;
+  background: var(--russ-bg-secondary);
+}
+
+.ruchnik-block--full-page .ruchnik-toolbar-field.ruchnik-select :deep(.base-select-combo:focus) {
+  border-color: var(--russ-secondary-dark);
+  box-shadow: none;
+}
+
+.ruchnik-block--full-page .ruchnik-toolbar-field.ruchnik-select :deep(.base-select-arrow) {
+  right: 12px;
+  width: 16px;
+  height: 16px;
+  background-size: 16px;
+}
+
+.ruchnik-block--full-page .ruchnik-toolbar-input {
+  background: var(--russ-bg-secondary);
+}
+
+.ruchnik-block--full-page .ruchnik-add-btn.ruchnik-toolbar-add--inline {
+  min-height: var(--ruchnik-toolbar-control-height);
+  height: var(--ruchnik-toolbar-control-height);
+  margin-left: auto;
+  border-radius: 10px;
+  padding: 0 16px;
+  font-size: 13px;
+  box-shadow: 0 1px 3px var(--russ-shadow-accent-light);
+}
+
+.ruchnik-block--full-page .ruchnik-main {
+  flex: 0 1 auto;
+}
+
+.ruchnik-block--full-page .ruchnik-content {
+  flex: 0 1 auto;
+  overflow: visible;
+  gap: 0;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+}
+
+.ruchnik-block--full-page .ruchnik-list-area {
+  min-height: 0;
+  overflow: visible;
+  flex: 0 1 auto;
+}
+
+.ruchnik-block--full-page .ruchnik-list {
+  max-height: none;
+  flex: 0 1 auto;
+}
+
+.ruchnik-block--full-page .ruchnik-list-body {
+  overflow: visible;
+  flex: 0 1 auto;
+}
+
+.ruchnik-block--full-page .ruchnik-fab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  right: max(20px, env(safe-area-inset-right, 0px));
+  bottom: max(24px, env(safe-area-inset-bottom, 0px));
+  z-index: 900;
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 50%;
+  background: var(--russ-accent);
+  color: var(--russ-text-inverse);
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px var(--russ-shadow-primary);
+  touch-action: manipulation;
+}
+
+.ruchnik-block--full-page .ruchnik-fab:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ruchnik-block--full-page .ruchnik-fab:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.ruchnik-block--full-page .ruchnik-toolbar-add--inline {
+  display: none;
+}
+
+.ruchnik-drawer-overlay--full-page {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  background: var(--russ-overlay);
+}
+
+.ruchnik-drawer-overlay--full-page .ruchnik-drawer {
+  width: 100%;
+  max-height: min(92dvh, 100%);
+  height: auto;
+  border-left: none;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -8px 32px var(--russ-shadow-color);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.ruchnik-drawer-overlay--full-page .ruchnik-drawer-body {
+  padding-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .ruchnik-block--full-page {
+    --base-select-height: 44px;
+    --ruchnik-toolbar-control-height: 44px;
   }
 
-  .ruchnik-block--modal-embed {
-    overflow: hidden;
-    flex: 1 1 0%;
-    min-height: 0;
+  .ruchnik-block--full-page .ruchnik-toolbar {
+    min-width: 0;
+    max-width: 100%;
   }
 
-  .ruchnik-container {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    overflow: visible;
-  }
-
-  .ruchnik-block--modal-embed .ruchnik-container {
-    overflow: hidden;
-    min-height: 0;
-    grid-template-rows: minmax(0, 1fr) auto;
-  }
-
-  .ruchnik-block--modal-embed .ruchnik-add-column {
-    min-height: 0;
-    overflow: hidden;
-  }
-
-  .ruchnik-block--modal-embed .ruchnik-list-column {
-    min-height: 0;
-    overflow: hidden;
-  }
-
-  .ruchnik-content {
-    overflow: visible;
-  }
-
-  .ruchnik-block--modal-embed .ruchnik-content {
-    overflow: hidden;
-  }
-
-  .ruchnik-list-column > .ruchnik-filters-container {
-    min-height: 160px;
-  }
-
-  .ruchnik-section-title {
+  .ruchnik-block--full-page .ruchnik-toolbar-search,
+  .ruchnik-toolbar-search {
+    height: var(--ruchnik-toolbar-control-height);
     font-size: 16px;
-    margin-bottom: 16px;
+    border-radius: 12px;
+    padding: 0 14px;
+    box-sizing: border-box;
   }
 
-  .ruchnik-card {
+  .ruchnik-block--full-page .ruchnik-toolbar-controls {
+    gap: 8px;
+    padding: 0 12px 12px;
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  .ruchnik-block--full-page .ruchnik-toolbar-controls-top {
+    gap: 8px;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .ruchnik-block--full-page .ruchnik-toolbar-search {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 0;
+    max-width: 100%;
+  }
+
+  .ruchnik-block--full-page .ruchnik-toolbar-filters {
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    gap: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: 12px;
+    border: 1px solid var(--russ-border);
+    border-radius: 12px;
+    background: var(--russ-bg-secondary);
   }
 
-  .ruchnik-avatar {
-    width: 36px;
-    height: 36px;
+  .ruchnik-block--full-page .ruchnik-toolbar--filters-open .ruchnik-toolbar-filters {
+    display: flex;
+  }
+
+  .ruchnik-block--full-page .ruchnik-toolbar-filters-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex: 0 0 auto;
+    flex-shrink: 0;
+    min-height: var(--ruchnik-toolbar-control-height);
+    padding: 0 10px;
+    border: 1px solid var(--russ-border);
+    border-radius: 12px;
+    background: var(--russ-bg-secondary);
+    color: var(--russ-text-tertiary);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .ruchnik-block--full-page .ruchnik-toolbar-filters-btn--active {
+    border-color: var(--russ-primary);
+    background: color-mix(in srgb, var(--russ-primary) 10%, var(--russ-bg-secondary));
+    color: var(--russ-primary);
+  }
+
+  .ruchnik-block--full-page .ruchnik-toolbar-filters-btn:focus-visible {
+    outline: 2px solid var(--russ-accent);
+    outline-offset: 2px;
+  }
+
+  .ruchnik-block--full-page .ruchnik-toolbar-filters-btn:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  .ruchnik-block--full-page .ruchnik-filter-item,
+  .ruchnik-block--full-page .ruchnik-toolbar-type {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .ruchnik-block--full-page
+    .ruchnik-filter-item:not(.ruchnik-toolbar-type):not(.ruchnik-filter-item--reset) {
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .ruchnik-block--full-page .ruchnik-toolbar-type :deep(.p-chip) {
+    display: inline-flex;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+
+  .ruchnik-block--full-page .ruchnik-toolbar-filters .ruchnik-toolbar-field,
+  .ruchnik-block--full-page .ruchnik-toolbar-filters .ruchnik-toolbar-field.ruchnik-select {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .ruchnik-block--full-page .ruchnik-filter-label--spacer {
+    display: none;
+  }
+
+  .ruchnik-block--full-page .ruchnik-filter-item--reset {
+    padding-top: 2px;
+  }
+
+  .ruchnik-block--full-page .ruchnik-toolbar-field.ruchnik-select :deep(.base-select-wrapper) {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .ruchnik-block--full-page .ruchnik-toolbar-field.ruchnik-select :deep(.base-select-container) {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .ruchnik-block--full-page .ruchnik-toolbar-field.ruchnik-select :deep(.base-select-combo) {
+    width: 100%;
+    max-width: 100%;
+    min-height: var(--ruchnik-toolbar-control-height);
+    border: 1px solid var(--russ-border);
+    border-radius: 12px;
+    background: var(--russ-bg);
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+
+  .ruchnik-block--full-page .ruchnik-toolbar-reset-btn {
+    width: 100%;
+    min-height: 44px;
+    height: auto;
+    border-radius: 12px;
+    background: var(--russ-bg);
     font-size: 14px;
   }
 
-  .ruchnik-code {
-    font-size: 14px;
+  .ruchnik-block--full-page .ruchnik-content {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (max-width: 640px) {
+  .ruchnik-block {
+    --base-select-height: 44px;
+    --ruchnik-toolbar-control-height: 44px;
+    --ruchnik-list-viewport-min: 100px;
   }
 
-  .ruchnik-user {
-    font-size: 12px;
+  .ruchnik-toolbar {
+    gap: 8px;
+    padding: 8px 0 10px;
   }
 
-  .ruchnik-actions {
+  .ruchnik-block--full-page .ruchnik-toolbar-leading {
+    display: flex;
+    padding: 0 0 2px;
+  }
+
+  .ruchnik-toolbar-controls {
+    gap: 8px;
+  }
+
+  .ruchnik-toolbar-search {
+    height: var(--ruchnik-toolbar-control-height);
+    font-size: 16px;
+    border-radius: 12px;
+    padding: 0 14px;
+  }
+
+  .ruchnik-row {
+    padding: 6px 6px 6px 8px;
     gap: 6px;
+    min-height: 36px;
+  }
+
+  .ruchnik-row-main {
+    gap: 6px;
+  }
+
+  .ruchnik-row-code {
+    font-size: 12px;
+    max-width: 48%;
+  }
+
+  .ruchnik-row-agent {
+    font-size: 11px;
+  }
+
+  .ruchnik-row-agent::before {
+    margin-right: 6px;
   }
 
   .ruchnik-edit-btn,
   .ruchnik-remove-btn {
-    min-width: 36px;
-    height: 36px;
-    padding: 6px 10px;
-  }
-
-  .ruchnik-add-btn {
-    padding: 12px 16px;
-    font-size: 14px;
-  }
-
-  .ruchnik-empty {
-    padding: 30px 16px;
-  }
-
-  .ruchnik-empty-text {
-    font-size: 14px;
-  }
-
-  .ruchnik-empty-subtext {
+    width: 28px;
+    height: 28px;
     font-size: 12px;
   }
 
-  .ruchnik-info {
-    flex-direction: column;
+  .status-text-full {
+    display: none;
   }
 
-  .ruchnik-pagination {
-    margin-top: 0;
-    padding: 10px 12px;
+  .status-text-short {
+    display: inline;
+  }
+
+  .status-indicator {
+    padding: 5px 8px;
+    font-size: 11px;
   }
 
   .pagination-compact {
     flex-direction: column;
-    gap: 8px;
     align-items: stretch;
+    gap: 10px;
+    padding-top: 10px;
   }
 
   .pagination-info-compact {
     justify-content: center;
-    gap: 8px;
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .pagination-controls-compact {
     justify-content: center;
-    gap: 6px;
+    gap: 10px;
   }
 
+  .pagination-select-compact,
   .page-btn-compact {
-    min-width: 24px;
-    height: 24px;
-    font-size: 11px;
-    padding: 2px 6px;
+    min-height: 44px;
+    min-width: 44px;
+    font-size: 14px;
   }
 
   .pagination-select-compact {
-    font-size: 11px;
-    height: 24px;
-    min-width: 45px;
+    flex: 1;
+    max-width: 88px;
   }
 
-  .ruchnik-edit-mode {
-    margin-bottom: 12px;
+  .bulk-agents-modes {
+    display: flex;
+    width: 100%;
+    gap: 1px;
+    padding: 1px;
+  }
+
+  .bulk-agents-mode-option {
+    flex: 1;
+    justify-content: center;
+    min-height: 0;
+    padding: 3px 4px;
+    font-size: 14px;
+    line-height: 1.2;
+    touch-action: manipulation;
+  }
+
+  .ruchnik-drawer-body .ruchnik-select {
+    --base-select-radius: 12px;
+  }
+
+  .ruchnik-drawer-body .ruchnik-select :deep(.base-select-combo) {
+    font-size: 16px;
+  }
+
+  .ruchnik-drawer-input {
+    font-size: 16px;
     border-radius: 12px;
-    background: var(--russ-bg-secondary);
-    border: 1px solid var(--russ-border-light);
+    padding: 14px;
   }
 
-  .edit-header {
-    padding: 10px 12px;
-    flex-direction: column;
+  .ruchnik-drawer-textarea-wrap {
+    border-radius: 12px;
+  }
+
+  .ruchnik-drawer-textarea-wrap .ruchnik-drawer-textarea {
+    min-height: 140px;
+    font-size: 16px;
+    padding: 14px 4px 14px 14px;
+  }
+
+  .ruchnik-drawer-overlay--full-page {
+    align-items: flex-end;
+  }
+
+  .ruchnik-drawer-overlay--full-page .form-actions {
+    flex-direction: column-reverse;
     align-items: stretch;
     gap: 10px;
   }
 
-  .edit-header-main {
-    gap: 10px;
-  }
-
-  .edit-header-icon {
-    width: 36px;
-    height: 36px;
-    font-size: 16px;
-  }
-
-  .edit-header-title {
-    font-size: 11px;
-  }
-
-  .edit-header-code {
-    font-size: 14px;
-  }
-
-  .ruchnik-edit-filters {
-    padding: 10px;
-  }
-
-  .edit-header-actions {
+  .ruchnik-drawer-overlay--full-page .ruchnik-cancel-btn,
+  .ruchnik-drawer-overlay--full-page .ruchnik-drawer-submit {
     width: 100%;
-    justify-content: stretch;
+    min-height: 48px;
+    justify-content: center;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
   }
 
-  .edit-header-actions .ruchnik-cancel-btn--toolbar,
-  .edit-header-actions .ruchnik-save-btn--toolbar {
-    flex: 1;
-    padding: 10px 12px;
-    font-size: 13px;
-  }
-
-  .ruchnik-cancel-edit-btn {
-    width: 32px;
-    height: 32px;
-    padding: 6px;
-    font-size: 12px;
-  }
-
-  .ruchnik-input {
-    padding: 8px 12px;
-    font-size: 14px;
-    border-radius: 8px;
-  }
-
-  .input-counter {
-    font-size: 10px;
-    right: 8px;
-  }
-
-  .edit-hint {
-    font-size: 10px;
-    margin-top: 2px;
+  .ruchnik-drawer-overlay--full-page .ruchnik-drawer-footer {
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
   }
 }
 
-/* Дополнительные стили для очень маленьких экранов */
-@media (max-width: 480px) {
-  .ruchnik-edit-mode {
-    margin-bottom: 8px;
+@media (min-width: 769px) {
+  .ruchnik-block--full-page .ruchnik-fab {
+    display: none;
+  }
+
+  .ruchnik-block--full-page .ruchnik-toolbar-add--inline {
+    display: inline-flex;
+  }
+
+  .ruchnik-list {
+    gap: 0;
+    border: 1px solid var(--russ-border);
     border-radius: 8px;
+    background: var(--russ-bg);
+    overflow: hidden;
   }
 
-  .edit-header {
-    padding: 8px 10px;
+  .ruchnik-list-head {
+    display: grid;
+    grid-template-columns: 168px minmax(0, 1fr) 56px;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background: var(--russ-bg-secondary);
+    border-bottom: 1px solid var(--russ-border);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--russ-text-tertiary);
+    flex-shrink: 0;
   }
 
-  .edit-header-main {
+  .ruchnik-list-body {
+    gap: 0;
+    flex: 0 1 auto;
+    min-height: 0;
+  }
+
+  .ruchnik-list-head:has(.ruchnik-list-head-status) {
+    grid-template-columns: 168px minmax(0, 1fr) 100px 56px;
+  }
+
+  .ruchnik-list-head-actions {
+    width: 56px;
+  }
+
+  .ruchnik-list-footer {
+    padding: 6px 10px;
+    margin-top: 0;
+    border-top: 1px solid var(--russ-border);
+    background: var(--russ-bg-secondary);
+  }
+
+  .ruchnik-list-footer .pagination-compact {
     gap: 8px;
   }
 
-  .edit-header-icon {
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
+  .ruchnik-list-footer .pagination-info-compact {
+    font-size: 12px;
+    gap: 8px;
   }
 
-  .edit-header-title {
-    font-size: 10px;
-  }
-
-  .edit-header-code {
-    font-size: 13px;
-  }
-
-  .ruchnik-edit-filters {
-    padding: 8px;
-  }
-
-  .edit-header-actions .ruchnik-cancel-btn--toolbar,
-  .edit-header-actions .ruchnik-save-btn--toolbar {
-    padding: 8px 10px;
+  .ruchnik-list-footer .pagination-select-compact,
+  .ruchnik-list-footer .page-btn-compact {
+    height: 28px;
+    min-height: 28px;
     font-size: 12px;
   }
 
-  .ruchnik-cancel-edit-btn {
+  .ruchnik-list-footer .page-btn-compact {
     width: 28px;
-    height: 28px;
-    padding: 4px;
   }
 
-  .ruchnik-input {
-    padding: 6px 10px;
+  .ruchnik-row {
+    display: grid;
+    grid-template-columns: 168px minmax(0, 1fr) 56px;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px;
+    min-height: 32px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--russ-border-light);
+    border-radius: 0;
+  }
+
+  .ruchnik-row:has(.ruchnik-row-status) {
+    grid-template-columns: 168px minmax(0, 1fr) 100px 56px;
+  }
+
+  .ruchnik-row:last-child {
+    border-bottom: none;
+  }
+
+  .ruchnik-row:hover {
+    background: var(--russ-bg-secondary);
+  }
+
+  .ruchnik-row-main {
+    display: contents;
+  }
+
+  .ruchnik-row-code {
     font-size: 13px;
+    max-width: none;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.25;
   }
 
-  .input-counter {
-    font-size: 9px;
-    right: 6px;
+  .ruchnik-row-agent {
+    font-size: 12px;
+    line-height: 1.25;
   }
 
-  .edit-hint {
-    font-size: 9px;
+  .ruchnik-row-agent::before {
+    display: none;
+  }
+
+  .ruchnik-row-actions {
+    margin-left: 0;
+    width: 56px;
+    gap: 2px;
+    justify-content: flex-end;
+  }
+
+  .ruchnik-edit-btn,
+  .ruchnik-remove-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 11px;
+    border-radius: 6px;
+  }
+
+  .ruchnik-row-status {
+    justify-self: start;
+  }
+
+  .status-text-full {
+    display: inline;
+  }
+
+  .status-text-short {
+    display: none;
+  }
+
+  .ruchnik-block--full-page .ruchnik-content {
+    padding-bottom: 12px;
+  }
+
+  .ruchnik-drawer-overlay--full-page {
+    justify-content: flex-end;
+    align-items: stretch;
+  }
+
+  .ruchnik-drawer-overlay--full-page .ruchnik-drawer {
+    width: min(420px, 100vw);
+    height: 100%;
+    max-height: none;
+    border-left: 1px solid var(--russ-border);
+    border-radius: 0;
+    box-shadow: -8px 0 32px var(--russ-shadow-color);
+    padding-bottom: 0;
+  }
+
+  .ruchnik-drawer-overlay--full-page .ruchnik-drawer-body {
+    padding: 18px;
+  }
+
+  .ruchnik-drawer-overlay--full-page .ruchnik-drawer-footer {
+    padding: 14px 18px;
   }
 }
 </style>
