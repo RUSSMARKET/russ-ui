@@ -9,6 +9,8 @@ export { default as InventoryLineItem } from './InventoryLineItem/InventoryLineI
 export { default as TablePagination } from './TablePagination/TablePagination.vue';
 export { default as ColumnFilter } from './ColumnFilter/ColumnFilter.vue';
 export { default as MagnetSearchModal } from './MagnetSearchModal/MagnetSearchModal.vue';
+export { AnalyticsExportModal } from './AnalyticsExportModal';
+export type { AnalyticsRuchnikType } from './AnalyticsExportModal';
 export { default as StaffResultsModal } from './StaffResultsModal/StaffResultsModal.vue';
 export { default as EffectivenessModal } from './EffectivenessModal/EffectivenessModal.vue';
 export { RolePagesModal } from './RolePagesModal';
