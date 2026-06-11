@@ -68,7 +68,7 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { Teleport } from 'vue';
 import { strictFuzzyMatch } from '../../../utils/levenshtein';
-import { computeFloatingPlacement, getMobileFiltersBounds } from '../../../utils';
+import { buildFixedFloatingStyles, computeFloatingPlacement, getMobileFiltersBounds } from '../../../utils';
 const props = defineProps({
   modelValue: [String, Number, Array],
   options: {
@@ -344,17 +344,17 @@ function calculateDropdownPosition() {
 
   const baseZIndex = 100000;
   if (openUpward.value) {
-    const idealTop = containerRect.top - padding - maxHeightPx;
-    const top = Math.max(boundsTop + padding, idealTop);
     dropdownStyles.value = {
-      position: 'fixed',
-      top: `${top}px`,
-      bottom: 'auto',
-      left: `${placementResult.left}px`,
+      ...buildFixedFloatingStyles(containerRect, {
+        ...placementResult,
+        placement: 'above',
+        maxHeight: maxHeightPx,
+      }, {
+        padding,
+        containerRect: filtersBounds,
+        zIndex: baseZIndex,
+      }),
       right: 'auto',
-      width: `${placementResult.width}px`,
-      zIndex: baseZIndex,
-      maxHeight: `${maxHeightPx}px`,
     };
   } else {
     dropdownStyles.value = {

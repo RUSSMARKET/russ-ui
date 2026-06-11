@@ -156,7 +156,7 @@ export interface BuildFixedFloatingStylesOptions {
 
 /**
  * Builds fixed-position inline styles for a teleported dropdown/calendar.
- * When opening above, clamps top to the container top so the panel stays in the sheet.
+ * When opening above, anchors the panel bottom edge to the anchor top so short lists sit flush.
  */
 export function buildFixedFloatingStyles(
   anchorRect: DOMRect,
@@ -165,7 +165,6 @@ export function buildFixedFloatingStyles(
 ): Record<string, string | number> {
   const padding = options.padding ?? 8;
   const zIndex = options.zIndex ?? 100000;
-  const boundsTop = options.containerRect?.top ?? padding;
 
   const base = {
     position: 'fixed' as const,
@@ -177,11 +176,15 @@ export function buildFixedFloatingStyles(
   };
 
   if (result.placement === 'above') {
-    const idealTop = anchorRect.top - padding - result.maxHeight;
+    const viewportHeight =
+      typeof window !== 'undefined'
+        ? window.innerHeight
+        : result.viewport.top + result.viewport.height;
+
     return {
       ...base,
-      top: `${Math.max(boundsTop + padding, idealTop)}px`,
-      bottom: 'auto',
+      top: 'auto',
+      bottom: `${viewportHeight - anchorRect.top + padding}px`,
     };
   }
 
