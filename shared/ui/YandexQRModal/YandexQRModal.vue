@@ -6,7 +6,11 @@
           <i class="pi pi-times"></i>
         </button>
         <div class="yandex-qr-content">
-          <div v-if="type === 'yandex'" class="yandex-qr-info">
+          <div v-if="actionText" class="yandex-qr-info">
+            <img v-if="productLogo" :src="productLogo" alt="Логотип" class="yandex-product-logo" />
+            <p class="yandex-keyboards-title">{{ actionText }}</p>
+          </div>
+          <div v-else-if="type === 'yandex'" class="yandex-qr-info">
             <img v-if="productLogo" :src="productLogo" alt="Логотип" class="yandex-product-logo" />
             <p data-v-50f32d06=""><strong data-v-50f32d06="">Дарит 100 рублей</strong> За смену поиска на IOS </p>
           </div>
@@ -31,6 +35,7 @@ interface Props {
   qrUrl?: string;
   type?: 'yandex' | 'yandex-white' | 'yandex-keyboards';
   productLogo?: string;
+  actionText?: string;
 }
 
 interface Emits {
