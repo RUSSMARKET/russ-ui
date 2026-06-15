@@ -142,6 +142,7 @@ const handleTouchEnd = (event) => {
   -ms-overflow-style: none;
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
+  margin-top: 10px;
 }
 
 .stories-list::-webkit-scrollbar {

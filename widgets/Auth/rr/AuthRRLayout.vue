@@ -38,7 +38,12 @@
           height="32"
           alt="РУССАЙФИН"
         />
-        <a class="auth-rr-support" :href="supportHref">Поддержка</a>
+        <a
+          class="auth-rr-support"
+          :href="supportHref"
+          target="_blank"
+          rel="noopener noreferrer"
+        >Поддержка</a>
       </header>
 
       <main class="auth-rr-main">
@@ -96,6 +101,7 @@
 import { computed } from 'vue';
 import {
   authRrBrand,
+  authRrLegalLinks,
   getAuthRrHero,
   type AuthRrHeroVariant,
 } from 'bibli/shared/assets/auth/rr';
@@ -123,8 +129,8 @@ const props = withDefaults(
   }>(),
   {
     subtitle: '',
-    supportHref: '#',
-    policyHref: '#',
+    supportHref: authRrLegalLinks.support,
+    policyHref: authRrLegalLinks.personalDataPolicy,
     logoHref: '',
     bodySpacing: 'sm',
     subtitleSpacing: 'sm',

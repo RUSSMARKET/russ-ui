@@ -23,6 +23,17 @@ export const authRrBrand = {
   logo: logoUrl,
 } as const;
 
+/**
+ * Дефолтные ссылки на юридические документы (PDF в public/ origin приложения).
+ * Для SSO/rusaiauth передайте свои пути через props (`policy-href` и т.д.).
+ */
+export const authRrLegalLinks = {
+  userAgreement: '/user-agreement.pdf',
+  personalDataConsent: '/SOPD-Fintech.pdf',
+  personalDataPolicy: '/Policy.pdf',
+  support: 'https://t.me/uliasupport',
+} as const;
+
 /** Флаги / индикаторы страны */
 export const authRrFlags = {
   ru: flagRuUrl,
