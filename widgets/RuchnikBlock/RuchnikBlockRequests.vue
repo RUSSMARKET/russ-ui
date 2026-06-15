@@ -49,7 +49,7 @@
             </button>
 
             <button
-              v-if="canManage && !showMobileFilterToggle"
+              v-if="canManage"
               type="button"
               class="ruchnik-add-btn ruchnik-toolbar-add ruchnik-toolbar-add--inline"
               :disabled="loading"
@@ -1813,8 +1813,12 @@ defineExpose({ resetBulkForm, closeDrawer });
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
+  flex-shrink: 0;
   width: 32px;
   height: 32px;
+  min-width: 32px;
+  min-height: 32px;
   font-size: 13px;
   touch-action: manipulation;
 }
@@ -2378,7 +2382,7 @@ defineExpose({ resetBulkForm, closeDrawer });
 
 .ruchnik-block--full-page .ruchnik-toolbar-field.ruchnik-select {
   --base-select-padding: 0 36px 0 12px;
-  --base-select-font-size: 13px;
+  --base-select-font-size: 14px;
 }
 
 .ruchnik-block--full-page .ruchnik-toolbar-field.ruchnik-select :deep(.base-select-combo) {
@@ -2414,7 +2418,7 @@ defineExpose({ resetBulkForm, closeDrawer });
   margin-left: auto;
   border-radius: 10px;
   padding: 0 16px;
-  font-size: 13px;
+  font-size: 14px;
   box-shadow: 0 1px 3px var(--russ-shadow-accent-light);
 }
 
@@ -2843,6 +2847,10 @@ defineExpose({ resetBulkForm, closeDrawer });
 }
 
 @media (min-width: 769px) {
+  .ruchnik-block--full-page {
+    --ruchnik-toolbar-control-height: 40px;
+  }
+
   .ruchnik-block--full-page .ruchnik-fab {
     display: none;
   }
@@ -2861,13 +2869,13 @@ defineExpose({ resetBulkForm, closeDrawer });
 
   .ruchnik-list-head {
     display: grid;
-    grid-template-columns: 168px minmax(0, 1fr) 56px;
+    grid-template-columns: 168px minmax(0, 1fr) 68px;
     align-items: center;
     gap: 8px;
-    padding: 6px 10px;
+    padding: 8px 12px;
     background: var(--russ-bg-secondary);
     border-bottom: 1px solid var(--russ-border);
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.05em;
     text-transform: uppercase;
@@ -2882,15 +2890,15 @@ defineExpose({ resetBulkForm, closeDrawer });
   }
 
   .ruchnik-list-head:has(.ruchnik-list-head-status) {
-    grid-template-columns: 168px minmax(0, 1fr) 100px 56px;
+    grid-template-columns: 168px minmax(0, 1fr) 100px 68px;
   }
 
   .ruchnik-list-head-actions {
-    width: 56px;
+    width: 68px;
   }
 
   .ruchnik-list-footer {
-    padding: 6px 10px;
+    padding: 8px 12px;
     margin-top: 0;
     border-top: 1px solid var(--russ-border);
     background: var(--russ-bg-secondary);
@@ -2901,28 +2909,28 @@ defineExpose({ resetBulkForm, closeDrawer });
   }
 
   .ruchnik-list-footer .pagination-info-compact {
-    font-size: 12px;
+    font-size: 14px;
     gap: 8px;
   }
 
   .ruchnik-list-footer .pagination-select-compact,
   .ruchnik-list-footer .page-btn-compact {
-    height: 28px;
-    min-height: 28px;
-    font-size: 12px;
+    height: 32px;
+    min-height: 32px;
+    font-size: 14px;
   }
 
   .ruchnik-list-footer .page-btn-compact {
-    width: 28px;
+    width: 32px;
   }
 
   .ruchnik-row {
     display: grid;
-    grid-template-columns: 168px minmax(0, 1fr) 56px;
+    grid-template-columns: 168px minmax(0, 1fr) 68px;
     align-items: center;
     gap: 8px;
-    padding: 5px 10px;
-    min-height: 32px;
+    padding: 8px 12px;
+    min-height: 40px;
     background: transparent;
     border: none;
     border-bottom: 1px solid var(--russ-border-light);
@@ -2930,7 +2938,7 @@ defineExpose({ resetBulkForm, closeDrawer });
   }
 
   .ruchnik-row:has(.ruchnik-row-status) {
-    grid-template-columns: 168px minmax(0, 1fr) 100px 56px;
+    grid-template-columns: 168px minmax(0, 1fr) 100px 68px;
   }
 
   .ruchnik-row:last-child {
@@ -2946,14 +2954,14 @@ defineExpose({ resetBulkForm, closeDrawer });
   }
 
   .ruchnik-row-code {
-    font-size: 13px;
+    font-size: 15px;
     max-width: none;
     font-variant-numeric: tabular-nums;
     line-height: 1.25;
   }
 
   .ruchnik-row-agent {
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1.25;
   }
 
@@ -2963,16 +2971,18 @@ defineExpose({ resetBulkForm, closeDrawer });
 
   .ruchnik-row-actions {
     margin-left: 0;
-    width: 56px;
-    gap: 2px;
+    width: 68px;
+    gap: 4px;
     justify-content: flex-end;
   }
 
   .ruchnik-edit-btn,
   .ruchnik-remove-btn {
-    width: 26px;
-    height: 26px;
-    font-size: 11px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 13px;
     border-radius: 6px;
   }
 
