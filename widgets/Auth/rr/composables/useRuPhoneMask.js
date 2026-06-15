@@ -66,6 +66,8 @@ export function extractUserDigits(value) {
   } else {
     raw = raw.replace(/^\+7[\s(-]*/u, '');
     raw = raw.replace(/^8[\s(-]*/u, '');
+    // PM иногда вставляет «7 (9xx» без «+» в локальное поле
+    raw = raw.replace(/^7\s*\(\s*(?=9)/u, '');
   }
 
   return normalizeRuPhoneDigits(raw);
@@ -111,9 +113,24 @@ function cursorAfterDigits(formatted, digitsBeforeCursor) {
 export function useRuPhoneMask(props, emit) {
   const errorMessage = ref('');
   const isFocused = ref(false);
+  const inputLockedForAutofill = ref(true);
   const inputRef = ref(null);
   const localValue = ref('');
   let autofillSyncTimer = null;
+
+  function updateCredentialDom(el, digits) {
+    const inputId = el?.id;
+    if (!inputId) {
+      return;
+    }
+    const credentialEl = document.getElementById(`${inputId}-credential`);
+    if (credentialEl instanceof HTMLInputElement) {
+      const next = toRuPhoneE164(digits);
+      if (credentialEl.value !== next) {
+        credentialEl.value = next;
+      }
+    }
+  }
 
   function emitFull(digits) {
     const full = digits.length > 0 ? formatRuPhone(digits) : '';
@@ -127,6 +144,7 @@ export function useRuPhoneMask(props, emit) {
     emitFull(digits);
     if (el) {
       el.value = formatted;
+      updateCredentialDom(el, digits);
       const cursorPos = cursorAfterDigits(formatted, cursorDigits);
       requestAnimationFrame(() => el.setSelectionRange(cursorPos, cursorPos));
     }
@@ -138,6 +156,7 @@ export function useRuPhoneMask(props, emit) {
     emitFull('');
     if (el) {
       el.value = '';
+      updateCredentialDom(el, '');
       requestAnimationFrame(() => el.setSelectionRange(0, 0));
     }
   }
@@ -158,11 +177,11 @@ export function useRuPhoneMask(props, emit) {
     if (!inputRef.value) {
       return;
     }
-    const visibleDigits = extractUserDigits(inputRef.value.value || '');
     const credentialDigits = getCredentialDigits();
-    const digits = credentialDigits.length > visibleDigits.length
+    const visibleDigits = extractUserDigits(inputRef.value.value || '');
+    const digits = credentialDigits.length >= 10
       ? credentialDigits
-      : visibleDigits;
+      : (credentialDigits.length > visibleDigits.length ? credentialDigits : visibleDigits);
     const currentDigits = extractUserDigits(`${PREFIX}${localValue.value}`);
     if (digits !== currentDigits) {
       applyDigits(digits, inputRef.value);
@@ -175,7 +194,7 @@ export function useRuPhoneMask(props, emit) {
     }
     const run = () => syncFromDom();
     requestAnimationFrame(run);
-    for (const delay of [50, 150, 350, 700]) {
+    for (const delay of [50, 150, 350, 700, 1500]) {
       setTimeout(run, delay);
     }
     autofillSyncTimer = setTimeout(run, 1000);
@@ -191,6 +210,7 @@ export function useRuPhoneMask(props, emit) {
     localValue.value = local;
     if (inputRef.value) {
       inputRef.value.value = local;
+      updateCredentialDom(inputRef.value, digits);
     }
 
     const full = formatRuPhone(digits);
@@ -202,6 +222,10 @@ export function useRuPhoneMask(props, emit) {
   }
 
   const handleFocus = () => {
+    if (inputLockedForAutofill.value) {
+      inputLockedForAutofill.value = false;
+      syncFromDom();
+    }
     isFocused.value = true;
     errorMessage.value = '';
     scheduleAutofillSync();
@@ -215,6 +239,7 @@ export function useRuPhoneMask(props, emit) {
     emitFull(digits);
     if (inputRef.value) {
       inputRef.value.value = local;
+      updateCredentialDom(inputRef.value, digits);
     }
     errorMessage.value = props.error || '';
   };
@@ -347,6 +372,7 @@ export function useRuPhoneMask(props, emit) {
     inputRef,
     localValue,
     errorMessage,
+    inputLockedForAutofill,
     handleFocus,
     handleBlur,
     handleInput,

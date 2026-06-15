@@ -10,16 +10,17 @@
       <span class="auth-rr-input-phone__flag" aria-hidden="true">
         <img :src="authRrFlags.ru" width="24" height="24" alt="" />
       </span>
-      <!-- Полный номер для менеджеров паролей (видимое поле — только локальная часть) -->
+      <!-- PM заполняет это поле (+7977…); :value не ставим — Vue не должен затирать autofill -->
       <input
         :id="`${fieldId}-credential`"
+        ref="credentialRef"
         type="text"
         tabindex="-1"
         aria-hidden="true"
         class="auth-rr-input-phone__credential"
         :name="name"
-        :value="credentialValue"
         :autocomplete="credentialAutocomplete"
+        inputmode="tel"
         @input="syncFromCredentialInput"
         @change="syncFromCredentialInput"
         @animationstart="onCredentialAutofill"
@@ -40,9 +41,15 @@
               type="tel"
               inputmode="tel"
               autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              data-1p-ignore
+              data-lpignore="true"
+              data-bwignore
               maxlength="15"
               class="auth-rr-input-phone__input"
-              :readonly="readonly"
+              :readonly="readonly || inputLockedForAutofill"
               aria-label="Номер телефона"
               @beforeinput="handleBeforeInput"
               @input="handleInput"
@@ -76,7 +83,7 @@
 import { computed, useId } from 'vue';
 import AuthRRField from './AuthRRField.vue';
 import { authRrFlags, authRrIcons } from 'bibli/shared/assets/auth/rr';
-import { extractUserDigits, localMaskGhost, toRuPhoneE164, useRuPhoneMask } from './composables/useRuPhoneMask.js';
+import { extractUserDigits, localMaskGhost, useRuPhoneMask } from './composables/useRuPhoneMask.js';
 import './auth-rr-input.css';
 
 const props = withDefaults(
@@ -112,6 +119,7 @@ const {
   inputRef,
   localValue,
   errorMessage,
+  inputLockedForAutofill,
   handleFocus,
   handleBlur,
   handleInput,
@@ -123,8 +131,6 @@ const {
   scheduleAutofillSync,
   syncFromCredentialInput,
 } = useRuPhoneMask(props, emit);
-
-const credentialValue = computed(() => toRuPhoneE164(extractUserDigits(localValue.value)));
 
 const maskTail = computed(() => {
   const digits = extractUserDigits(`+7 (${localValue.value}`);
