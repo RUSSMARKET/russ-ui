@@ -1,7 +1,6 @@
-import { ref, watch, onMounted, computed } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 
 const PREFIX = '+7 (';
-const PREFIX_LEN = PREFIX.length;
 
 export function formatRuPhone(digits) {
   if (!digits || digits.length === 0) {
@@ -21,7 +20,6 @@ export function formatRuPhone(digits) {
   return formatted;
 }
 
-/** Часть номера для mirror (без «+7 (») */
 export function formatLocalPart(digits) {
   if (!digits || digits.length === 0) {
     return '';
@@ -59,7 +57,7 @@ export function extractUserDigits(value) {
   }
 
   if (raw.startsWith(PREFIX)) {
-    raw = raw.slice(PREFIX_LEN);
+    raw = raw.slice(PREFIX.length);
   } else {
     raw = raw.replace(/^\+7[\s(-]*/u, '');
     raw = raw.replace(/^8[\s(-]*/u, '');
@@ -69,7 +67,6 @@ export function extractUserDigits(value) {
   return normalizeRuPhoneDigits(raw);
 }
 
-/** @deprecated PM сохраняет полный формат +7 (999) 999-99-99 из value input */
 export function toRuPhoneE164(digits) {
   const normalized = normalizeRuPhoneDigits(digits);
   return normalized.length > 0 ? `+7${normalized}` : '';
@@ -89,24 +86,9 @@ export function localMaskGhost(digits) {
   return sample.slice(current.length);
 }
 
-function digitsFromFullValue(value) {
-  if (!value || value === PREFIX) {
-    return '';
-  }
-  if (value.startsWith(PREFIX)) {
-    const userPart = value.slice(PREFIX_LEN);
-    let digits = userPart.replace(/\D/g, '');
-    if (digits.length > 10 && (digits[0] === '7' || digits[0] === '8')) {
-      digits = digits.slice(1);
-    }
-    return digits.slice(0, 10);
-  }
-  return extractUserDigits(value);
-}
-
-function cursorAfterAllDigits(formatted, digitsBeforeCursor) {
+function cursorAfterDigits(formatted, digitsBeforeCursor) {
   if (digitsBeforeCursor <= 0) {
-    return PREFIX_LEN;
+    return 0;
   }
   let count = 0;
   for (let i = 0; i < formatted.length; i++) {
@@ -120,98 +102,97 @@ function cursorAfterAllDigits(formatted, digitsBeforeCursor) {
   return formatted.length;
 }
 
-function normalizeRawToFull(raw, { emptyFallback = '' } = {}) {
-  const text = String(raw || '').trim();
-  if (!text) {
-    return emptyFallback;
-  }
-
-  const digits = extractUserDigits(text.startsWith(PREFIX) ? text : text);
-  if (digits.length === 0) {
-    return text.startsWith(PREFIX) ? PREFIX : emptyFallback;
-  }
-
-  return formatRuPhone(digits);
+function normalizeRawToFull(raw) {
+  const digits = extractUserDigits(raw);
+  return digits.length > 0 ? formatRuPhone(digits) : '';
 }
 
 export function useRuPhoneMask(props, emit) {
   const errorMessage = ref('');
   const isFocused = ref(false);
   const inputRef = ref(null);
-  const fullValue = ref('');
+  const localValue = ref('');
   let autofillSyncTimer = null;
 
-  const localValue = computed(() => {
-    const value = fullValue.value;
-    if (!value || value === PREFIX) {
-      return '';
+  function getCredentialEl(el) {
+    const inputId = el?.id;
+    if (!inputId) {
+      return null;
     }
-    if (value.startsWith(PREFIX)) {
-      return value.slice(PREFIX_LEN);
-    }
-    return formatLocalPart(extractUserDigits(value));
-  });
+    const node = document.getElementById(`${inputId}-credential`);
+    return node instanceof HTMLInputElement ? node : null;
+  }
 
-  function emitModel(formatted, digits) {
-    const next = digits.length > 0 ? formatted : '';
+  /** PM читает/пишет полный +7 (999) 999-99-99 — без Vue :value, чтобы не затирать autofill */
+  function updateCredentialDom(el, fullFormatted) {
+    const credentialEl = getCredentialEl(el);
+    if (!credentialEl) {
+      return;
+    }
+    const next = fullFormatted && fullFormatted !== PREFIX ? fullFormatted : '';
+    if (credentialEl.value !== next) {
+      credentialEl.value = next;
+    }
+  }
+
+  function emitModel(digits) {
+    const next = digits.length > 0 ? formatRuPhone(digits) : '';
     emit('update:modelValue', next);
     return next;
   }
 
-  function applyFormatted(formatted, el, oldCursorPos) {
-    const digits = digitsFromFullValue(formatted);
-    const nextFormatted = digits.length > 0 ? formatRuPhone(digits) : (isFocused.value ? PREFIX : '');
+  function applyDigits(digits, el, cursorDigits = digits.length) {
+    const local = formatLocalPart(digits);
+    const full = digits.length > 0 ? formatRuPhone(digits) : '';
 
-    fullValue.value = nextFormatted;
-    emitModel(nextFormatted, digits);
+    localValue.value = local;
+    emitModel(digits);
 
-    if (!el) {
-      return nextFormatted;
+    if (el) {
+      el.value = local;
+      updateCredentialDom(el, full);
+      const cursorPos = cursorAfterDigits(local, cursorDigits);
+      requestAnimationFrame(() => el.setSelectionRange(cursorPos, cursorPos));
     }
 
-    el.value = nextFormatted;
-
-    let newCursorPos = PREFIX_LEN;
-    if (digits.length > 0) {
-      let digitsBeforeCursor = 0;
-      const source = formatted.startsWith(PREFIX) ? formatted : nextFormatted;
-      for (let i = 0; i < Math.min(oldCursorPos ?? source.length, source.length); i++) {
-        if (/\d/.test(source[i])) {
-          digitsBeforeCursor++;
-        }
-      }
-      newCursorPos = cursorAfterAllDigits(nextFormatted, digitsBeforeCursor);
-      if (newCursorPos < PREFIX_LEN) {
-        newCursorPos = PREFIX_LEN;
-      }
-    }
-
-    requestAnimationFrame(() => el.setSelectionRange(newCursorPos, newCursorPos));
-    return nextFormatted;
+    return local;
   }
 
   function clearField(el) {
-    fullValue.value = '';
-    emitModel('', '');
+    localValue.value = '';
+    emitModel('');
     if (el) {
       el.value = '';
+      updateCredentialDom(el, '');
       requestAnimationFrame(() => el.setSelectionRange(0, 0));
     }
   }
 
+  function readCredentialRaw(el) {
+    return getCredentialEl(el)?.value?.trim() || '';
+  }
+
   function syncFromDom() {
-    if (!inputRef.value) {
+    const el = inputRef.value;
+    if (!el) {
       return;
     }
-    const raw = inputRef.value.value || '';
-    if (!raw) {
-      return;
+
+    const credentialRaw = readCredentialRaw(el);
+    const visibleRaw = el.value || '';
+    const credentialDigits = extractUserDigits(credentialRaw);
+    const visibleDigits = extractUserDigits(visibleRaw);
+
+    const digits = credentialDigits.length >= visibleDigits.length
+      ? credentialDigits
+      : visibleDigits;
+
+    const currentDigits = extractUserDigits(localValue.value);
+    if (digits !== currentDigits) {
+      applyDigits(digits, el, digits.length);
+    } else if (credentialRaw && credentialRaw !== normalizeRawToFull(credentialRaw)) {
+      updateCredentialDom(el, normalizeRawToFull(credentialRaw));
     }
-    const normalized = normalizeRawToFull(raw, { emptyFallback: isFocused.value ? PREFIX : '' });
-    if (!normalized || normalized === fullValue.value) {
-      return;
-    }
-    applyFormatted(normalized, inputRef.value, normalized.length);
   }
 
   function scheduleAutofillSync() {
@@ -232,76 +213,92 @@ export function useRuPhoneMask(props, emit) {
     }
 
     const digits = extractUserDigits(newValue);
-    const formatted = digits.length > 0 ? formatRuPhone(digits) : '';
-    fullValue.value = formatted;
+    const local = formatLocalPart(digits);
+    const full = digits.length > 0 ? formatRuPhone(digits) : '';
+
+    localValue.value = local;
     if (inputRef.value) {
-      inputRef.value.value = formatted;
+      inputRef.value.value = local;
+      updateCredentialDom(inputRef.value, full);
     }
 
-    if (formatted && !formatted.startsWith('+7')) {
+    if (full && !full.startsWith('+7')) {
       errorMessage.value = 'Телефон должен начинаться с +7';
     } else {
       errorMessage.value = props.error || '';
     }
   }
 
-  const handleFocus = (event) => {
+  const handleFocus = () => {
     isFocused.value = true;
     errorMessage.value = '';
-
-    const el = event.target;
-    const currentValue = el.value || '';
-    const isEmpty =
-      !currentValue ||
-      currentValue === PREFIX ||
-      extractUserDigits(currentValue).length === 0;
-
-    if (isEmpty) {
-      const fromDom = normalizeRawToFull(currentValue, { emptyFallback: PREFIX });
-      if (fromDom && fromDom !== PREFIX && extractUserDigits(fromDom).length > 0) {
-        applyFormatted(fromDom, el, fromDom.length);
-      } else {
-        fullValue.value = PREFIX;
-        el.value = PREFIX;
-        requestAnimationFrame(() => el.setSelectionRange(PREFIX_LEN, PREFIX_LEN));
-      }
-    } else {
-      requestAnimationFrame(() => {
-        if ((el.selectionStart ?? 0) < PREFIX_LEN) {
-          el.setSelectionRange(PREFIX_LEN, PREFIX_LEN);
-        }
-      });
-    }
-
     scheduleAutofillSync();
   };
 
   const handleBlur = () => {
     isFocused.value = false;
-    const digits = digitsFromFullValue(fullValue.value);
-    const formatted = digits.length > 0 ? formatRuPhone(digits) : '';
-    fullValue.value = formatted;
-    emitModel(formatted, digits);
+    const digits = extractUserDigits(localValue.value);
+    const local = formatLocalPart(digits);
+    const full = digits.length > 0 ? formatRuPhone(digits) : '';
+
+    localValue.value = local;
+    emitModel(digits);
+
     if (inputRef.value) {
-      inputRef.value.value = formatted;
+      inputRef.value.value = local;
+      updateCredentialDom(inputRef.value, full);
     }
+
     errorMessage.value = props.error || '';
   };
 
   const handleInput = (event) => {
     const el = event.target;
-    let value = el.value || '';
+    const oldRaw = el.value || '';
     const oldCursorPos = el.selectionStart ?? 0;
+    const inputType = event.inputType || '';
+    const prevDigits = extractUserDigits(localValue.value);
+    const rawDigits = oldRaw.replace(/\D/g, '');
+    const isBulkInsert =
+      inputType === 'insertFromPaste' ||
+      inputType === 'insertReplacementText' ||
+      inputType === 'insertFromDrop' ||
+      rawDigits.length - prevDigits.length > 1 ||
+      oldRaw.includes('+');
 
-    if (!value.startsWith(PREFIX)) {
-      value = normalizeRawToFull(value, { emptyFallback: PREFIX });
+    if (isBulkInsert) {
+      applyDigits(extractUserDigits(oldRaw), el);
+      return;
     }
 
-    if (value.length < PREFIX_LEN) {
-      value = PREFIX;
+    let digitsBeforeCursor = 0;
+    for (let i = 0; i < Math.min(oldCursorPos, oldRaw.length); i++) {
+      if (/\d/.test(oldRaw[i])) {
+        digitsBeforeCursor++;
+      }
     }
 
-    applyFormatted(value, el, oldCursorPos);
+    applyDigits(extractUserDigits(oldRaw), el, digitsBeforeCursor);
+  };
+
+  const handleBeforeInput = (event) => {
+    const inputType = event.inputType || '';
+    if (
+      inputType !== 'insertReplacementText' &&
+      inputType !== 'insertFromPaste' &&
+      inputType !== 'insertFromDrop'
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    const el = event.target;
+    const text = event.data ?? '';
+    const currentRaw = el.value || '';
+    const start = el.selectionStart ?? currentRaw.length;
+    const end = el.selectionEnd ?? currentRaw.length;
+    const merged = `${currentRaw.slice(0, start)}${text}${currentRaw.slice(end)}`;
+    applyDigits(extractUserDigits(merged), el);
   };
 
   const handlePaste = (event) => {
@@ -312,8 +309,7 @@ export function useRuPhoneMask(props, emit) {
       return;
     }
     event.preventDefault();
-    const digits = extractUserDigits(pasted);
-    applyFormatted(formatRuPhone(digits), el, PREFIX_LEN + formatLocalPart(digits).length);
+    applyDigits(extractUserDigits(pasted), el);
   };
 
   const handleKeydown = (event) => {
@@ -323,57 +319,27 @@ export function useRuPhoneMask(props, emit) {
     const value = el.value || '';
     const isFullSelection = selectionStart === 0 && selectionEnd === value.length && value.length > 0;
 
-    const navKeys = [
+    if ((event.key === 'Backspace' || event.key === 'Delete') && isFullSelection) {
+      event.preventDefault();
+      clearField(el);
+      return;
+    }
+
+    const allowed = [
       'Tab', 'Shift', 'Control', 'Alt', 'Meta',
       'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End',
+      'Backspace', 'Delete',
     ];
-
-    if (event.key === 'Backspace' || event.key === 'Delete') {
-      if (isFullSelection || (selectionStart < PREFIX_LEN && selectionEnd > PREFIX_LEN)) {
-        event.preventDefault();
-        fullValue.value = PREFIX;
-        emitModel(PREFIX, '');
-        requestAnimationFrame(() => {
-          el.value = PREFIX;
-          el.setSelectionRange(PREFIX_LEN, PREFIX_LEN);
-        });
-        return;
-      }
-
-      if (event.key === 'Backspace' && selectionStart <= PREFIX_LEN && selectionEnd <= PREFIX_LEN) {
-        event.preventDefault();
-        requestAnimationFrame(() => el.setSelectionRange(PREFIX_LEN, PREFIX_LEN));
-        return;
-      }
-
-      if (event.key === 'Delete' && selectionStart < PREFIX_LEN) {
-        event.preventDefault();
-        requestAnimationFrame(() => el.setSelectionRange(PREFIX_LEN, PREFIX_LEN));
-        return;
-      }
-
-      if (selectionStart < PREFIX_LEN && selectionEnd <= PREFIX_LEN) {
-        event.preventDefault();
-        requestAnimationFrame(() => el.setSelectionRange(PREFIX_LEN, PREFIX_LEN));
-        return;
-      }
-
+    if (allowed.includes(event.key) || event.ctrlKey || event.metaKey) {
       return;
     }
-
-    if (selectionStart < PREFIX_LEN && !navKeys.includes(event.key) && !(event.ctrlKey || event.metaKey)) {
-      event.preventDefault();
-      requestAnimationFrame(() => el.setSelectionRange(PREFIX_LEN, PREFIX_LEN));
-      return;
-    }
-
-    if (navKeys.includes(event.key) || event.ctrlKey || event.metaKey) {
-      return;
-    }
-
     if (!/^\d$/.test(event.key)) {
       event.preventDefault();
     }
+  };
+
+  const syncFromCredentialInput = () => {
+    syncFromDom();
   };
 
   watch(() => props.error, (val) => {
@@ -400,16 +366,17 @@ export function useRuPhoneMask(props, emit) {
 
   return {
     inputRef,
-    fullValue,
     localValue,
     errorMessage,
     handleFocus,
     handleBlur,
     handleInput,
+    handleBeforeInput,
     handlePaste,
     handleKeydown,
     clear,
     syncFromInputElement,
     scheduleAutofillSync,
+    syncFromCredentialInput,
   };
 }

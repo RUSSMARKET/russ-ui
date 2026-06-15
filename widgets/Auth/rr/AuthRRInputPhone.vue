@@ -2,7 +2,7 @@
   <AuthRRField :label="label" :error="displayError" :field-id="fieldId">
     <div
       class="auth-rr-input-phone"
-      data-auth-rr-phone="v2-full"
+      data-auth-rr-phone="v3-local"
       :class="{
         'auth-rr-input-phone--error': !!displayError,
         'auth-rr-input-phone--clearable': clearable && showClear,
@@ -11,6 +11,21 @@
       <span class="auth-rr-input-phone__flag" aria-hidden="true">
         <img :src="authRrFlags.ru" width="24" height="24" alt="" />
       </span>
+      <!-- PM: полный +7 (999) 999-99-99 (без Vue :value) -->
+      <input
+        :id="`${fieldId}-credential`"
+        type="text"
+        tabindex="-1"
+        aria-hidden="true"
+        class="auth-rr-input-phone__credential"
+        :name="name"
+        :autocomplete="credentialAutocomplete"
+        inputmode="tel"
+        @input="syncFromCredentialInput"
+        @change="syncFromCredentialInput"
+        @animationstart="onCredentialAutofill"
+        @animationend="onCredentialAutofill"
+      />
       <div class="auth-rr-input-phone__editor" @mousedown="onEditorPointer">
         <div class="auth-rr-input-phone__value">
           <span class="auth-rr-input-phone__prefix" aria-hidden="true">+7 (</span>
@@ -22,15 +37,15 @@
             <input
               :id="fieldId"
               ref="inputRef"
-              :value="fullValue"
+              :value="localValue"
               type="tel"
               inputmode="tel"
-              :name="name"
-              :autocomplete="credentialAutocomplete"
-              maxlength="18"
+              autocomplete="off"
+              maxlength="15"
               class="auth-rr-input-phone__input"
               :readonly="readonly"
               aria-label="Номер телефона"
+              @beforeinput="handleBeforeInput"
               @input="handleInput"
               @focus="handleFocus"
               @blur="handleBlur"
@@ -74,7 +89,6 @@ const props = withDefaults(
     error?: string;
     fieldId?: string;
     clearable?: boolean;
-    /** login: username — PM сохраняет +7 (999) 999-99-99 */
     credentialAutocomplete?: string;
   }>(),
   {
@@ -96,28 +110,36 @@ const fieldId = computed(() => props.fieldId || `auth-rr-phone-${autoId}`);
 
 const {
   inputRef,
-  fullValue,
   localValue,
   errorMessage,
   handleFocus,
   handleBlur,
   handleInput,
+  handleBeforeInput,
   handlePaste,
   handleKeydown,
   clear,
   syncFromInputElement,
   scheduleAutofillSync,
+  syncFromCredentialInput,
 } = useRuPhoneMask(props, emit);
 
-const maskTail = computed(() => localMaskGhost(extractUserDigits(fullValue.value)));
+const maskTail = computed(() => localMaskGhost(extractUserDigits(localValue.value)));
 
-const showClear = computed(() => extractUserDigits(fullValue.value).length > 0);
+const showClear = computed(() => extractUserDigits(localValue.value).length > 0);
 
 const displayError = computed(() => props.error || errorMessage.value);
 
 function onAutofillAnimation(event: AnimationEvent) {
   if (event.animationName === 'auth-rr-phone-autofill-start') {
     syncFromInputElement();
+    scheduleAutofillSync();
+  }
+}
+
+function onCredentialAutofill(event: AnimationEvent) {
+  if (event.animationName === 'auth-rr-phone-autofill-start') {
+    syncFromCredentialInput();
     scheduleAutofillSync();
   }
 }
@@ -133,7 +155,7 @@ function onEditorPointer(event: MouseEvent) {
   }
   event.preventDefault();
   input.focus();
-  const end = input.value.length;
+  const end = localValue.value.length;
   requestAnimationFrame(() => input.setSelectionRange(end, end));
 }
 </script>
