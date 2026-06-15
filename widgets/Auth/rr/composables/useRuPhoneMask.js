@@ -120,6 +120,20 @@ function cursorAfterAllDigits(formatted, digitsBeforeCursor) {
   return formatted.length;
 }
 
+function normalizeRawToFull(raw, { emptyFallback = '' } = {}) {
+  const text = String(raw || '').trim();
+  if (!text) {
+    return emptyFallback;
+  }
+
+  const digits = extractUserDigits(text.startsWith(PREFIX) ? text : text);
+  if (digits.length === 0) {
+    return text.startsWith(PREFIX) ? PREFIX : emptyFallback;
+  }
+
+  return formatRuPhone(digits);
+}
+
 export function useRuPhoneMask(props, emit) {
   const errorMessage = ref('');
   const isFocused = ref(false);
@@ -193,10 +207,11 @@ export function useRuPhoneMask(props, emit) {
     if (!raw) {
       return;
     }
-    if (raw === fullValue.value) {
+    const normalized = normalizeRawToFull(raw, { emptyFallback: isFocused.value ? PREFIX : '' });
+    if (!normalized || normalized === fullValue.value) {
       return;
     }
-    applyFormatted(raw.startsWith(PREFIX) ? raw : formatRuPhone(extractUserDigits(raw)), inputRef.value, raw.length);
+    applyFormatted(normalized, inputRef.value, normalized.length);
   }
 
   function scheduleAutofillSync() {
@@ -242,9 +257,14 @@ export function useRuPhoneMask(props, emit) {
       extractUserDigits(currentValue).length === 0;
 
     if (isEmpty) {
-      fullValue.value = PREFIX;
-      el.value = PREFIX;
-      requestAnimationFrame(() => el.setSelectionRange(PREFIX_LEN, PREFIX_LEN));
+      const fromDom = normalizeRawToFull(currentValue, { emptyFallback: PREFIX });
+      if (fromDom && fromDom !== PREFIX && extractUserDigits(fromDom).length > 0) {
+        applyFormatted(fromDom, el, fromDom.length);
+      } else {
+        fullValue.value = PREFIX;
+        el.value = PREFIX;
+        requestAnimationFrame(() => el.setSelectionRange(PREFIX_LEN, PREFIX_LEN));
+      }
     } else {
       requestAnimationFrame(() => {
         if ((el.selectionStart ?? 0) < PREFIX_LEN) {
@@ -273,7 +293,11 @@ export function useRuPhoneMask(props, emit) {
     let value = el.value || '';
     const oldCursorPos = el.selectionStart ?? 0;
 
-    if (value.length < PREFIX_LEN || !value.startsWith(PREFIX)) {
+    if (!value.startsWith(PREFIX)) {
+      value = normalizeRawToFull(value, { emptyFallback: PREFIX });
+    }
+
+    if (value.length < PREFIX_LEN) {
       value = PREFIX;
     }
 

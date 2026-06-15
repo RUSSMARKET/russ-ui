@@ -2,6 +2,7 @@
   <AuthRRField :label="label" :error="displayError" :field-id="fieldId">
     <div
       class="auth-rr-input-phone"
+      data-auth-rr-phone="v2-full"
       :class="{
         'auth-rr-input-phone--error': !!displayError,
         'auth-rr-input-phone--clearable': clearable && showClear,
