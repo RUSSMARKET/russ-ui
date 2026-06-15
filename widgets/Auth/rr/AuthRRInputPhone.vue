@@ -10,6 +10,21 @@
       <span class="auth-rr-input-phone__flag" aria-hidden="true">
         <img :src="authRrFlags.ru" width="24" height="24" alt="" />
       </span>
+      <!-- Полный номер для менеджеров паролей (видимое поле — только локальная часть) -->
+      <input
+        :id="`${fieldId}-credential`"
+        type="text"
+        tabindex="-1"
+        aria-hidden="true"
+        class="auth-rr-input-phone__credential"
+        :name="name"
+        :value="credentialValue"
+        :autocomplete="credentialAutocomplete"
+        @input="syncFromCredentialInput"
+        @change="syncFromCredentialInput"
+        @animationstart="onCredentialAutofill"
+        @animationend="onCredentialAutofill"
+      />
       <div class="auth-rr-input-phone__editor" @mousedown="onEditorPointer">
         <div class="auth-rr-input-phone__value">
           <span class="auth-rr-input-phone__prefix" aria-hidden="true">+7 (</span>
@@ -24,10 +39,9 @@
               :value="localValue"
               type="tel"
               inputmode="tel"
-              autocomplete="tel"
+              autocomplete="off"
               maxlength="15"
               class="auth-rr-input-phone__input"
-              :name="name"
               :readonly="readonly"
               aria-label="Номер телефона"
               @beforeinput="handleBeforeInput"
@@ -62,7 +76,7 @@
 import { computed, useId } from 'vue';
 import AuthRRField from './AuthRRField.vue';
 import { authRrFlags, authRrIcons } from 'bibli/shared/assets/auth/rr';
-import { extractUserDigits, localMaskGhost, useRuPhoneMask } from './composables/useRuPhoneMask.js';
+import { extractUserDigits, localMaskGhost, toRuPhoneE164, useRuPhoneMask } from './composables/useRuPhoneMask.js';
 import './auth-rr-input.css';
 
 const props = withDefaults(
@@ -74,6 +88,8 @@ const props = withDefaults(
     error?: string;
     fieldId?: string;
     clearable?: boolean;
+    /** autocomplete скрытого поля с полным номером (+7…) для менеджеров паролей */
+    credentialAutocomplete?: string;
   }>(),
   {
     modelValue: '',
@@ -83,6 +99,7 @@ const props = withDefaults(
     error: '',
     fieldId: '',
     clearable: false,
+    credentialAutocomplete: 'tel',
   },
 );
 
@@ -104,7 +121,10 @@ const {
   clear,
   syncFromInputElement,
   scheduleAutofillSync,
+  syncFromCredentialInput,
 } = useRuPhoneMask(props, emit);
+
+const credentialValue = computed(() => toRuPhoneE164(extractUserDigits(localValue.value)));
 
 const maskTail = computed(() => {
   const digits = extractUserDigits(`+7 (${localValue.value}`);
@@ -118,6 +138,13 @@ const displayError = computed(() => props.error || errorMessage.value);
 function onAutofillAnimation(event: AnimationEvent) {
   if (event.animationName === 'auth-rr-phone-autofill-start') {
     syncFromInputElement();
+    scheduleAutofillSync();
+  }
+}
+
+function onCredentialAutofill(event: AnimationEvent) {
+  if (event.animationName === 'auth-rr-phone-autofill-start') {
+    syncFromCredentialInput(event);
     scheduleAutofillSync();
   }
 }

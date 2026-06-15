@@ -172,6 +172,7 @@
 
 .auth-rr-input-phone {
   --auth-rr-phone-h: var(--auth-rr-control-h, var(--rr-size-4-xl));
+  position: relative;
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -228,6 +229,25 @@
   width: 24px;
   height: 24px;
   object-fit: cover;
+}
+
+.auth-rr-input-phone__credential {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+  opacity: 0;
+}
+
+.auth-rr-input-phone__credential:-webkit-autofill,
+.auth-rr-input-phone__credential:autofill {
+  animation: auth-rr-phone-autofill-start 0.001s;
 }
 
 .auth-rr-input-phone__editor {

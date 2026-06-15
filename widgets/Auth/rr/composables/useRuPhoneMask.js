@@ -56,9 +56,25 @@ export function normalizeRuPhoneDigits(raw) {
 }
 
 export function extractUserDigits(value) {
-  const raw = String(value || '');
-  const userPart = raw.startsWith(PREFIX) ? raw.slice(PREFIX.length) : raw;
-  return normalizeRuPhoneDigits(userPart);
+  let raw = String(value || '').trim();
+  if (!raw) {
+    return '';
+  }
+
+  if (raw.startsWith(PREFIX)) {
+    raw = raw.slice(PREFIX.length);
+  } else {
+    raw = raw.replace(/^\+7[\s(-]*/u, '');
+    raw = raw.replace(/^8[\s(-]*/u, '');
+  }
+
+  return normalizeRuPhoneDigits(raw);
+}
+
+/** E.164 для автозаполнения и менеджеров паролей: +79777777777 */
+export function toRuPhoneE164(digits) {
+  const normalized = normalizeRuPhoneDigits(digits);
+  return normalized.length > 0 ? `+7${normalized}` : '';
 }
 
 export function countRuPhoneDigits(value) {
@@ -126,23 +142,43 @@ export function useRuPhoneMask(props, emit) {
     }
   }
 
+  function getCredentialDigits() {
+    const inputId = inputRef.value?.id;
+    if (!inputId) {
+      return '';
+    }
+    const credentialEl = document.getElementById(`${inputId}-credential`);
+    if (!(credentialEl instanceof HTMLInputElement) || !credentialEl.value) {
+      return '';
+    }
+    return extractUserDigits(credentialEl.value);
+  }
+
+  function syncFromDom() {
+    if (!inputRef.value) {
+      return;
+    }
+    const visibleDigits = extractUserDigits(inputRef.value.value || '');
+    const credentialDigits = getCredentialDigits();
+    const digits = credentialDigits.length > visibleDigits.length
+      ? credentialDigits
+      : visibleDigits;
+    const currentDigits = extractUserDigits(`${PREFIX}${localValue.value}`);
+    if (digits !== currentDigits) {
+      applyDigits(digits, inputRef.value);
+    }
+  }
+
   function scheduleAutofillSync() {
     if (autofillSyncTimer) {
       clearTimeout(autofillSyncTimer);
     }
-    const run = () => {
-      if (!inputRef.value) {
-        return;
-      }
-      const domDigits = normalizeRuPhoneDigits(inputRef.value.value || '');
-      const currentDigits = extractUserDigits(`${PREFIX}${localValue.value}`);
-      if (domDigits !== currentDigits) {
-        applyDigits(domDigits, inputRef.value);
-      }
-    };
+    const run = () => syncFromDom();
     requestAnimationFrame(run);
-    autofillSyncTimer = setTimeout(run, 50);
-    setTimeout(run, 200);
+    for (const delay of [50, 150, 350, 700]) {
+      setTimeout(run, delay);
+    }
+    autofillSyncTimer = setTimeout(run, 1000);
   }
 
   function syncFromModel(newValue) {
@@ -185,7 +221,6 @@ export function useRuPhoneMask(props, emit) {
 
   const handleInput = (event) => {
     const el = event.target;
-    const oldCursorPos = el.selectionStart ?? 0;
     const oldRaw = el.value || '';
     const inputType = event.inputType || '';
     const prevDigits = extractUserDigits(`${PREFIX}${localValue.value}`);
@@ -194,13 +229,15 @@ export function useRuPhoneMask(props, emit) {
       inputType === 'insertFromPaste' ||
       inputType === 'insertReplacementText' ||
       inputType === 'insertFromDrop' ||
-      rawDigits.length - prevDigits.length > 1;
+      rawDigits.length - prevDigits.length > 1 ||
+      oldRaw.includes('+');
 
     if (isBulkInsert) {
-      applyDigits(normalizeRuPhoneDigits(oldRaw), el);
+      applyDigits(extractUserDigits(oldRaw), el);
       return;
     }
 
+    const oldCursorPos = el.selectionStart ?? 0;
     let digitsBeforeCursor = 0;
     for (let i = 0; i < Math.min(oldCursorPos, oldRaw.length); i++) {
       if (/\d/.test(oldRaw[i])) {
@@ -208,7 +245,7 @@ export function useRuPhoneMask(props, emit) {
       }
     }
 
-    applyDigits(normalizeRuPhoneDigits(oldRaw), el, digitsBeforeCursor);
+    applyDigits(extractUserDigits(oldRaw), el, digitsBeforeCursor);
   };
 
   const handleBeforeInput = (event) => {
@@ -221,14 +258,14 @@ export function useRuPhoneMask(props, emit) {
       return;
     }
 
-    const text = event.data || '';
-    if (!/\d/.test(text)) {
-      return;
-    }
-
     event.preventDefault();
     const el = event.target;
-    applyDigits(normalizeRuPhoneDigits(text), el);
+    const text = event.data ?? '';
+    const currentRaw = el.value || '';
+    const start = el.selectionStart ?? currentRaw.length;
+    const end = el.selectionEnd ?? currentRaw.length;
+    const merged = `${currentRaw.slice(0, start)}${text}${currentRaw.slice(end)}`;
+    applyDigits(extractUserDigits(merged), el);
   };
 
   const handlePaste = (event) => {
@@ -239,7 +276,7 @@ export function useRuPhoneMask(props, emit) {
       return;
     }
     event.preventDefault();
-    applyDigits(normalizeRuPhoneDigits(pasted), el);
+    applyDigits(extractUserDigits(pasted), el);
   };
 
   const handleKeydown = (event) => {
@@ -275,10 +312,20 @@ export function useRuPhoneMask(props, emit) {
   watch(() => props.modelValue, syncFromModel, { immediate: true });
 
   const syncFromInputElement = () => {
-    if (!inputRef.value) {
+    syncFromDom();
+  };
+
+  const syncFromCredentialInput = (event) => {
+    const el = inputRef.value;
+    if (!el) {
       return;
     }
-    handleInput({ target: inputRef.value });
+    const raw = event?.target?.value ?? '';
+    if (!raw) {
+      syncFromDom();
+      return;
+    }
+    applyDigits(extractUserDigits(String(raw)), el);
   };
 
   onMounted(() => {
@@ -286,9 +333,8 @@ export function useRuPhoneMask(props, emit) {
       emitFull('');
     }
     requestAnimationFrame(() => {
-      if (inputRef.value?.value) {
-        syncFromInputElement();
-      }
+      syncFromDom();
+      scheduleAutofillSync();
     });
   });
 
@@ -310,5 +356,6 @@ export function useRuPhoneMask(props, emit) {
     clear,
     syncFromInputElement,
     scheduleAutofillSync,
+    syncFromCredentialInput,
   };
 }
