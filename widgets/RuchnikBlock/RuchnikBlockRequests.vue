@@ -986,20 +986,14 @@ const agentSelectOptions = computed(() =>
 
 function onToolbarTypeChange(value: string | null) {
   const normalized = value || null;
-  if (normalized !== localSelectedType.value) {
-    localSelectedType.value = normalized;
-    emit("type-change", normalized);
-    emit("page-change", 1);
-  }
+  localSelectedType.value = normalized;
+  emit("type-change", normalized);
 }
 
 function onToolbarAgentChange(value: number | null) {
   const normalized = value ?? null;
-  if (normalized !== localSelectedUserId.value) {
-    localSelectedUserId.value = normalized;
-    emit("user-change", normalized);
-    emit("page-change", 1);
-  }
+  localSelectedUserId.value = normalized;
+  emit("user-change", normalized);
 }
 
 function onSearchInput() {
