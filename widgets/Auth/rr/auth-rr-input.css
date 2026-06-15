@@ -231,25 +231,6 @@
   object-fit: cover;
 }
 
-.auth-rr-input-phone__credential {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-  opacity: 0;
-}
-
-.auth-rr-input-phone__credential:-webkit-autofill,
-.auth-rr-input-phone__credential:autofill {
-  animation: auth-rr-phone-autofill-start 0.001s;
-}
-
 .auth-rr-input-phone__editor {
   display: flex;
   flex: 1 1 auto;
@@ -332,6 +313,7 @@
   margin: 0;
   padding: 0;
   cursor: text;
+  overflow: hidden;
 }
 
 .auth-rr-input-phone__mirror {
@@ -354,12 +336,13 @@
 }
 
 .auth-rr-input-phone__input {
+  --auth-rr-phone-prefix-shift: 4.25ch;
   position: absolute;
   inset: 0;
   box-sizing: border-box;
-  width: 100%;
+  width: calc(100% + var(--auth-rr-phone-prefix-shift));
   height: 100%;
-  margin: 0;
+  margin: 0 0 0 calc(-1 * var(--auth-rr-phone-prefix-shift));
   padding: calc((var(--auth-rr-phone-h) - var(--auth-rr-lh-m, var(--rr-line-height-line-height-m))) / 2) 0;
   border: none;
   background: transparent;
