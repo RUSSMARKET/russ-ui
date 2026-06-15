@@ -240,12 +240,14 @@
           <aside class="ruchnik-drawer" role="dialog" :aria-label="drawerTitle">
           <div class="ruchnik-drawer-body">
             <template v-if="drawerMode === 'add'">
-              <div class="bulk-agents-section">
-                <span class="bulk-agents-label">Режим</span>
+              <div class="bulk-agents-section bulk-agents-section--mode">
+                <span class="bulk-agents-label">Режим добавления</span>
                 <div class="bulk-agents-modes" role="tablist" aria-label="Режим добавления">
                   <label
                     class="bulk-agents-mode-option"
                     :class="{ 'bulk-agents-mode-option--active': addMode === 'single' }"
+                    role="tab"
+                    :aria-selected="addMode === 'single'"
                   >
                     <input
                       v-model="addMode"
@@ -254,11 +256,14 @@
                       value="single"
                       :disabled="drawerBusy"
                     />
-                    Один ID
+                    <i class="pi pi-tag bulk-agents-mode-icon" aria-hidden="true"></i>
+                    <span class="bulk-agents-mode-text">Один ID</span>
                   </label>
                   <label
                     class="bulk-agents-mode-option"
                     :class="{ 'bulk-agents-mode-option--active': addMode === 'bulk' }"
+                    role="tab"
+                    :aria-selected="addMode === 'bulk'"
                   >
                     <input
                       v-model="addMode"
@@ -267,7 +272,8 @@
                       value="bulk"
                       :disabled="drawerBusy"
                     />
-                    Массово
+                    <i class="pi pi-list bulk-agents-mode-icon" aria-hidden="true"></i>
+                    <span class="bulk-agents-mode-text">Массово</span>
                   </label>
                 </div>
               </div>
@@ -2019,40 +2025,54 @@ defineExpose({ resetBulkForm, closeDrawer });
   gap: 10px;
 }
 
+.bulk-agents-section--mode {
+  gap: 8px;
+}
+
 .bulk-agents-label {
   font-size: 14px;
   font-weight: 600;
   color: var(--russ-text-primary);
 }
 
+.bulk-agents-section--mode .bulk-agents-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--russ-text-secondary);
+}
+
 .bulk-agents-modes {
-  display: inline-flex;
-  gap: 2px;
-  padding: 2px;
+  display: flex;
+  width: 100%;
+  gap: 4px;
+  padding: 4px;
   background: var(--russ-bg-secondary);
-  border: 1px solid var(--russ-border);
-  border-radius: 6px;
-  width: fit-content;
-  max-width: 100%;
+  border: 1.5px solid var(--russ-border);
+  border-radius: 12px;
+  box-sizing: border-box;
 }
 
 .bulk-agents-mode-option {
+  position: relative;
+  flex: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0;
+  gap: 8px;
   background: transparent;
-  border: 1px solid transparent;
-  border-radius: 4px;
-  padding: 4px 10px;
-  min-height: 26px;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 12px;
+  min-height: 44px;
   color: var(--russ-text-secondary);
   cursor: pointer;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
-  line-height: 1;
+  line-height: 1.2;
   white-space: nowrap;
   user-select: none;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .bulk-agents-mode-option input {
@@ -2066,11 +2086,35 @@ defineExpose({ resetBulkForm, closeDrawer });
   border: 0;
 }
 
-.bulk-agents-mode-option--active {
-  border-color: var(--russ-border);
+.bulk-agents-mode-icon {
+  font-size: 15px;
+  line-height: 1;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.bulk-agents-mode-text {
+  line-height: 1.2;
+}
+
+.bulk-agents-mode-option:hover:not(.bulk-agents-mode-option--active):not(:has(input:disabled)) {
+  color: var(--russ-primary);
   background: var(--russ-bg);
-  color: var(--russ-text-primary);
-  box-shadow: 0 1px 1px var(--russ-shadow-color);
+}
+
+.bulk-agents-mode-option--active {
+  background: var(--russ-primary);
+  color: var(--russ-text-inverse);
+  box-shadow: 0 2px 8px var(--russ-shadow-accent-light);
+}
+
+.bulk-agents-mode-option--active .bulk-agents-mode-icon {
+  opacity: 1;
+}
+
+.bulk-agents-mode-option:has(input:disabled) {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .bulk-agents-meta {
@@ -2781,20 +2825,23 @@ defineExpose({ resetBulkForm, closeDrawer });
   }
 
   .bulk-agents-modes {
-    display: flex;
-    width: 100%;
-    gap: 1px;
-    padding: 1px;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 12px;
   }
 
   .bulk-agents-mode-option {
     flex: 1;
     justify-content: center;
-    min-height: 0;
-    padding: 3px 4px;
-    font-size: 14px;
+    min-height: 44px;
+    padding: 10px 8px;
+    font-size: 13px;
     line-height: 1.2;
     touch-action: manipulation;
+  }
+
+  .bulk-agents-mode-icon {
+    font-size: 14px;
   }
 
   .ruchnik-drawer-body .ruchnik-select {

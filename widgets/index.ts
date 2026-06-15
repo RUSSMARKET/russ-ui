@@ -9,3 +9,5 @@ export * from './KpiCalendar';
 export * from './Layout'; 
 export * from './Project';
 export * from './Auth';
+export * from './HomeReferralBlock';
+export * from './AgentsFiltersBar';
