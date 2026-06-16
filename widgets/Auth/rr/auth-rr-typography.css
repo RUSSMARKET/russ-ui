@@ -23,6 +23,8 @@
   --auth-rr-font-regular: 'Onest Regular', 'Onest', system-ui, sans-serif;
   --auth-rr-font-medium: 'Onest Medium', 'Onest', system-ui, sans-serif;
   --auth-rr-font-semibold: 'Onest SemiBold', 'Onest', system-ui, sans-serif;
+  /* iOS Safari: маска пароля (•) не рисуется кастомным шрифтом — только системным */
+  --auth-rr-font-password: system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
 
   --auth-rr-control-h: 48px;
   --auth-rr-main-max: 460px;

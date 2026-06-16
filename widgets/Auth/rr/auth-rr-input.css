@@ -419,6 +419,18 @@
   padding-right: calc(var(--rr-spacing-padding-xl) + var(--rr-size-xl));
 }
 
+.auth-rr-input-password .auth-rr-input__control[type='password'] {
+  font-family: var(--auth-rr-font-password);
+}
+
+.auth-rr-input-password .auth-rr-input__control[type='password']:-webkit-autofill,
+.auth-rr-input-password .auth-rr-input__control[type='password']:-webkit-autofill:hover,
+.auth-rr-input-password .auth-rr-input__control[type='password']:-webkit-autofill:focus,
+.auth-rr-input-password .auth-rr-input__control[type='password']:-webkit-autofill:active,
+.auth-rr-input-password .auth-rr-input__control[type='password']:autofill {
+  font-family: var(--auth-rr-font-password) !important;
+}
+
 .auth-rr-input-password__toggle {
   position: absolute;
   right: var(--rr-spacing-padding-m);

@@ -91,7 +91,7 @@ html:has(.auth-rr-shell) body {
   font-weight: normal;
   line-height: var(--auth-rr-lh-s, var(--rr-line-height-line-height-s));
   letter-spacing: var(--auth-rr-track-s, var(--rr-tracking-tracking-s));
-  color: var(--rr-labels-brand-primary);
+  color: var(--rr-neutral-dark, #101012);
   cursor: pointer;
 }
 

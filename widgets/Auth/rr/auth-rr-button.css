@@ -78,6 +78,32 @@
   cursor: not-allowed;
 }
 
+.auth-rr-button--neutral-secondary {
+  --auth-rr-button-h: var(--auth-rr-control-h, var(--rr-size-4-xl));
+  height: var(--auth-rr-button-h);
+  min-height: var(--auth-rr-button-h);
+  max-height: var(--auth-rr-button-h);
+  padding: var(--rr-spacing-padding-l) var(--rr-spacing-padding-xl);
+  background-color: var(--rr-button-neutral-secondary-background-default, #F2F3F7);
+  color: var(--rr-button-neutral-secondary-text-default, #101012);
+}
+
+.auth-rr-button--neutral-secondary:hover:not(:disabled) {
+  background-color: var(--rr-button-neutral-secondary-background-hover, #E7E7E9);
+  color: var(--rr-button-neutral-secondary-text-hover, #101012);
+}
+
+.auth-rr-button--neutral-secondary:active:not(:disabled) {
+  background-color: var(--rr-button-neutral-secondary-background-active, #CDCDD6);
+  color: var(--rr-button-neutral-secondary-text-active, #101012);
+}
+
+.auth-rr-button--neutral-secondary:disabled {
+  background-color: var(--rr-button-neutral-secondary-background-disable, #F2F3F7);
+  color: var(--rr-button-neutral-secondary-text-disable, rgba(60, 60, 67, 0.32));
+  cursor: not-allowed;
+}
+
 .auth-rr-button:focus-visible {
   outline: 2px solid var(--rr-input-border-active);
   outline-offset: 2px;

@@ -18,7 +18,7 @@ import './auth-rr-button.css';
 withDefaults(
   defineProps<{
     label?: string;
-    variant?: 'brand-primary' | 'brand-secondary';
+    variant?: 'brand-primary' | 'brand-secondary' | 'neutral-secondary';
     disabled?: boolean;
     topSpacing?: boolean;
   }>(),

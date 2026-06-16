@@ -73,7 +73,7 @@
 }
 
 .auth-rr-otp__cell--active {
-  border-color: var(--rr-input-border-active);
+  border: 1.3px solid var(--rr-border-brand-strong, #5B7DEC);
 }
 
 .auth-rr-otp__cell--filled:not(.auth-rr-otp__cell--active) {
