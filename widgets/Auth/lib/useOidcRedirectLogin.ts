@@ -49,6 +49,8 @@ export function useOidcRedirectLogin(startLogin: () => void) {
     loading,
     authError,
     onLoginClick,
+    /** Запускает OIDC redirect на SSO (то же, что клик «Войти»). */
+    startRedirectLogin: onLoginClick,
     resetLoginState,
     clearLoginFallbackTimer,
   };
