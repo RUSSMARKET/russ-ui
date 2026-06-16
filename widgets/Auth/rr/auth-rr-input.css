@@ -20,7 +20,7 @@
   font-style: normal;
   line-height: var(--auth-rr-lh-xs, var(--rr-line-height-line-height-xs));
   letter-spacing: var(--auth-rr-track-s, var(--rr-tracking-tracking-s));
-  color: var(--rr-labels-neutral-primary);
+  color: var(--rr-labels-neutral-secondary);
 }
 
 .auth-rr-field > .auth-rr-field__label {

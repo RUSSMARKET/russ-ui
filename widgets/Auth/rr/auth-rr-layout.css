@@ -166,7 +166,7 @@ html:has(.auth-rr-shell) body {
   line-height: var(--auth-rr-lh-m, var(--rr-line-height-line-height-m));
   letter-spacing: var(--auth-rr-track-m, var(--rr-tracking-tracking-m));
   text-align: center;
-  color: var(--rr-backgrounds-neutral-primary-default);
+  color: var(--rr-labels-neutral-secondary);
 }
 
 .auth-rr-body {
