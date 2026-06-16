@@ -423,12 +423,24 @@
   font-family: var(--auth-rr-font-password);
 }
 
+.auth-rr-input-password .auth-rr-input__control[type='text'] {
+  font-family: var(--rr-font-family-font-family, var(--auth-rr-font-regular));
+}
+
 .auth-rr-input-password .auth-rr-input__control[type='password']:-webkit-autofill,
 .auth-rr-input-password .auth-rr-input__control[type='password']:-webkit-autofill:hover,
 .auth-rr-input-password .auth-rr-input__control[type='password']:-webkit-autofill:focus,
 .auth-rr-input-password .auth-rr-input__control[type='password']:-webkit-autofill:active,
 .auth-rr-input-password .auth-rr-input__control[type='password']:autofill {
   font-family: var(--auth-rr-font-password) !important;
+}
+
+.auth-rr-input-password .auth-rr-input__control[type='text']:-webkit-autofill,
+.auth-rr-input-password .auth-rr-input__control[type='text']:-webkit-autofill:hover,
+.auth-rr-input-password .auth-rr-input__control[type='text']:-webkit-autofill:focus,
+.auth-rr-input-password .auth-rr-input__control[type='text']:-webkit-autofill:active,
+.auth-rr-input-password .auth-rr-input__control[type='text']:autofill {
+  font-family: var(--rr-font-family-font-family, var(--auth-rr-font-regular)) !important;
 }
 
 .auth-rr-input-password__toggle {
