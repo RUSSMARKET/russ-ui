@@ -78,7 +78,7 @@
   font-style: normal;
   line-height: var(--auth-rr-lh-xs, var(--rr-line-height-line-height-xs));
   letter-spacing: var(--auth-rr-track-s, var(--rr-tracking-tracking-s));
-  color: var(--rr-labels-danger-primary, #dc2626);
+  color: var(--rr-labels-danger-primary);
 }
 
 .auth-rr-input__control {

@@ -84,7 +84,7 @@
 .auth-rr-otp--error .auth-rr-otp__cell--active,
 .auth-rr-otp--error .auth-rr-otp__cell--filled,
 .auth-rr-otp--error .auth-rr-otp__cell--filled:not(.auth-rr-otp__cell--active) {
-  border: 1.3px solid var(--Border-Danger-Strong, #dc2626);
+  border: 1.3px solid var(--rr-input-border-error);
 }
 
 .auth-rr-otp__placeholder,
@@ -114,9 +114,9 @@
   height: 1.3px;
   margin-bottom: 14px;
   border-radius: 999px;
-  background: var(--Labels-Neutral-Quaternary, #3c3c4352);
+  background: var(--rr-labels-neutral-quaternary);
 }
 
 .auth-rr-otp__digit {
-  color: var(--Labels-Neutral-Primary, #101012);
+  color: var(--rr-labels-neutral-primary);
 }
