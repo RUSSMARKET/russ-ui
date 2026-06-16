@@ -50,7 +50,8 @@ html:has(.auth-rr-shell) body {
   min-width: 0;
   overflow: hidden;
   box-sizing: border-box;
-  font-family: var(--rr-font-family-font-family), system-ui, sans-serif;
+  font-family: var(--auth-rr-font-regular);
+  font-weight: normal;
   color: var(--rr-backgrounds-neutral-primary-default);
 }
 
@@ -87,7 +88,7 @@ html:has(.auth-rr-shell) body {
   background: none;
   font-family: inherit;
   font-size: var(--auth-rr-fs-s, var(--rr-font-size-font-size-s));
-  font-weight: 400;
+  font-weight: normal;
   line-height: var(--auth-rr-lh-s, var(--rr-line-height-line-height-s));
   letter-spacing: var(--auth-rr-track-s, var(--rr-tracking-tracking-s));
   color: var(--rr-labels-brand-primary);
@@ -121,7 +122,7 @@ html:has(.auth-rr-shell) body {
 .auth-rr-support {
   font-family: inherit;
   font-size: var(--auth-rr-fs-s, var(--rr-font-size-font-size-s));
-  font-weight: 400;
+  font-weight: normal;
   font-style: normal;
   line-height: var(--auth-rr-lh-s, var(--rr-line-height-line-height-s));
   letter-spacing: var(--auth-rr-track-s, var(--rr-tracking-tracking-s));
@@ -147,9 +148,9 @@ html:has(.auth-rr-shell) body {
 .auth-rr-title {
   margin: var(--rr-spacing-margin-none) var(--rr-spacing-margin-none)
     var(--rr-spacing-margin-s);
-  font-family: inherit;
+  font-family: var(--auth-rr-font-medium);
   font-size: var(--auth-rr-fs-2xl, var(--rr-font-size-font-size-2xl));
-  font-weight: 500;
+  font-weight: normal;
   font-style: normal;
   line-height: var(--auth-rr-lh-2xl, var(--rr-line-height-line-height-2xl));
   letter-spacing: var(--auth-rr-track-2xl, var(--rr-tracking-tracking-2xl));
@@ -159,9 +160,9 @@ html:has(.auth-rr-shell) body {
 
 .auth-rr-subtitle {
   margin: var(--rr-spacing-margin-none) var(--rr-spacing-margin-none) 0;
-  font-family: inherit;
+  font-family: var(--auth-rr-font-regular);
   font-size: var(--auth-rr-fs-m, var(--rr-font-size-font-size-m));
-  font-weight: 400;
+  font-weight: normal;
   font-style: normal;
   line-height: var(--auth-rr-lh-m, var(--rr-line-height-line-height-m));
   letter-spacing: var(--auth-rr-track-m, var(--rr-tracking-tracking-m));
@@ -201,9 +202,9 @@ html:has(.auth-rr-shell) body {
 
 .auth-rr-otp-sent {
   margin: 0 0 var(--rr-spacing-margin-l, 12px);
-  font-family: var(--rr-font-family-font-family), system-ui, sans-serif;
+  font-family: var(--auth-rr-font-regular);
   font-size: var(--auth-rr-fs-m, var(--rr-font-size-font-size-m));
-  font-weight: 400;
+  font-weight: normal;
   font-style: normal;
   line-height: var(--auth-rr-lh-m, var(--rr-line-height-line-height-m));
   letter-spacing: var(--auth-rr-track-m, var(--rr-tracking-tracking-m));
@@ -228,7 +229,7 @@ html:has(.auth-rr-shell) body {
   margin: var(--rr-spacing-margin-l, 12px) 0 0;
   font-family: inherit;
   font-size: var(--auth-rr-fs-s, var(--rr-font-size-font-size-s));
-  font-weight: 400;
+  font-weight: normal;
   line-height: var(--auth-rr-lh-s, var(--rr-line-height-line-height-s));
   letter-spacing: var(--auth-rr-track-s, var(--rr-tracking-tracking-s));
   text-align: center;
@@ -239,9 +240,9 @@ html:has(.auth-rr-shell) body {
   flex-shrink: 0;
   margin-top: auto;
   padding-top: var(--rr-spacing-padding-xl);
-  font-family: inherit;
+  font-family: var(--auth-rr-font-regular);
   font-size: var(--auth-rr-fs-xs, var(--rr-font-size-font-size-xs));
-  font-weight: 400;
+  font-weight: normal;
   font-style: normal;
   line-height: var(--auth-rr-lh-xs, var(--rr-line-height-line-height-xs));
   letter-spacing: var(--auth-rr-track-s, var(--rr-tracking-tracking-s));

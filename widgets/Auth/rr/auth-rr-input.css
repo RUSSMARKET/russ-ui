@@ -14,9 +14,9 @@
   margin: 0;
   padding: 0;
   text-align: left;
-  font-family: 'Onest', var(--rr-font-family-font-family), system-ui, sans-serif;
+  font-family: var(--auth-rr-font-regular);
   font-size: var(--auth-rr-fs-xs, var(--rr-font-size-font-size-xs));
-  font-weight: 400;
+  font-weight: normal;
   font-style: normal;
   line-height: var(--auth-rr-lh-xs, var(--rr-line-height-line-height-xs));
   letter-spacing: var(--auth-rr-track-s, var(--rr-tracking-tracking-s));
@@ -41,9 +41,9 @@
   padding: 0;
   border: none;
   background: none;
-  font-family: var(--rr-font-family-font-family), system-ui, sans-serif;
+  font-family: var(--auth-rr-font-regular);
   font-size: var(--auth-rr-fs-xs, var(--rr-font-size-font-size-xs));
-  font-weight: 400;
+  font-weight: normal;
   font-style: normal;
   line-height: var(--auth-rr-lh-xs, var(--rr-line-height-line-height-xs));
   letter-spacing: var(--auth-rr-track-s, var(--rr-tracking-tracking-s));
@@ -72,9 +72,9 @@
 .auth-rr-field__error {
   margin: 4px 0 0;
   text-align: left;
-  font-family: var(--rr-font-family-font-family), system-ui, sans-serif;
+  font-family: var(--auth-rr-font-regular);
   font-size: var(--auth-rr-fs-xs, var(--rr-font-size-font-size-xs));
-  font-weight: 400;
+  font-weight: normal;
   font-style: normal;
   line-height: var(--auth-rr-lh-xs, var(--rr-line-height-line-height-xs));
   letter-spacing: var(--auth-rr-track-s, var(--rr-tracking-tracking-s));
@@ -91,9 +91,9 @@
   border: 1px solid var(--rr-input-border-default);
   border-radius: var(--rr-radius-l);
   background-color: var(--rr-backgrounds-primary);
-  font-family: var(--rr-font-family-font-family), system-ui, sans-serif;
+  font-family: var(--auth-rr-font-regular);
   font-size: var(--auth-rr-fs-m, var(--rr-font-size-font-size-m));
-  font-weight: 400;
+  font-weight: normal;
   font-style: normal;
   line-height: var(--auth-rr-lh-m, var(--rr-line-height-line-height-m));
   letter-spacing: var(--auth-rr-track-m, var(--rr-tracking-tracking-m));
@@ -287,9 +287,9 @@
 .auth-rr-input-phone__prefix,
 .auth-rr-input-phone__mirror,
 .auth-rr-input-phone__input {
-  font-family: 'Onest', var(--rr-font-family-font-family), system-ui, sans-serif;
+  font-family: var(--auth-rr-font-regular);
   font-size: var(--auth-rr-fs-m, var(--rr-font-size-font-size-m));
-  font-weight: 400;
+  font-weight: normal;
   font-style: normal;
   line-height: var(--auth-rr-lh-m, var(--rr-line-height-line-height-m));
   letter-spacing: var(--auth-rr-track-m, var(--rr-tracking-tracking-m));
@@ -401,9 +401,9 @@
   background-image: none !important;
   box-shadow: none !important;
   -webkit-box-shadow: none !important;
-  font-family: 'Onest', var(--rr-font-family-font-family), system-ui, sans-serif !important;
+  font-family: var(--auth-rr-font-regular) !important;
   font-size: var(--auth-rr-fs-m, var(--rr-font-size-font-size-m)) !important;
-  font-weight: 400 !important;
+  font-weight: normal !important;
   line-height: var(--auth-rr-lh-m, var(--rr-line-height-line-height-m)) !important;
   letter-spacing: var(--auth-rr-track-m, var(--rr-tracking-tracking-m)) !important;
   animation: auth-rr-phone-autofill-start 0.001s;

@@ -12,9 +12,9 @@
   border: none;
   border-radius: var(--rr-radius-m);
   cursor: pointer;
-  font-family: var(--rr-font-family-font-family), system-ui, sans-serif;
+  font-family: var(--auth-rr-font-semibold);
   font-size: var(--auth-rr-fs-m, var(--rr-font-size-font-size-m));
-  font-weight: 600;
+  font-weight: normal;
   font-style: normal;
   line-height: var(--auth-rr-lh-m, var(--rr-line-height-line-height-m));
   letter-spacing: var(--auth-rr-track-m, var(--rr-tracking-tracking-m));

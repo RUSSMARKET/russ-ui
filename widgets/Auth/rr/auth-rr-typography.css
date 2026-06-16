@@ -19,9 +19,18 @@
   --auth-rr-track-m: var(--rr-tracking-tracking-m);
   --auth-rr-track-2xl: var(--rr-tracking-tracking-2xl);
 
+  /* Именованные начертания Onest — @font-face в app.css / main.css хоста */
+  --auth-rr-font-regular: 'Onest Regular', 'Onest', system-ui, sans-serif;
+  --auth-rr-font-medium: 'Onest Medium', 'Onest', system-ui, sans-serif;
+  --auth-rr-font-semibold: 'Onest SemiBold', 'Onest', system-ui, sans-serif;
+
   --auth-rr-control-h: 48px;
   --auth-rr-main-max: 460px;
   --auth-rr-logo-h: 32px;
+
+  font-family: var(--auth-rr-font-regular);
+  font-weight: normal;
+  font-synthesis: none;
 }
 
 /* Adaptives.Width: mobile 390px, desktop 1440px — bibli/shared/tokens/adaptives.css */

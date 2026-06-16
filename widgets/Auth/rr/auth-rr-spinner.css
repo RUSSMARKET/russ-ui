@@ -36,9 +36,9 @@
   padding: 0;
   border: none;
   background: none;
-  font-family: var(--rr-font-family-font-family), system-ui, sans-serif;
+  font-family: var(--auth-rr-font-medium);
   font-size: var(--auth-rr-fs-s, var(--rr-font-size-font-size-s));
-  font-weight: 500;
+  font-weight: normal;
   line-height: var(--auth-rr-lh-s, var(--rr-line-height-line-height-s));
   letter-spacing: var(--auth-rr-track-s, var(--rr-tracking-tracking-s));
   color: var(--rr-labels-brand-primary);
