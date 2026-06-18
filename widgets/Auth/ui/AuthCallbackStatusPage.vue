@@ -44,11 +44,25 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, nextTick, onMounted } from 'vue';
 import { authRrLegalLinks, type AuthRrHeroVariant } from 'bibli/shared/assets/auth/rr';
 import { AuthRRLayout } from '../rr';
 import AuthRRButton from '../rr/AuthRRButton.vue';
 import '../rr/auth-rr-spinner.css';
+
+function hideBootstrapShellWhenReady(): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  const hide = (window as Window & { __hideBootstrapShell?: () => void }).__hideBootstrapShell;
+  hide?.();
+}
+
+onMounted(() => {
+  void nextTick(() => {
+    requestAnimationFrame(hideBootstrapShellWhenReady);
+  });
+});
 
 const props = withDefaults(
   defineProps<{

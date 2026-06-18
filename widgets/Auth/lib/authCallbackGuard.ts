@@ -117,12 +117,18 @@ export function shouldSuppressGlobalRecovery(path?: string): boolean {
   if (!isAuthCallbackPath(path)) {
     return false;
   }
-  return isOAuthCallbackPageActive() || isOAuthCallbackBusy() || hasOAuthCallbackParams();
+  if (isAuthCallbackContentPresent()) {
+    return true;
+  }
+  return isOAuthCallbackPageActive() || isOAuthCallbackBusy();
 }
 
 export function isAuthCallbackContentPresent(doc?: Document): boolean {
   const target = doc ?? (typeof document !== 'undefined' ? document : null);
   if (!target) {
+    return false;
+  }
+  if (typeof target.querySelector !== 'function' || typeof target.getElementById !== 'function') {
     return false;
   }
   return Boolean(
