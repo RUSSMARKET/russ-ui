@@ -4,6 +4,18 @@ export const OAUTH_CALLBACK_CODE_KEY = 'oauth_callback_code';
 export const OAUTH_CALLBACK_STATE_KEY = 'oauth_callback_state';
 export const OAUTH_CALLBACK_BUSY_KEY = 'oauth_callback_busy';
 export const OAUTH_CALLBACK_PAGE_ACTIVE_KEY = 'oauth_callback_page_active';
+export const AUTH_EARLY_REDIRECT_FLAG = 'auth_early_redirect_pending';
+
+export function isAuthFlowPath(path?: string): boolean {
+  if (typeof path !== 'string' || path === '') {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+    path = window.location.pathname;
+  }
+  const normalized = path.replace(/\/+$/, '') || '/';
+  return normalized === '/auth' || normalized.startsWith('/auth/');
+}
 
 export function isAuthCallbackPath(path?: string): boolean {
   if (typeof path !== 'string' || path === '') {
@@ -113,14 +125,64 @@ export function isOAuthCallbackPageActive(): boolean {
   }
 }
 
-export function shouldSuppressGlobalRecovery(path?: string): boolean {
-  if (!isAuthCallbackPath(path)) {
+export function isEarlyAuthRedirectPending(): boolean {
+  if (typeof sessionStorage === 'undefined') {
     return false;
   }
-  if (isAuthCallbackContentPresent()) {
+  try {
+    return sessionStorage.getItem(AUTH_EARLY_REDIRECT_FLAG) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function isBootstrapShellVisible(doc: Document): boolean {
+  const shell = doc.getElementById('app-bootstrap-shell');
+  if (!shell) return false;
+  const style = shell.style;
+  return style.display !== 'none';
+}
+
+export function isAuthEntryContentPresent(doc?: Document): boolean {
+  const target = doc ?? (typeof document !== 'undefined' ? document : null);
+  if (!target) {
+    return false;
+  }
+  if (typeof target.querySelector !== 'function' || typeof target.getElementById !== 'function') {
+    return false;
+  }
+
+  const authTemplate = target.querySelector('.auth-template');
+  if (authTemplate && authTemplate.children.length > 0) {
     return true;
   }
-  return isOAuthCallbackPageActive() || isOAuthCallbackBusy();
+
+  if (target.querySelector('.auth-page')) {
+    return true;
+  }
+
+  if (isBootstrapShellVisible(target)) {
+    return true;
+  }
+
+  return isEarlyAuthRedirectPending();
+}
+
+export function shouldSuppressGlobalRecovery(path?: string): boolean {
+  const resolvedPath = path ?? (typeof window !== 'undefined' ? window.location.pathname : '');
+
+  if (isAuthCallbackPath(resolvedPath)) {
+    if (isAuthCallbackContentPresent()) {
+      return true;
+    }
+    return isOAuthCallbackPageActive() || isOAuthCallbackBusy();
+  }
+
+  if (resolvedPath.replace(/\/+$/, '') === '/auth') {
+    return isAuthEntryContentPresent();
+  }
+
+  return false;
 }
 
 export function isAuthCallbackContentPresent(doc?: Document): boolean {
