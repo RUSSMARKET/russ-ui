@@ -84,6 +84,7 @@
   min-height: var(--auth-rr-button-h);
   max-height: var(--auth-rr-button-h);
   padding: var(--rr-spacing-padding-l) var(--rr-spacing-padding-xl);
+  font-family: var(--auth-rr-font-regular);
   background-color: var(--rr-button-neutral-secondary-background-default, #F2F3F7);
   color: var(--rr-button-neutral-secondary-text-default, #101012);
 }
