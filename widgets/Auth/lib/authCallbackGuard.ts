@@ -136,13 +136,6 @@ export function isEarlyAuthRedirectPending(): boolean {
   }
 }
 
-function isBootstrapShellVisible(doc: Document): boolean {
-  const shell = doc.getElementById('app-bootstrap-shell');
-  if (!shell) return false;
-  const style = shell.style;
-  return style.display !== 'none';
-}
-
 export function isAuthEntryContentPresent(doc?: Document): boolean {
   const target = doc ?? (typeof document !== 'undefined' ? document : null);
   if (!target) {
@@ -158,10 +151,6 @@ export function isAuthEntryContentPresent(doc?: Document): boolean {
   }
 
   if (target.querySelector('.auth-page')) {
-    return true;
-  }
-
-  if (isBootstrapShellVisible(target)) {
     return true;
   }
 
@@ -196,8 +185,7 @@ export function isAuthCallbackContentPresent(doc?: Document): boolean {
   return Boolean(
     target.querySelector('.auth-rr-callback-status')
       || target.querySelector('.auth-rr-callback-actions')
-      || target.querySelector('.auth-rr-spinner')
-      || target.getElementById('app-bootstrap-shell'),
+      || target.querySelector('.auth-rr-spinner'),
   );
 }
 
