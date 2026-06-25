@@ -136,6 +136,18 @@ export function isEarlyAuthRedirectPending(): boolean {
   }
 }
 
+function isBootstrapShellVisible(doc?: Document): boolean {
+  const target = doc ?? (typeof document !== 'undefined' ? document : null);
+  if (!target || typeof target.getElementById !== 'function') {
+    return false;
+  }
+  const shell = target.getElementById('app-bootstrap-shell') as HTMLElement | null;
+  if (!shell) {
+    return false;
+  }
+  return shell.style?.display !== 'none';
+}
+
 export function isAuthEntryContentPresent(doc?: Document): boolean {
   const target = doc ?? (typeof document !== 'undefined' ? document : null);
   if (!target) {
@@ -154,7 +166,7 @@ export function isAuthEntryContentPresent(doc?: Document): boolean {
     return true;
   }
 
-  return isEarlyAuthRedirectPending();
+  return false;
 }
 
 export function shouldSuppressGlobalRecovery(path?: string): boolean {
@@ -168,7 +180,13 @@ export function shouldSuppressGlobalRecovery(path?: string): boolean {
   }
 
   if (resolvedPath.replace(/\/+$/, '') === '/auth') {
-    return isAuthEntryContentPresent();
+    if (isAuthEntryContentPresent()) {
+      return true;
+    }
+    if (isEarlyAuthRedirectPending() && isBootstrapShellVisible()) {
+      return true;
+    }
+    return false;
   }
 
   return false;
