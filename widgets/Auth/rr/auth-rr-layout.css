@@ -143,19 +143,20 @@ html:has(.auth-rr-shell) body {
   min-height: 0;
   max-width: var(--auth-rr-main-max, 460px);
   margin: var(--auth-rr-main-margin-block) auto;
+  background: transparent;
 }
 
 .auth-rr-title {
   margin: var(--rr-spacing-margin-none) var(--rr-spacing-margin-none)
     var(--rr-spacing-margin-s);
   font-family: var(--auth-rr-font-medium);
-  font-size: var(--auth-rr-fs-2xl, var(--rr-font-size-font-size-2xl));
+  font-size: var(--auth-rr-fs-2xl, 28px);
   font-weight: normal;
   font-style: normal;
-  line-height: var(--auth-rr-lh-2xl, var(--rr-line-height-line-height-2xl));
-  letter-spacing: var(--auth-rr-track-2xl, var(--rr-tracking-tracking-2xl));
+  line-height: var(--auth-rr-lh-2xl, 36px);
+  letter-spacing: var(--auth-rr-track-2xl, -0.02em);
   text-align: center;
-  color: var(--rr-backgrounds-neutral-primary-default);
+  color: var(--rr-backgrounds-neutral-primary-default, #101012);
 }
 
 .auth-rr-subtitle {

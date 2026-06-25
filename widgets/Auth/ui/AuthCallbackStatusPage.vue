@@ -58,9 +58,26 @@ function hideBootstrapShellWhenReady(): void {
   hide?.();
 }
 
+function isAuthRrContentReady(): boolean {
+  if (typeof document === 'undefined') {
+    return false;
+  }
+  return Boolean(
+    document.querySelector('.auth-rr-callback-status, .auth-rr-callback-actions'),
+  );
+}
+
+function tryHideBootstrapShell(attempt = 0): void {
+  if (isAuthRrContentReady() || attempt > 120) {
+    hideBootstrapShellWhenReady();
+    return;
+  }
+  requestAnimationFrame(() => tryHideBootstrapShell(attempt + 1));
+}
+
 onMounted(() => {
   void nextTick(() => {
-    requestAnimationFrame(hideBootstrapShellWhenReady);
+    requestAnimationFrame(() => tryHideBootstrapShell());
   });
 });
 
