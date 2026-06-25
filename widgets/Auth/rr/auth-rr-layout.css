@@ -151,7 +151,7 @@ html:has(.auth-rr-shell) body {
     var(--rr-spacing-margin-s);
   font-family: var(--auth-rr-font-medium);
   font-size: var(--auth-rr-fs-2xl, 28px);
-  font-weight: normal;
+  font-weight: 500;
   font-style: normal;
   line-height: var(--auth-rr-lh-2xl, 36px);
   letter-spacing: var(--auth-rr-track-2xl, -0.02em);

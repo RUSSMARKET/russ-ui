@@ -50,14 +50,6 @@ import { AuthRRLayout } from '../rr';
 import AuthRRButton from '../rr/AuthRRButton.vue';
 import '../rr/auth-rr-spinner.css';
 
-function hideBootstrapShellWhenReady(): void {
-  if (typeof window === 'undefined') {
-    return;
-  }
-  const hide = (window as Window & { __hideBootstrapShell?: () => void }).__hideBootstrapShell;
-  hide?.();
-}
-
 function isAuthRrContentReady(): boolean {
   if (typeof document === 'undefined') {
     return false;
@@ -65,6 +57,22 @@ function isAuthRrContentReady(): boolean {
   return Boolean(
     document.querySelector('.auth-rr-callback-status, .auth-rr-callback-actions'),
   );
+}
+
+function hideBootstrapShellWhenReady(): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  const hideWhenReady = (window as Window & {
+    __hideBootstrapShellWhenReady?: () => Promise<void>;
+    __hideBootstrapShell?: () => void;
+  }).__hideBootstrapShellWhenReady;
+  if (hideWhenReady) {
+    void hideWhenReady();
+    return;
+  }
+  const hide = (window as Window & { __hideBootstrapShell?: () => void }).__hideBootstrapShell;
+  hide?.();
 }
 
 function tryHideBootstrapShell(attempt = 0): void {
