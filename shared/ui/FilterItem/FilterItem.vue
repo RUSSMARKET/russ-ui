@@ -94,6 +94,7 @@ const props = defineProps<Props>();
 const emit = defineEmits<{
   'update:modelValue': [value: any];
   'filter-close': [key: string];
+  'search-submit': [value: any];
 }>();
 
 const filterItemClass = computed(() => {
@@ -119,10 +120,13 @@ const handleSearchInput = (event: Event) => {
   emit('update:modelValue', target.value);
 };
 
-const handleSearchEnter = () => {
-  if (props.filter.onChange) {
-    props.filter.onChange(props.modelValue);
-  }
+const handleSearchEnter = (event: Event) => {
+  const button = event.currentTarget as HTMLElement | null;
+  const input = button?.closest('.filter-search-wrapper')
+    ?.querySelector('.search-input-modern') as HTMLInputElement | null;
+  const value = input?.value ?? props.modelValue ?? '';
+  emit('update:modelValue', value);
+  emit('search-submit', value);
 };
 </script>
 

@@ -34,20 +34,6 @@
             placeholder="Например: 8"
           />
         </div>
-
-        <div class="form-row">
-          <label for="product-category" class="form-label">Категория продукта</label>
-          <BaseSelect
-            id="product-category"
-            :model-value="productForm.category_id != null && productForm.category_id !== '' ? Number(productForm.category_id) : undefined"
-            :options="categories"
-            option-label="name"
-            option-value="id"
-            placeholder="Выберите категорию"
-            required
-            @update:model-value="updateField('category_id', $event != null ? String($event) : '')"
-          />
-        </div>
       </div>
 
       <div class="form-row logo-row">
@@ -109,8 +95,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { BaseModal, InputText, Button, FileUpload, BaseSelect } from '@/shared/ui';
-import type { Category } from '~/entities/product';
+import { BaseModal, InputText, Button, FileUpload } from '@/shared/ui';
 
 interface ProductForm {
   name?: string;
@@ -124,7 +109,6 @@ interface Props {
   isEditMode: boolean;
   productForm: ProductForm;
   logoPreview?: string | null;
-  categories: Category[];
   showManageMetrics?: boolean;
 }
 

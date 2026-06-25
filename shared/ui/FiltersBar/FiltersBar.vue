@@ -28,6 +28,7 @@
             <div class="filters-grid-mobile">
               <FilterItem v-for="(filter, index) in filters" :key="filterItemKey(filter, index)" :filter="filter"
                 :model-value="getFilterValue(filter.key)" @update:model-value="handleFilterChange(filter.key, $event)"
+                @search-submit="(value) => handleSearchSubmit(filter.key, value)"
                 @filter-close="(key) => emit('filter-close', key)" />
               <slot name="actions"></slot>
               <div v-if="showResetButton" class="filter-item-wrapper filter-item-wrapper--reset">
@@ -57,6 +58,7 @@
       <div class="filters-grid">
         <FilterItem v-for="(filter, index) in filters" :key="filterItemKey(filter, index)" :filter="filter"
           :model-value="getFilterValue(filter.key)" @update:model-value="handleFilterChange(filter.key, $event)"
+          @search-submit="(value) => handleSearchSubmit(filter.key, value)"
           @filter-close="(key) => emit('filter-close', key)" />
         <slot name="actions"></slot>
         <div v-if="showResetButton" class="filter-item-wrapper filter-item-wrapper--reset">
@@ -123,6 +125,7 @@ const emit = defineEmits<{
   'update:modelValue': [value: Record<string, any>];
   'filter-change': [key: string, value: any];
   'filter-close': [key: string];
+  'search-submit': [key: string, value: any];
   'reset': [];
 }>();
 
@@ -160,6 +163,12 @@ const handleFilterChange = (key: string, value: any) => {
   if (filter?.onChange) {
     filter.onChange(value);
   }
+};
+
+const handleSearchSubmit = (key: string, value: any) => {
+  const newValue = { ...props.modelValue, [key]: value };
+  emit('update:modelValue', newValue);
+  emit('search-submit', key, value);
 };
 
 const handleReset = () => {
