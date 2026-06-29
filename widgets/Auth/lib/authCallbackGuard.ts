@@ -5,6 +5,12 @@ export const OAUTH_CALLBACK_STATE_KEY = 'oauth_callback_state';
 export const OAUTH_CALLBACK_BUSY_KEY = 'oauth_callback_busy';
 export const OAUTH_CALLBACK_PAGE_ACTIVE_KEY = 'oauth_callback_page_active';
 export const AUTH_EARLY_REDIRECT_FLAG = 'auth_early_redirect_pending';
+export const AUTH_EARLY_REDIRECT_AT_KEY = 'auth_early_redirect_at';
+// Ранний редирект на SSO живёт максимум столько. Если флаг висит дольше — редирект
+// не ушёл (Safari ITP вытеснил PKCE-слои / устаревший index ссылается на мёртвый
+// чанк /auth), и подавлять recovery нельзя, иначе вечный пустой экран на /auth.
+// Синхронно с EARLY_TTL в client-storage-migration (10s) + запас на медленный SSO-хоп.
+export const AUTH_EARLY_REDIRECT_STALE_MS = 10000;
 
 export function isAuthFlowPath(path?: string): boolean {
   if (typeof path !== 'string' || path === '') {
@@ -130,7 +136,17 @@ export function isEarlyAuthRedirectPending(): boolean {
     return false;
   }
   try {
-    return sessionStorage.getItem(AUTH_EARLY_REDIRECT_FLAG) === '1';
+    if (sessionStorage.getItem(AUTH_EARLY_REDIRECT_FLAG) !== '1') {
+      return false;
+    }
+    // Флаг без свежей метки времени или старше TTL = зависший редирект: не считаем
+    // его «в процессе». Иначе мёртвый чанк /auth + застрявший флаг → recovery
+    // подавлён навсегда → вечный пустой экран (полоска висит).
+    const startedAt = Number(sessionStorage.getItem(AUTH_EARLY_REDIRECT_AT_KEY));
+    if (!Number.isFinite(startedAt) || startedAt <= 0) {
+      return false;
+    }
+    return Date.now() - startedAt <= AUTH_EARLY_REDIRECT_STALE_MS;
   } catch {
     return false;
   }
