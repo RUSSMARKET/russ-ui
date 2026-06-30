@@ -38,12 +38,14 @@
           height="32"
           alt="РУССАЙФИН"
         />
+        <!--
         <a
           class="auth-rr-support"
           :href="supportHref"
           target="_blank"
           rel="noopener noreferrer"
         >Поддержка</a>
+        -->
       </header>
 
       <main class="auth-rr-main">
