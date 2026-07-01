@@ -897,39 +897,47 @@ function applyDayInterval(userId: number, date: string, intervalId: number) {
   closeDayEdit();
 }
 
-const filterConfigs = computed<FilterConfig[]>(() => [
-  {
-    key: 'search',
-    type: 'search',
-    label: 'Поиск',
-    placeholder: 'Поиск по ФИО',
-    onChange: () => emit('search-submit'),
-  },
-  {
-    key: 'project',
-    type: 'select',
-    label: 'Проект',
-    placeholder: 'Все проекты',
-    options: [
-      { id: '', name: 'Все' },
-      ...props.projects.map((p) => ({ id: p.id, name: p.name })),
-    ],
-    searchable: false,
-    onChange: (value) => emit('project-filter-change', value),
-  },
-  {
-    key: 'point',
-    type: 'select',
-    label: 'Точка',
-    placeholder: 'Все точки',
-    options: [
-      { id: '', name: 'Все' },
-      ...props.points.map((p) => ({ id: p.id, name: p.name })),
-    ],
-    searchable: true,
-    onChange: (value) => emit('point-filter-change', value),
-  },
-  {
+const filterConfigs = computed<FilterConfig[]>(() => {
+  const configs: FilterConfig[] = [
+    {
+      key: 'search',
+      type: 'search',
+      label: 'Поиск',
+      placeholder: 'Поиск по ФИО',
+      onChange: () => emit('search-submit'),
+    },
+    {
+      key: 'project',
+      type: 'select',
+      label: 'Проект',
+      placeholder: 'Все проекты',
+      options: [
+        { id: '', name: 'Все' },
+        ...props.projects.map((p) => ({ id: p.id, name: p.name })),
+      ],
+      searchable: false,
+      hideWhenSingle: true,
+      onChange: (value) => emit('project-filter-change', value),
+    },
+  ];
+
+  if (props.projectFilter !== '' && props.projectFilter != null) {
+    configs.push({
+      key: 'point',
+      type: 'select',
+      label: 'Точка',
+      placeholder: 'Все точки',
+      options: [
+        { id: '', name: 'Все' },
+        ...props.points.map((p) => ({ id: p.id, name: p.name })),
+      ],
+      searchable: true,
+      hideWhenSingle: true,
+      onChange: (value) => emit('point-filter-change', value),
+    });
+  }
+
+  configs.push({
     key: 'monthYear',
     type: 'custom',
     label: 'Месяц и год',
@@ -938,8 +946,10 @@ const filterConfigs = computed<FilterConfig[]>(() => [
     props: {
       placeholder: 'Месяц и год',
     },
-  },
-]);
+  });
+
+  return configs;
+});
 
 const filterValues = computed(() => ({
   search: props.search,

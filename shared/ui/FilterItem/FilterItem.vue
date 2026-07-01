@@ -1,5 +1,5 @@
 <template>
-  <div class="filter-item-wrapper" :class="filterItemClass">
+  <div v-if="isVisible" class="filter-item-wrapper" :class="filterItemClass">
     <label v-if="filter.label" class="filter-label">{{ filter.label }}</label>
     
     <!-- Select -->
@@ -15,6 +15,7 @@
       :disabled="filter.disabled"
       :loading="filter.loading"
       :width="filter.width"
+      :hide-when-single="hideWhenSingle"
       @update:model-value="handleChange"
       @dropdown-close="handleDropdownClose"
     />
@@ -79,11 +80,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import type { FilterConfig } from '../FiltersBar/FiltersBar.vue';
 import { DatePicker } from '../DatePicker';
 import { DateRangePicker } from '../DateRangePicker';
 import { BaseSelect, InputText } from '@/shared/ui';
+import { getSingleSelectableValue, shouldHideSingleOption } from '../../utils/selectSingleOption';
 
 interface Props {
   filter: FilterConfig;
@@ -97,6 +99,21 @@ const emit = defineEmits<{
   'search-submit': [value: any];
 }>();
 
+const hideWhenSingle = computed(() => props.filter.hideWhenSingle !== false);
+
+const isVisible = computed(() => {
+  if (props.filter.type !== 'select' || !hideWhenSingle.value) {
+    return true;
+  }
+  return !shouldHideSingleOption(props.filter.options, {
+    hideWhenSingle: true,
+    multiple: props.filter.multiple === true,
+    loading: props.filter.loading === true,
+    optionLabel: props.filter.optionLabel || 'name',
+    optionValue: props.filter.optionValue || 'id',
+  });
+});
+
 const filterItemClass = computed(() => {
   return {
     'filter-item--disabled': props.filter.disabled,
@@ -106,6 +123,26 @@ const filterItemClass = computed(() => {
 const handleChange = (value: any) => {
   emit('update:modelValue', value);
 };
+
+function applySingleOptionIfNeeded() {
+  if (!hideWhenSingle.value || props.filter.type !== 'select' || props.filter.multiple || props.filter.loading) {
+    return;
+  }
+  const value = getSingleSelectableValue(
+    props.filter.options,
+    props.filter.optionLabel || 'name',
+    props.filter.optionValue || 'id',
+  );
+  if (value != null && props.modelValue !== value) {
+    handleChange(value);
+  }
+}
+
+watch(
+  () => [props.filter.options, props.filter.loading, hideWhenSingle.value],
+  applySingleOptionIfNeeded,
+  { immediate: true, deep: true },
+);
 
 const handleDropdownClose = () => {
   emit('filter-close', props.filter.key);

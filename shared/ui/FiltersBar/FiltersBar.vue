@@ -102,6 +102,8 @@ export interface FilterConfig {
   onInputFocus?: (e: FocusEvent) => void;
   loading?: boolean;
   width?: string;
+  multiple?: boolean;
+  hideWhenSingle?: boolean;
   component?: any; // For custom components
   props?: Record<string, any>; // Additional props for the component
   onChange?: (value: any) => void;

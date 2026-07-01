@@ -1,5 +1,5 @@
 <template>
-  <div class="base-select-wrapper" ref="wrapperRef">
+  <div v-if="!isHiddenBySingleOption" class="base-select-wrapper" ref="wrapperRef">
     <label v-if="label" :for="id" class="base-select-label">{{ label }}</label>
     <div class="base-select-container" ref="containerRef" :class="{ 'has-error': error, 'is-multiple': multiple }">
       <template v-if="props.searchable">
@@ -74,6 +74,10 @@ import {
   getFloatingScrollContainer,
   getMobileFiltersBounds,
 } from '../../../utils';
+import {
+  getSingleSelectableValue,
+  shouldHideSingleOption,
+} from '../../../utils/selectSingleOption';
 const props = defineProps({
   modelValue: [String, Number, Array],
   options: {
@@ -126,8 +130,39 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  hideWhenSingle: {
+    type: Boolean,
+    default: false,
+  },
 });
 const emit = defineEmits(['update:modelValue', 'dropdown-close', 'max-reached']);
+
+const isHiddenBySingleOption = computed(() =>
+  shouldHideSingleOption(props.options, {
+    hideWhenSingle: props.hideWhenSingle,
+    multiple: props.multiple,
+    loading: props.loading,
+    optionLabel: props.optionLabel,
+    optionValue: props.optionValue,
+  }),
+);
+
+function applySingleOptionIfNeeded() {
+  if (!props.hideWhenSingle || props.multiple || props.loading) {
+    return;
+  }
+  const value = getSingleSelectableValue(
+    props.options,
+    props.optionLabel,
+    props.optionValue,
+  );
+  if (value == null) {
+    return;
+  }
+  if (!isSameValue(props.modelValue, value)) {
+    emit('update:modelValue', value);
+  }
+}
 
 const comboStyle = computed(() => {
   const s = {};
@@ -587,6 +622,7 @@ onMounted(() => {
     window.visualViewport.addEventListener('scroll', handleVisualViewportResize);
   }
   syncSingleSelectDisplay();
+  applySingleOptionIfNeeded();
 });
 onBeforeUnmount(() => {
   detachMobileFiltersScrollListener();
@@ -603,7 +639,15 @@ watch(() => props.modelValue, () => {
 });
 watch(() => props.options, () => {
   syncSingleSelectDisplay();
+  applySingleOptionIfNeeded();
 });
+
+watch(
+  () => [props.loading, props.hideWhenSingle],
+  () => {
+    applySingleOptionIfNeeded();
+  },
+);
 
 watch(() => props.loading, (isLoading) => {
   if (isLoading && dropdownOpen.value) {

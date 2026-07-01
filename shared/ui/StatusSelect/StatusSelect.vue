@@ -1,5 +1,5 @@
 <template>
-  <div class="status-select-wrapper" ref="wrapperRef">
+  <div v-if="!isHiddenBySingleOption" class="status-select-wrapper" ref="wrapperRef">
     <label v-if="label" :for="id" class="status-select-label">{{ label }}</label>
 
     <div class="status-select-container" :class="{ 'has-error': error, 'disabled': disabled, 'multiple': multiple }">
@@ -88,6 +88,10 @@ import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { Teleport } from 'vue';
 import { strictFuzzyMatch } from '../../utils/levenshtein';
 import { buildFixedFloatingStyles, computeFloatingPlacement, getMobileFiltersBounds } from '../../utils';
+import {
+  getSingleSelectableValue,
+  shouldHideSingleOption,
+} from '../../utils/selectSingleOption';
 
 const props = defineProps({
   modelValue: [String, Number, Array],
@@ -128,10 +132,42 @@ const props = defineProps({
   multiple: {
     type: Boolean,
     default: false
-  }
+  },
+  hideWhenSingle: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const emit = defineEmits(['update:modelValue', 'change']);
+
+const isHiddenBySingleOption = computed(() =>
+  shouldHideSingleOption(props.options, {
+    hideWhenSingle: props.hideWhenSingle,
+    multiple: props.multiple,
+    loading: false,
+    optionLabel: props.optionLabel,
+    optionValue: props.optionValue,
+  }),
+);
+
+function applySingleOptionIfNeeded() {
+  if (!props.hideWhenSingle || props.multiple) {
+    return;
+  }
+  const value = getSingleSelectableValue(
+    props.options,
+    props.optionLabel,
+    props.optionValue,
+  );
+  if (value == null) {
+    return;
+  }
+  if (!isSameValue(props.modelValue, value)) {
+    emit('update:modelValue', value);
+    emit('change', value);
+  }
+}
 
 const wrapperRef = ref(null);
 const searchInput = ref(null);
@@ -383,6 +419,7 @@ onMounted(() => {
   document.addEventListener('keydown', handleKeydown);
   window.addEventListener('resize', handleResize);
   window.addEventListener('scroll', handleResize, true);
+  applySingleOptionIfNeeded();
 });
 
 onBeforeUnmount(() => {
@@ -396,6 +433,11 @@ watch(() => props.modelValue, () => {
 });
 
 watch(() => props.options, () => {
+  applySingleOptionIfNeeded();
+});
+
+watch(() => props.hideWhenSingle, () => {
+  applySingleOptionIfNeeded();
 });
 </script>
 
