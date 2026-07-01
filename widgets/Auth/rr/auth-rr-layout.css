@@ -143,6 +143,10 @@ html:has(.auth-rr-shell) body {
   min-height: 0;
   max-width: var(--auth-rr-main-max, 460px);
   margin: var(--auth-rr-main-margin-block) auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   background: transparent;
 }
 
