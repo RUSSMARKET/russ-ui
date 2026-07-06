@@ -137,6 +137,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  dropdownZIndex: {
+    type: Number,
+    default: 100000,
+  },
 });
 
 const emit = defineEmits(['update:modelValue', 'change']);
@@ -264,7 +268,7 @@ function calculateDropdownPosition() {
     ? false
     : placementResult.placement === 'above';
 
-  const baseZIndex = 1001;
+  const baseZIndex = props.dropdownZIndex;
 
   if (openUpward.value) {
     dropdownStyles.value = {
