@@ -46,6 +46,15 @@ export interface EditModalStaffSummary {
   factHoursTotal: string;
   yandex: string;
   dvd: string;
+  /** Sum of pilot-product coefficients for planned shift days in the month. */
   coeffTotal: string;
+  /** coeffTotal / planHoursTotal for the month. */
   coeffPerHour: string;
+}
+
+/** Pilot product coefficient row (GET /api/planned-shifts/coefficients). */
+export interface PlannedShiftCoefficientItem {
+  product_id: number;
+  product_name: string;
+  coefficient: number;
 }

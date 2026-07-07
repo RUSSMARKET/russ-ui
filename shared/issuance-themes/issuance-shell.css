@@ -1,0 +1,229 @@
+/**
+ * Issuance shell CSS variables — mapped from russ design tokens.
+ * Applied via applyTheme() on shell root elements.
+ */
+.issuance-shell {
+  --issuance-accent: var(--russ-primary);
+  --issuance-bg: var(--russ-bg-blue-light);
+  --issuance-surface: var(--russ-bg);
+  --issuance-text: var(--russ-text-primary);
+  --issuance-text-secondary: var(--russ-text-secondary);
+  --issuance-qr-frame: var(--russ-bg);
+  --issuance-hover: var(--russ-bg-hover);
+  --issuance-border: var(--russ-border);
+  --issuance-bg-image: none;
+}
+
+.issuance-shell--consent.issuance-shell--platform {
+  --issuance-bg: var(--russ-bg);
+}
+
+.issuance-shell--consent.issuance-shell--pilot {
+  --issuance-bg: var(--russ-bg-secondary);
+}
+
+.issuance-shell--fullscreen {
+  min-height: 100vh;
+  min-width: 100vw;
+}
+
+.issuance-shell__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--issuance-bg);
+  animation: issuance-fade-in 0.2s ease;
+}
+
+.issuance-shell--fullscreen .issuance-shell__overlay {
+  padding: 0;
+}
+
+.issuance-shell__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  background: var(--issuance-surface);
+  border: 1px solid var(--issuance-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px var(--russ-shadow-color);
+}
+
+.issuance-shell--fullscreen .issuance-shell__panel {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  justify-content: center;
+}
+
+.issuance-shell__headline {
+  margin: 0;
+  color: var(--issuance-text);
+  font-size: clamp(1.25rem, 2.5vw, 2.5rem);
+  font-weight: 600;
+  text-align: center;
+}
+
+.issuance-shell__subheadline {
+  margin: 0;
+  color: var(--issuance-text-secondary);
+  font-size: clamp(0.95rem, 1.8vw, 1.25rem);
+  text-align: center;
+}
+
+.issuance-shell__product-logo {
+  max-width: min(280px, 65vw);
+  max-height: 120px;
+  object-fit: contain;
+}
+
+.issuance-shell__qr-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--issuance-qr-frame);
+  border-radius: 8px;
+  padding: 0;
+  min-height: 200px;
+}
+
+.issuance-shell__qr-canvas {
+  display: block;
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 8px;
+}
+
+.issuance-shell__close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--issuance-text-secondary);
+  box-shadow: 0 2px 8px var(--russ-shadow-color);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.issuance-shell__close-btn:hover {
+  background: var(--issuance-hover);
+  transform: scale(1.05);
+}
+
+.issuance-shell--magnit .issuance-shell__card,
+.issuance-shell--five_cards .issuance-shell__card {
+  position: relative;
+  width: min(95vw, 400px);
+  aspect-ratio: 9 / 16;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px var(--russ-overlay-light);
+}
+
+.issuance-shell__card-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.issuance-shell--magnit .issuance-shell__qr-frame {
+  position: absolute;
+  z-index: 2;
+  width: min(50vw, 205px);
+  height: min(50vw, 215px);
+  border-radius: 16px;
+}
+
+.issuance-shell--five_cards .issuance-shell__qr-frame {
+  position: absolute;
+  bottom: 13px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  width: 95%;
+  height: 53%;
+  border-radius: 38px;
+  padding: 8px;
+}
+
+.issuance-shell--otp .issuance-shell__panel {
+  width: min(520px, 100%);
+  padding: clamp(22px, 5vw, 46px);
+  border-radius: 36px;
+  backdrop-filter: blur(18px);
+  box-shadow: 0 30px 90px rgba(78, 45, 104, 0.26);
+}
+
+.issuance-shell--otp .issuance-shell__qr-frame {
+  padding: 16px;
+  border: 8px solid var(--issuance-border);
+  border-radius: 30px;
+  box-shadow:
+    0 0 0 8px rgba(193, 255, 5, 0.84),
+    0 20px 58px rgba(78, 45, 104, 0.3);
+}
+
+.issuance-shell--dual_qr .issuance-shell__dual-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.issuance-shell__dual-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px;
+  border: 1px solid var(--issuance-border);
+  border-radius: 12px;
+  background: var(--issuance-surface);
+  color: var(--issuance-text);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.issuance-shell__dual-btn:hover {
+  background: var(--issuance-hover);
+}
+
+.issuance-shell--consent {
+  min-height: 100vh;
+  background: var(--issuance-bg);
+}
+
+.issuance-shell--consent .issuance-shell__consent-card {
+  background: var(--issuance-surface);
+  border: 1px solid var(--issuance-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px var(--russ-shadow-color);
+}
+
+@keyframes issuance-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

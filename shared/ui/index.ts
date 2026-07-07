@@ -55,3 +55,33 @@ export { default as Toast } from './Toast/Toast.vue';
 export { useToast } from './Toast';
 export type { ToastServiceMethods, ToastMessage, ToastMessageOptions, ToastSeverity } from './Toast';
 export * from './profile';
+export {
+  mergeTheme,
+  applyTheme,
+  clearTheme,
+  generateBrandedQr,
+  extractDominantColorFromLogo,
+  extractDominantColorFromImageData,
+  getPresetTokens,
+  platformPreset,
+  pilotPreset,
+  magnitPreset,
+  yandexPreset,
+  otpPreset,
+  fiveCardsPreset,
+  IssuanceQrShell,
+  IssuanceDualQrShell,
+  IssuanceConsentShell,
+} from '../issuance-themes';
+export type {
+  ThemePreset,
+  IssuanceShellVariant,
+  IssuanceThemeTokens,
+  IssuanceThemeColors,
+  IssuanceThemeBranding,
+  IssuanceThemeLayout,
+  ThemeOverrides,
+  MergeThemeOptions,
+  GenerateBrandedQrOptions,
+  DominantColorInput,
+} from '../issuance-themes';
