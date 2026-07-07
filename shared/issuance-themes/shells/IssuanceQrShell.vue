@@ -77,12 +77,16 @@ interface Props {
   productName?: string;
   productLogo?: string | null;
   canvasSize?: number;
+  /** @deprecated Ignored — shell variant is always QR. Kept for Products.vue compat. */
+  variant?: string;
 }
 
 interface Emits {
   (e: 'update:visible', value: boolean): void;
   (e: 'close'): void;
 }
+
+defineOptions({ inheritAttrs: false });
 
 const props = withDefaults(defineProps<Props>(), {
   preset: 'platform',

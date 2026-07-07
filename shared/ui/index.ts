@@ -57,8 +57,6 @@ export type { ToastServiceMethods, ToastMessage, ToastMessageOptions, ToastSever
 export * from './profile';
 export {
   mergeTheme,
-  applyTheme,
-  clearTheme,
   generateBrandedQr,
   extractDominantColorFromLogo,
   extractDominantColorFromImageData,
