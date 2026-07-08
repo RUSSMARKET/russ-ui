@@ -64,7 +64,7 @@
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue';
 import { applyTheme, clearTheme } from '../applyTheme';
 import { generateBrandedQr } from '../generateBrandedQr';
-import { mergeTheme } from '../mergeTheme';
+import { resolveShellTheme } from '../mergeTheme';
 import type { IssuanceThemeTokens, ThemeOverrides, ThemePreset } from '../types';
 import '../issuance-shell.css';
 
@@ -99,10 +99,10 @@ const shellRef = ref<HTMLElement | null>(null);
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 
 const theme = computed(() =>
-  props.theme ?? mergeTheme(props.preset, props.overrides, { variant: 'qr' }),
+  resolveShellTheme(props.theme, props.preset, props.overrides, { variant: 'qr' }),
 );
 
-const hasBackgroundImage = computed(() => Boolean(theme.value.layout.backgroundImage));
+const hasBackgroundImage = computed(() => Boolean(theme.value.layout?.backgroundImage));
 
 const showLogo = computed(
   () => theme.value.branding.showLogo && Boolean(props.productLogo),

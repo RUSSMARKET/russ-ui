@@ -36,18 +36,28 @@ describe('mergeTheme', () => {
     expect(theme.colors.background).toBe('#112233');
     expect(theme.branding.headline).toBe('Custom headline');
     expect(theme.colors.accent).toBe('var(--russ-yellow)');
-    expect(theme.branding.subheadline).toBeNull();
+    expect(theme.branding.subheadline).toBe('Ignored subheadline');
     expect(theme.branding.showLogo).toBe(true);
   });
 
   it('ignores overrides for non-yandex presets', () => {
-    const theme = mergeTheme('platform', {
+    const theme = mergeTheme('magnit', {
       colors: { background: '#000000' },
       branding: { headline: 'Should not apply' },
     });
 
-    expect(theme.colors.background).toBe('var(--russ-bg-blue-light)');
-    expect(theme.branding.headline).toBeNull();
+    expect(theme.colors.background).not.toBe('#000000');
+    expect(theme.branding.headline).not.toBe('Should not apply');
+  });
+
+  it('applies platform qr overrides for headline and background', () => {
+    const theme = mergeTheme('platform', {
+      colors: { background: '#aabbcc' },
+      branding: { headline: 'Сканируйте QR' },
+    });
+
+    expect(theme.colors.background).toBe('#aabbcc');
+    expect(theme.branding.headline).toBe('Сканируйте QR');
   });
 
   it('ignores overrides for consent shell regardless of preset', () => {

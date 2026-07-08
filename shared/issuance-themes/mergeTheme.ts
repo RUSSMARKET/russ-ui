@@ -16,7 +16,9 @@ function cloneTokens(tokens: IssuanceThemeTokens): IssuanceThemeTokens {
   };
 }
 
-/** v1 whitelist: only Yandex QR accepts headline + background overrides. */
+/** v1 whitelist: headline + background overrides for QR shells (platform / pilot / yandex). */
+const QR_OVERRIDE_PRESETS = new Set<ThemePreset>(['yandex', 'platform', 'pilot']);
+
 function applyWhitelistedOverrides(
   preset: ThemePreset,
   variant: IssuanceShellVariant,
@@ -27,7 +29,7 @@ function applyWhitelistedOverrides(
     return tokens;
   }
 
-  if (preset !== 'yandex' || variant !== 'qr') {
+  if (variant !== 'qr' || !QR_OVERRIDE_PRESETS.has(preset)) {
     return tokens;
   }
 
@@ -39,6 +41,10 @@ function applyWhitelistedOverrides(
 
   if (overrides.branding?.headline !== undefined) {
     merged.branding.headline = overrides.branding.headline;
+  }
+
+  if (overrides.branding?.subheadline !== undefined) {
+    merged.branding.subheadline = overrides.branding.subheadline;
   }
 
   return merged;
@@ -57,4 +63,28 @@ export function mergeTheme(
   }
 
   return applyWhitelistedOverrides(preset, variant, base, overrides);
+}
+
+export function isIssuanceThemeTokens(value: unknown): value is IssuanceThemeTokens {
+  return (
+    !!value &&
+    typeof value === 'object' &&
+    'layout' in value &&
+    'colors' in value &&
+    'branding' in value
+  );
+}
+
+/** Shell `theme` prop must be full tokens; preset-resolution objects are ignored. */
+export function resolveShellTheme(
+  theme: IssuanceThemeTokens | undefined,
+  preset: ThemePreset,
+  overrides: ThemeOverrides | null | undefined,
+  options: MergeThemeOptions = {},
+): IssuanceThemeTokens {
+  if (isIssuanceThemeTokens(theme)) {
+    return theme;
+  }
+
+  return mergeTheme(preset, overrides, options);
 }

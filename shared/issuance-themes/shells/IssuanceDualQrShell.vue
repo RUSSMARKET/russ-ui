@@ -92,7 +92,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue';
 import { applyTheme, clearTheme } from '../applyTheme';
-import { mergeTheme } from '../mergeTheme';
+import { mergeTheme, resolveShellTheme } from '../mergeTheme';
 import type { IssuanceThemeTokens, ThemeOverrides, ThemePreset } from '../types';
 import IssuanceQrShell from './IssuanceQrShell.vue';
 import '../issuance-shell.css';
@@ -161,7 +161,7 @@ const isValidMask = computed(() =>
 );
 
 const theme = computed(() =>
-  props.theme ?? mergeTheme(props.preset, props.overrides, { variant: 'dual_qr' }),
+  resolveShellTheme(props.theme, props.preset, props.overrides, { variant: 'dual_qr' }),
 );
 
 const qrTheme = computed(() => ({
