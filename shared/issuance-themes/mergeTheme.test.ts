@@ -37,7 +37,8 @@ describe('mergeTheme', () => {
     expect(theme.branding.headline).toBe('Custom headline');
     expect(theme.colors.accent).toBe('var(--russ-yellow)');
     expect(theme.branding.subheadline).toBe('Ignored subheadline');
-    expect(theme.branding.showLogo).toBe(true);
+    expect(theme.branding.showLogo).toBe(false);
+    expect(theme.branding.qrEmbedLogo).toBe(true);
   });
 
   it('ignores overrides for non-yandex presets', () => {
@@ -75,11 +76,13 @@ describe('mergeTheme', () => {
     expect(theme.branding.headline).toBe('Получите подарки от Яндекса');
   });
 
-  it('returns pilot gray tokens for test products', () => {
+  it('returns pilot yandex-like tokens for test QR products', () => {
     const theme = mergeTheme('pilot');
 
     expect(theme.preset).toBe('pilot');
-    expect(theme.colors.background).toBe('var(--russ-bg-tertiary)');
-    expect(theme.branding.headline).toContain('pilot');
+    expect(theme.colors.background).toBe('var(--russ-yellow)');
+    expect(theme.branding.headline).toContain('Тестовая');
+    expect(theme.branding.qrEmbedLogo).toBe(true);
+    expect(theme.branding.showLogo).toBe(false);
   });
 });

@@ -17,8 +17,8 @@ export function yandexPreset(variant: IssuanceShellVariant = 'qr'): IssuanceThem
     branding: {
       headline: 'Получите подарки от Яндекса',
       subheadline: null,
-      showLogo: true,
-      qrEmbedLogo: false,
+      showLogo: false,
+      qrEmbedLogo: true,
     },
     layout: {
       fullscreen: true,

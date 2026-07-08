@@ -1,6 +1,9 @@
 import type { IssuanceShellVariant, IssuanceThemeTokens } from '../types';
 
-/** Neutral gray theme for pilot / test products. */
+/**
+ * Пилот / тестовый продукт: для qr_scan визуально как Яндекс
+ * (жёлтый fullscreen, подпись, лого только в центре QR).
+ */
 export function pilotPreset(variant: IssuanceShellVariant = 'qr'): IssuanceThemeTokens {
   const isConsent = variant === 'consent';
 
@@ -8,23 +11,23 @@ export function pilotPreset(variant: IssuanceShellVariant = 'qr'): IssuanceTheme
     preset: 'pilot',
     variant,
     colors: {
-      accent: 'var(--russ-neutral-dark)',
-      background: isConsent ? 'var(--russ-bg-secondary)' : 'var(--russ-bg-tertiary)',
+      accent: 'var(--russ-yellow)',
+      background: isConsent ? 'var(--russ-bg)' : 'var(--russ-yellow)',
       surface: 'var(--russ-bg)',
       text: 'var(--russ-text-primary)',
-      textSecondary: 'var(--russ-text-tertiary)',
+      textSecondary: 'var(--russ-text-secondary)',
       qrFrame: 'var(--russ-bg)',
       hover: 'var(--russ-bg-hover)',
-      border: 'var(--russ-border-dark)',
+      border: 'var(--russ-border)',
     },
     branding: {
-      headline: 'Тестовая выдача (pilot)',
+      headline: isConsent ? null : 'Тестовая выдача',
       subheadline: null,
-      showLogo: !isConsent,
+      showLogo: false,
       qrEmbedLogo: !isConsent,
     },
     layout: {
-      fullscreen: false,
+      fullscreen: !isConsent,
       showCloseButton: true,
       backgroundImage: null,
     },

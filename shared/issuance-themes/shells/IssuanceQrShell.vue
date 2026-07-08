@@ -105,7 +105,10 @@ const theme = computed(() =>
 const hasBackgroundImage = computed(() => Boolean(theme.value.layout?.backgroundImage));
 
 const showLogo = computed(
-  () => theme.value.branding.showLogo && Boolean(props.productLogo),
+  () =>
+    theme.value.branding.showLogo &&
+    !theme.value.branding.qrEmbedLogo &&
+    Boolean(props.productLogo),
 );
 
 const displayHeadline = computed(() => theme.value.branding.headline ?? null);
