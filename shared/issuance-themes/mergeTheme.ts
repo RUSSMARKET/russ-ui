@@ -1,4 +1,5 @@
 import { getPresetTokens } from './presets';
+import { isHexColor } from './contrastText';
 import type {
   IssuanceShellVariant,
   IssuanceThemeTokens,
@@ -37,6 +38,9 @@ function applyWhitelistedOverrides(
 
   if (overrides.colors?.background) {
     merged.colors.background = overrides.colors.background;
+    if (isHexColor(overrides.colors.background)) {
+      merged.colors.surface = overrides.colors.background;
+    }
   }
 
   if (overrides.branding?.headline !== undefined) {

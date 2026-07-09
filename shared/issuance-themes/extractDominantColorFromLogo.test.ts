@@ -1,5 +1,8 @@
-import { describe, expect, it } from 'vitest';
-import { extractDominantColorFromImageData } from './extractDominantColorFromLogo';
+import { describe, expect, it, vi } from 'vitest';
+import {
+  extractDominantColorFromImageData,
+  resolveLogoLoadUrl,
+} from './extractDominantColorFromLogo';
 
 function createImageData(pixels: Array<[number, number, number, number]>): {
   data: Uint8ClampedArray;
@@ -71,5 +74,26 @@ describe('extractDominantColorFromImageData', () => {
     );
 
     expect(result).toBe('#204080');
+  });
+});
+
+describe('resolveLogoLoadUrl', () => {
+  it('proxies dev.server document URLs on localhost', () => {
+    vi.stubGlobal('window', {
+      location: {
+        origin: 'http://127.0.0.1:3000',
+        hostname: '127.0.0.1',
+        href: 'http://127.0.0.1:3000/products',
+      },
+    });
+
+    const remote =
+      'https://dev.server.rusaifin.ru/document/abc123';
+    expect(resolveLogoLoadUrl(remote)).toBe(
+      'http://127.0.0.1:3000/document-proxy?url='
+        + encodeURIComponent(remote),
+    );
+
+    vi.unstubAllGlobals();
   });
 });

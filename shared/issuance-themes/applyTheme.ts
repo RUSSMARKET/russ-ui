@@ -1,4 +1,5 @@
 import type { IssuanceThemeTokens } from './types';
+import { isHexColor, resolveContrastingTextColorsFromCss } from './contrastText';
 
 const TOKEN_CSS_MAP: Record<keyof IssuanceThemeTokens['colors'], string> = {
   accent: '--issuance-accent',
@@ -10,6 +11,36 @@ const TOKEN_CSS_MAP: Record<keyof IssuanceThemeTokens['colors'], string> = {
   hover: '--issuance-hover',
   border: '--issuance-border',
 };
+
+function resolveTextBackgroundColor(tokens: IssuanceThemeTokens): string {
+  if (tokens.layout.fullscreen) {
+    return tokens.colors.background;
+  }
+
+  return tokens.colors.surface;
+}
+
+function applyContrastTextColors(element: HTMLElement, tokens: IssuanceThemeTokens): void {
+  if (tokens.layout.backgroundImage) {
+    return;
+  }
+
+  const probe = document.createElement('div');
+  probe.style.position = 'absolute';
+  probe.style.visibility = 'hidden';
+  probe.style.pointerEvents = 'none';
+  probe.style.background = resolveTextBackgroundColor(tokens);
+  element.appendChild(probe);
+
+  const resolved = getComputedStyle(probe).backgroundColor;
+  probe.remove();
+
+  const contrasting = resolveContrastingTextColorsFromCss(resolved);
+  if (!contrasting) return;
+
+  element.style.setProperty('--issuance-text', contrasting.text);
+  element.style.setProperty('--issuance-text-secondary', contrasting.textSecondary);
+}
 
 export function applyTheme(element: HTMLElement, tokens: IssuanceThemeTokens): void {
   for (const [key, cssVar] of Object.entries(TOKEN_CSS_MAP)) {
@@ -32,6 +63,8 @@ export function applyTheme(element: HTMLElement, tokens: IssuanceThemeTokens): v
   } else {
     element.style.removeProperty('--issuance-bg-image');
   }
+
+  applyContrastTextColors(element, tokens);
 }
 
 export function clearTheme(element: HTMLElement): void {

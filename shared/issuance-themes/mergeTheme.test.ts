@@ -34,6 +34,7 @@ describe('mergeTheme', () => {
     });
 
     expect(theme.colors.background).toBe('#112233');
+    expect(theme.colors.surface).toBe('#112233');
     expect(theme.branding.headline).toBe('Custom headline');
     expect(theme.colors.accent).toBe('var(--russ-yellow)');
     expect(theme.branding.subheadline).toBe('Ignored subheadline');
@@ -58,6 +59,7 @@ describe('mergeTheme', () => {
     });
 
     expect(theme.colors.background).toBe('#aabbcc');
+    expect(theme.colors.surface).toBe('#aabbcc');
     expect(theme.branding.headline).toBe('Сканируйте QR');
   });
 

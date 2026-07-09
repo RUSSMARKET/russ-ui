@@ -2,6 +2,12 @@ const WHITE_THRESHOLD = 240;
 const ALPHA_THRESHOLD = 16;
 const QUANTIZE_STEP = 16;
 
+const DOCUMENT_STORAGE_HOSTS = new Set([
+  'server.rusaifin.ru',
+  'dev.server.rusaifin.ru',
+  'yandex.server.rusaifin.ru',
+]);
+
 function rgbToHex(r: number, g: number, b: number): string {
   const toHex = (value: number) => value.toString(16).padStart(2, '0');
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
@@ -66,6 +72,38 @@ export function extractDominantColorFromImageData(
   return dominant;
 }
 
+/** Local dev: same-origin /document-proxy вместо cross-origin dev.server (CORS на canvas). */
+export function resolveLogoLoadUrl(logoUrl: string): string {
+  if (!logoUrl || typeof window === 'undefined') {
+    return logoUrl;
+  }
+
+  try {
+    const parsed = new URL(logoUrl, window.location.href);
+    const host = window.location.hostname.toLowerCase();
+    const isLocalDev =
+      host === 'localhost'
+      || host.startsWith('127.')
+      || host.startsWith('192.')
+      || host.startsWith('172.');
+
+    if (!isLocalDev || parsed.origin === window.location.origin) {
+      return logoUrl;
+    }
+
+    if (
+      DOCUMENT_STORAGE_HOSTS.has(parsed.hostname.toLowerCase())
+      && parsed.pathname.includes('/document/')
+    ) {
+      return `${window.location.origin}/document-proxy?url=${encodeURIComponent(logoUrl)}`;
+    }
+  } catch {
+    return logoUrl;
+  }
+
+  return logoUrl;
+}
+
 export async function extractDominantColorFromLogo(
   logoUrl: string,
   sampleSize = 64,
@@ -79,7 +117,7 @@ export async function extractDominantColorFromLogo(
     image.crossOrigin = 'anonymous';
     image.onload = () => resolve(image);
     image.onerror = () => reject(new Error(`Failed to load logo: ${logoUrl}`));
-    image.src = logoUrl;
+    image.src = resolveLogoLoadUrl(logoUrl);
   });
 
   const canvas = document.createElement('canvas');
