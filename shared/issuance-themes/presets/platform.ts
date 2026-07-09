@@ -11,12 +11,12 @@ const platformQr: Omit<IssuanceThemeTokens, 'preset' | 'variant'> = {
     hover: 'var(--russ-bg-hover)',
     border: 'var(--russ-border)',
   },
-  branding: {
-    headline: null,
-    subheadline: null,
-    showLogo: true,
-    qrEmbedLogo: true,
-  },
+    branding: {
+      headline: null,
+      subheadline: null,
+      showLogo: true,
+      qrEmbedLogo: false,
+    },
   layout: {
     fullscreen: false,
     showCloseButton: true,

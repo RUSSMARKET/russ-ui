@@ -1,5 +1,8 @@
 <template>
-  <div class="auth-page">
+  <div
+    class="auth-page"
+    :data-auth-redirecting="loading ? 'true' : undefined"
+  >
     <a :href="homeHref" class="auth-header">
       <img class="logo" :src="logo" :alt="logoAlt" />
     </a>

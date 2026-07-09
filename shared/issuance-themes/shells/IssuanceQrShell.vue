@@ -105,10 +105,7 @@ const theme = computed(() =>
 const hasBackgroundImage = computed(() => Boolean(theme.value.layout?.backgroundImage));
 
 const showLogo = computed(
-  () =>
-    theme.value.branding.showLogo &&
-    !theme.value.branding.qrEmbedLogo &&
-    Boolean(props.productLogo),
+  () => theme.value.branding.showLogo && Boolean(props.productLogo),
 );
 
 const displayHeadline = computed(() => theme.value.branding.headline ?? null);
@@ -128,10 +125,7 @@ async function renderQr(url: string) {
     return;
   }
 
-  const logoUrl =
-    theme.value.branding.qrEmbedLogo && props.productLogo ? props.productLogo : null;
-
-  await generateBrandedQr(canvas, url, logoUrl, { size: props.canvasSize });
+  await generateBrandedQr(canvas, url, null, { size: props.canvasSize });
 }
 
 function applyShellTheme() {

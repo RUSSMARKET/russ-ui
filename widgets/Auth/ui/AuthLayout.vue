@@ -47,6 +47,8 @@ onUnmounted(() => {
 
 html,
 body {
+  margin: 0;
+  background-color: #ffffff;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }

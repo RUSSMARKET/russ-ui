@@ -173,12 +173,16 @@ export function isAuthEntryContentPresent(doc?: Document): boolean {
     return false;
   }
 
-  const authTemplate = target.querySelector('.auth-template');
-  if (authTemplate && authTemplate.children.length > 0) {
-    return true;
-  }
-
-  if (target.querySelector('.auth-page')) {
+  // Смонтированная форма входа. Пока loading (авто-редирект на SSO) — bootstrap-shell не скрываем.
+  const authPage = target.querySelector('.auth-page');
+  if (authPage) {
+    const redirecting =
+      typeof (authPage as Element).getAttribute === 'function'
+        ? (authPage as Element).getAttribute('data-auth-redirecting')
+        : null;
+    if (redirecting === 'true') {
+      return false;
+    }
     return true;
   }
 

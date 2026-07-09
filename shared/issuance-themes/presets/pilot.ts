@@ -2,7 +2,7 @@ import type { IssuanceShellVariant, IssuanceThemeTokens } from '../types';
 
 /**
  * Пилот / тестовый продукт: для qr_scan визуально как Яндекс
- * (жёлтый fullscreen, подпись, лого только в центре QR).
+ * (жёлтый fullscreen, подпись, логотип над QR).
  */
 export function pilotPreset(variant: IssuanceShellVariant = 'qr'): IssuanceThemeTokens {
   const isConsent = variant === 'consent';
@@ -23,8 +23,8 @@ export function pilotPreset(variant: IssuanceShellVariant = 'qr'): IssuanceTheme
     branding: {
       headline: isConsent ? null : 'Тестовая выдача',
       subheadline: null,
-      showLogo: false,
-      qrEmbedLogo: !isConsent,
+      showLogo: !isConsent,
+      qrEmbedLogo: false,
     },
     layout: {
       fullscreen: !isConsent,
