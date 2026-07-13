@@ -28,7 +28,7 @@
           :model-value="form.patronymic" 
           @update:model-value="updateField('patronymic', $event)"
           name="patronymic" 
-          placeholder="Отчество" 
+          :placeholder="form.noPatronymic ? 'По паспорту нет отчества' : 'Отчество'"
           class="form-input"
           :class="{ error: errors.patronymic }"
           :disabled="form.noPatronymic"
@@ -40,7 +40,7 @@
             :checked="form.noPatronymic"
             @change="handleNoPatronymicChange"
           />
-          <span>Нет отчества</span>
+          <span>По паспорту нет отчества</span>
         </label>
       </div>
       <div v-if="errors.patronymic && !isYandexHost" class="error-message">

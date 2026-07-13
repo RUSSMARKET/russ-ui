@@ -8,9 +8,9 @@
       <span class="profile-label">Имя:</span>
       <span class="profile-value">{{ filledUserData?.name || '-' }}</span>
     </div>
-    <div v-if="filledUserData?.patronymic && !isYandexHost" class="profile-row">
+    <div v-if="!isYandexHost" class="profile-row">
       <span class="profile-label">Отчество:</span>
-      <span class="profile-value">{{ filledUserData?.patronymic || '-' }}</span>
+      <span class="profile-value">{{ filledUserData?.patronymic || 'По паспорту нет отчества' }}</span>
     </div>
     <div class="profile-row">
       <span class="profile-label">Телефон:</span>
