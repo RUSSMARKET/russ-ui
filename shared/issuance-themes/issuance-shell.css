@@ -51,7 +51,6 @@
   background: var(--issuance-surface);
   border: 1px solid var(--issuance-border);
   border-radius: 12px;
-  padding: 1.5rem;
   box-shadow: 0 4px 12px var(--russ-shadow-color);
 }
 
