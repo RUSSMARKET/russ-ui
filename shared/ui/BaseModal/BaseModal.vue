@@ -697,10 +697,6 @@ onUnmounted(() => {
     border: none;
   }
 
-  .base-modal-footer.base-modal-footer--mobile-open :deep(.modal-actions-label) {
-    margin-top: 4px;
-  }
-
   .base-modal-footer.base-modal-footer--mobile-open :deep(button) {
     width: 100%;
     min-width: 0;
