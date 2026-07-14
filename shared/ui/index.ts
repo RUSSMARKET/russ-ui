@@ -12,6 +12,14 @@ export { default as MagnetSearchModal } from './MagnetSearchModal/MagnetSearchMo
 export { AnalyticsExportModal } from './AnalyticsExportModal';
 export type { AnalyticsRuchnikType } from './AnalyticsExportModal';
 export { default as StaffResultsModal } from './StaffResultsModal/StaffResultsModal.vue';
+export {
+  StaffPasswordChangeModals,
+  StaffCredentialsRevealModal,
+  STAFF_PASSWORD_SYMBOLS,
+  validateStaffPassword,
+  setUserPasswordErrorMessage,
+} from './StaffPassword';
+export type { StaffSetPasswordFn } from './StaffPassword';
 export { default as EffectivenessModal } from './EffectivenessModal/EffectivenessModal.vue';
 export { RolePagesModal } from './RolePagesModal';
 export { AddPagesModal } from './AddPagesModal';
