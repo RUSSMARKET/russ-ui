@@ -14,12 +14,12 @@
       <!-- PM: полный +7 (999) 999-99-99 (без Vue :value) -->
       <input
         :id="`${fieldId}-credential`"
-        type="text"
+        type="tel"
         tabindex="-1"
         aria-hidden="true"
         class="auth-rr-input-phone__credential"
         :name="name"
-        :autocomplete="credentialAutocomplete"
+        :autocomplete="resolvedCredentialAutocomplete"
         inputmode="tel"
         @input="syncFromCredentialInput"
         @change="syncFromCredentialInput"
@@ -107,6 +107,18 @@ const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
 
 const autoId = useId();
 const fieldId = computed(() => props.fieldId || `auth-rr-phone-${autoId}`);
+
+/** username + tel — Яндекс/Chrome PM; tel + username — регистрация и восстановление */
+const resolvedCredentialAutocomplete = computed(() => {
+  const token = props.credentialAutocomplete || 'tel';
+  if (token === 'username') {
+    return 'username tel';
+  }
+  if (token === 'tel') {
+    return 'tel username';
+  }
+  return token;
+});
 
 const {
   inputRef,
