@@ -28,6 +28,17 @@
           <div class="base-modal-header-actions">
             <slot name="header-actions"></slot>
             <button
+              v-if="hasFooter && isMobile"
+              type="button"
+              class="base-modal-mobile-menu-btn"
+              :class="{ 'base-modal-mobile-menu-btn--active': mobileFooterOpen }"
+              :aria-label="mobileMenuAriaLabel"
+              :aria-expanded="mobileFooterOpen"
+              @click.stop="toggleMobileFooter"
+            >
+              <i class="pi pi-ellipsis-v" aria-hidden="true"></i>
+            </button>
+            <button
               v-if="closable"
               class="base-modal-close"
               @click="handleClose"
@@ -43,8 +54,19 @@
           <slot></slot>
         </div>
 
+        <div
+          v-if="isMobile && mobileFooterOpen && hasFooter"
+          class="base-modal-footer-backdrop"
+          @click="mobileFooterOpen = false"
+        />
+
         <!-- Footer -->
-        <div v-if="$slots.footer" class="base-modal-footer">
+        <div
+          v-if="hasFooter"
+          class="base-modal-footer"
+          :class="{ 'base-modal-footer--mobile-open': isMobile && mobileFooterOpen }"
+          @click="onFooterClick"
+        >
           <slot name="footer"></slot>
         </div>
       </div>
@@ -53,7 +75,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted, onUnmounted, normalizeClass } from 'vue';
+import { ref, computed, watch, nextTick, onMounted, onUnmounted, normalizeClass, useSlots } from 'vue';
+
+const MOBILE_BREAKPOINT = 768;
 
 interface Props {
   modelValue: boolean;
@@ -70,6 +94,7 @@ interface Props {
   maxHeight?: string | number;
   position?: 'center' | 'top' | 'bottom';
   closeAriaLabel?: string;
+  mobileMenuAriaLabel?: string;
   class?: string;
   size?: 'sm' | 'md' | 'lg';
   heightMode?: 'content' | 'max';
@@ -83,10 +108,16 @@ const props = withDefaults(defineProps<Props>(), {
   modal: true,
   position: 'center',
   closeAriaLabel: 'Закрыть',
+  mobileMenuAriaLabel: 'Действия',
   class: '',
   size: 'md',
   heightMode: 'content',
 });
+
+const slots = useSlots();
+const hasFooter = computed(() => Boolean(slots.footer));
+const isMobile = ref(false);
+const mobileFooterOpen = ref(false);
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean];
@@ -192,14 +223,38 @@ const handleOverlayClick = () => {
 };
 
 const handleClose = () => {
+  mobileFooterOpen.value = false;
   emit('update:modelValue', false);
   emit('hide');
 };
 
-const handleEscape = (event: KeyboardEvent) => {
-  if (event.key === 'Escape' && props.closeOnEscape && props.modelValue) {
-    handleClose();
+const updateIsMobile = () => {
+  if (typeof window === 'undefined') return;
+  isMobile.value = window.innerWidth <= MOBILE_BREAKPOINT;
+};
+
+const toggleMobileFooter = () => {
+  mobileFooterOpen.value = !mobileFooterOpen.value;
+};
+
+const onFooterClick = (event: MouseEvent) => {
+  const target = event.target as HTMLElement | null;
+  if (target?.closest('button:not(:disabled)')) {
+    mobileFooterOpen.value = false;
   }
+};
+
+const handleEscape = (event: KeyboardEvent) => {
+  if (event.key !== 'Escape' || !props.closeOnEscape || !props.modelValue) {
+    return;
+  }
+
+  if (isMobile.value && mobileFooterOpen.value) {
+    mobileFooterOpen.value = false;
+    return;
+  }
+
+  handleClose();
 };
 
 // Блокировка скролла body при открытой модалке
@@ -215,6 +270,7 @@ watch(
         modalRef.value?.focus();
       });
     } else {
+      mobileFooterOpen.value = false;
       // Разблокируем скролл body
       document.body.style.overflow = '';
     }
@@ -222,19 +278,25 @@ watch(
   { immediate: true }
 );
 
-// Очистка при размонтировании
-onUnmounted(() => {
-  document.body.style.overflow = '';
+watch(isMobile, (mobile) => {
+  if (!mobile) {
+    mobileFooterOpen.value = false;
+  }
 });
 
 // Обработка клавиатуры
 onMounted(() => {
+  updateIsMobile();
+  window.addEventListener('resize', updateIsMobile);
+
   if (props.closeOnEscape) {
     document.addEventListener('keydown', handleEscape);
   }
 });
 
 onUnmounted(() => {
+  document.body.style.overflow = '';
+  window.removeEventListener('resize', updateIsMobile);
   document.removeEventListener('keydown', handleEscape);
 });
 </script>
@@ -329,6 +391,8 @@ onUnmounted(() => {
   flex-direction: row;
   align-items: flex-start;
   gap: 1rem;
+  position: relative;
+  z-index: 21;
 }
 
 .base-modal-header-content {
@@ -386,6 +450,47 @@ onUnmounted(() => {
 .base-modal-close:focus {
   outline: 1px solid var(--russ-text-quaternary);
   outline-offset: 2px;
+}
+
+.base-modal-mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--russ-text-tertiary);
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, background-color 0.15s;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.base-modal-mobile-menu-btn:hover {
+  color: var(--russ-text-secondary);
+  background: var(--russ-bg-hover);
+}
+
+.base-modal-mobile-menu-btn--active,
+.base-modal-mobile-menu-btn--active:hover {
+  color: var(--russ-accent-dark);
+  background: var(--russ-bg-hover);
+}
+
+.base-modal-mobile-menu-btn:focus {
+  outline: 1px solid var(--russ-text-quaternary);
+  outline-offset: 2px;
+}
+
+.base-modal-footer-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: transparent;
 }
 
 .base-modal-content {
@@ -532,13 +637,65 @@ onUnmounted(() => {
     padding: 1rem;
   }
 
-  .base-modal-footer {
-    padding: 0.75rem 1rem;
-    flex-direction: column;
+  .base-modal-mobile-menu-btn {
+    display: flex;
   }
 
-  .base-modal-footer > * {
+  .base-modal-footer {
+    display: none;
+    position: absolute;
+    top: 52px;
+    right: 12px;
+    left: auto;
+    width: min(320px, calc(100% - 24px));
+    max-height: min(60vh, calc(100dvh - 120px));
+    overflow-y: auto;
+    padding: 8px;
+    border: 1px solid var(--russ-border);
+    border-radius: 8px;
+    border-top: 1px solid var(--russ-border);
+    background: var(--russ-bg);
+    box-shadow: 0 4px 20px var(--russ-shadow-color);
+    flex-direction: column;
+    align-items: stretch;
+    z-index: 21;
+  }
+
+  .base-modal-footer.base-modal-footer--mobile-open {
+    display: flex;
+  }
+
+  .base-modal-footer.base-modal-footer--mobile-open > * {
     width: 100%;
+  }
+
+  .base-modal-footer.base-modal-footer--mobile-open :deep(.form-actions),
+  .base-modal-footer.base-modal-footer--mobile-open :deep(.modal-footer-actions),
+  .base-modal-footer.base-modal-footer--mobile-open :deep(.reporting-modal-footer) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+    padding: 4px;
+    margin: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+  }
+
+  .base-modal-footer.base-modal-footer--mobile-open :deep(.btn-block) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .base-modal-footer.base-modal-footer--mobile-open :deep(button) {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    white-space: normal;
+    text-align: center;
   }
 }
 </style>

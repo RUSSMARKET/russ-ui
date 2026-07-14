@@ -165,7 +165,7 @@
   --rr-fx-shadow-ambient: rgba(16, 16, 18, 0.019999999552965164);
   --rr-fx-shadow-penumbra: rgba(16, 16, 18, 0.03999999910593033);
   --rr-fx-shadow-major: rgba(16, 16, 18, 0.11999999731779099);
-  --rr-misc-control-control-bg: {Backgrounds.Neutral.Primary};
-  --rr-misc-badge-label-contrast: {Labels.Static.Dark.Primary};
-  --rr-misc-badge-label-default: {Labels.Static.Light.Primary};
+  --rr-misc-control-control-bg: var(--rr-backgrounds-neutral-primary-default);
+  --rr-misc-badge-label-contrast: var(--rr-labels-static-dark-primary);
+  --rr-misc-badge-label-default: var(--rr-labels-static-light-primary);
 }
