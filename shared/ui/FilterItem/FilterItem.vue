@@ -185,7 +185,7 @@ const handleSearchEnter = (event: Event) => {
   height: var(--filter-control-height, var(--ui-control-height, 40px));
   padding: 0 var(--filter-control-padding-x, 12px);
   border-radius: var(--filter-control-radius, 10px);
-  font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+  font-family: var(--filter-control-font-family, var(--russ-font-family));
   font-size: var(--filter-control-font-size, 14px);
   font-weight: var(--filter-control-font-weight, 500);
   line-height: var(--filter-control-line-height, 1.2);
@@ -225,7 +225,7 @@ const handleSearchEnter = (event: Event) => {
 }
 
 .filter-label {
-  font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+  font-family: var(--filter-control-font-family, var(--russ-font-family));
   font-size: 13px;
   font-weight: 600;
   color: var(--russ-text-muted);
@@ -265,7 +265,7 @@ const handleSearchEnter = (event: Event) => {
   padding: 0 0 0 var(--filter-control-padding-x, 12px);
   border: none;
   border-radius: 0;
-  font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+  font-family: var(--filter-control-font-family, var(--russ-font-family));
   font-size: var(--filter-control-font-size, 14px);
   font-weight: var(--filter-control-font-weight, 500);
   line-height: var(--filter-control-line-height, 1.2);

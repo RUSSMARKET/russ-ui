@@ -189,14 +189,14 @@ async function copyBoth() {
 }
 
 .cred-row__value--digits {
-  font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--russ-font-family);
   font-variant-numeric: tabular-nums lining-nums;
   font-feature-settings: "tnum" 1, "lnum" 1;
   letter-spacing: 0.04em;
 }
 
 .cred-row__value--mono {
-  font-family: ui-monospace, "SF Mono", "Cascadia Code", "Segoe UI Mono", Menlo, Consolas, monospace;
+  font-family: var(--russ-font-family-mono);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.06em;
 }

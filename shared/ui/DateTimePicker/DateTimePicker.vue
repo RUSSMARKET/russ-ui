@@ -338,7 +338,7 @@ onBeforeUnmount(() => {
 .date-time-picker__input:hover:not(.is-disabled) { border-color: var(--russ-border-light); }
 .date-time-picker__input.is-open { border-color: var(--russ-input-border-focus); box-shadow: inset 0 0 0 3px var(--russ-shadow-accent-light); background: var(--russ-input-bg); }
 .date-time-picker__input.is-disabled { opacity: .6; cursor: not-allowed; background: var(--russ-input-bg-disabled); }
-.date-time-picker__value { font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif); font-size: var(--filter-control-font-size, 14px); font-weight: var(--filter-control-font-weight, 500); line-height: var(--filter-control-line-height, 1.2); color: var(--russ-text-primary); }
+.date-time-picker__value { font-family: var(--filter-control-font-family, var(--russ-font-family)); font-size: var(--filter-control-font-size, 14px); font-weight: var(--filter-control-font-weight, 500); line-height: var(--filter-control-line-height, 1.2); color: var(--russ-text-primary); }
 .date-time-picker__value.placeholder { color: var(--filter-control-placeholder-color, var(--russ-text-quaternary)); }
 .date-time-picker__icon { color: var(--russ-text-tertiary); display: inline-flex; }
 .date-time-picker__dropdown { background: var(--russ-input-bg); border: 1.5px solid var(--russ-border); border-radius: 12px; box-shadow: 0 8px 24px var(--russ-shadow-color); padding: 10px; overflow: auto; overscroll-behavior: contain; }

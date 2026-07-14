@@ -77,7 +77,7 @@ const handleClick = (event) => {
   gap: 8px;
   min-height: var(--ui-control-height, var(--filter-control-height, var(--filter-control-height-md, 40px)));
   padding: 0 0.75rem;
-  font-family: 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-family: var(--russ-font-family);
   font-size: clamp(
     14px,
     calc(14px + (18 - 14) * ((100vw - 320px) / (1920 - 320))),

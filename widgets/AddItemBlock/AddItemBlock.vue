@@ -836,7 +836,7 @@ const onDrop = (dropIndex: number) => {
   border: 1.5px solid var(--russ-border);
   border-radius: var(--filter-control-radius, 10px);
   font-size: var(--filter-control-font-size, var(--filter-control-font-size-md, 14px));
-  font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+  font-family: var(--filter-control-font-family, var(--russ-font-family));
   font-weight: var(--filter-control-font-weight, 500);
   line-height: var(--filter-control-line-height, 1.2);
   background: var(--russ-bg-quaternary);

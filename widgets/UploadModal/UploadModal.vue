@@ -506,7 +506,7 @@ watch(() => props.uploadSuccess, (newValue, oldValue) => {
   border: 2px solid var(--russ-border-light);
   border-radius: 8px;
   font-size: 16px;
-  font-family: 'Courier New', monospace;
+  font-family: var(--russ-font-family-mono);
   letter-spacing: 1px;
   transition: all 0.2s ease;
 }

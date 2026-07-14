@@ -505,7 +505,7 @@ onBeforeUnmount(() => {
   padding: 0 var(--filter-control-padding-x, 12px);
   border: 1.5px solid var(--russ-border);
   border-radius: var(--filter-control-radius, 10px);
-  font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+  font-family: var(--filter-control-font-family, var(--russ-font-family));
   font-size: var(--filter-control-font-size, 14px);
   font-weight: var(--filter-control-font-weight, 500);
   line-height: var(--filter-control-line-height, 1.2);

@@ -599,7 +599,7 @@ watch(() => props.visible, (newVal) => {
 }
 
 .id-cell {
-    font-family: 'Courier New', monospace;
+    font-family: var(--russ-font-family-mono);
     font-weight: 700;
     color: var(--russ-text-primary);
     font-size: 13px;
@@ -665,7 +665,7 @@ watch(() => props.visible, (newVal) => {
 }
 
 .card-cell {
-    font-family: 'Courier New', monospace;
+    font-family: var(--russ-font-family-mono);
     font-weight: 600;
     color: var(--russ-text-primary);
     font-size: 13px;
