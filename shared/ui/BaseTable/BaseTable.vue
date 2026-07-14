@@ -20,12 +20,6 @@
               @click="column.sortable !== false ? handleSort(column.key) : null">
               <div class="header-content">
                 <span>{{ column.header }}</span>
-                <div v-if="column.sortable !== false" class="sort-indicators">
-                  <i class="pi pi-sort-up sort-icon"
-                    :class="{ 'active': sortColumn === column.key && sortDirection === 'asc' }"></i>
-                  <i class="pi pi-sort-down sort-icon"
-                    :class="{ 'active': sortColumn === column.key && sortDirection === 'desc' }"></i>
-                </div>
               </div>
             </th>
             <th v-if="showActions" class="actions-header">Действия</th>
@@ -426,28 +420,7 @@ const skeletonBarClass = (colIndex: number, rowIndex: number) => {
 .header-content {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
-}
-
-.sort-indicators {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.sort-icon {
-  font-size: 12px;
-  color: var(--russ-border-dark);
-  transition: color 0.2s ease;
-}
-
-.sort-icon.active {
-  color: var(--russ-secondary-dark);
-}
-
-.sort-icon:not(.active):hover {
-  color: var(--russ-text-quaternary);
 }
 
 .no-results {
@@ -517,10 +490,6 @@ const skeletonBarClass = (colIndex: number, rowIndex: number) => {
 
   .header-content {
     gap: 6px;
-  }
-
-  .sort-icon {
-    font-size: 10px;
   }
 }
 </style>

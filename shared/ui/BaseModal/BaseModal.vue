@@ -683,11 +683,22 @@ onUnmounted(() => {
     border-radius: 0;
   }
 
-  .base-modal-footer.base-modal-footer--mobile-open :deep(.btn-block) {
+  .base-modal-footer.base-modal-footer--mobile-open :deep(.btn-block),
+  .base-modal-footer.base-modal-footer--mobile-open :deep(.modal-actions-group),
+  .base-modal-footer.base-modal-footer--mobile-open :deep(.modal-actions-group--process),
+  .base-modal-footer.base-modal-footer--mobile-open :deep(.modal-actions-cluster),
+  .base-modal-footer.base-modal-footer--mobile-open :deep(.modal-actions-buttons) {
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
     width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+
+  .base-modal-footer.base-modal-footer--mobile-open :deep(.modal-actions-label) {
+    margin-top: 4px;
   }
 
   .base-modal-footer.base-modal-footer--mobile-open :deep(button) {
