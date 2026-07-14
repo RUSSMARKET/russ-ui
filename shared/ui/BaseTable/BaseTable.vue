@@ -272,7 +272,6 @@ const skeletonBarClass = (colIndex: number, rowIndex: number) => {
   overflow-x: auto;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  scrollbar-gutter: stable;
 }
 
 .base-table {
