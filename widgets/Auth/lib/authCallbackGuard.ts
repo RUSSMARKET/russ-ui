@@ -169,20 +169,26 @@ export function isAuthEntryContentPresent(doc?: Document): boolean {
   if (!target) {
     return false;
   }
-  if (typeof target.querySelector !== 'function' || typeof target.getElementById !== 'function') {
+  if (typeof target.querySelector !== 'function') {
     return false;
   }
 
-  const authTemplate = target.querySelector('.auth-template');
-  if (authTemplate && authTemplate.children.length > 0) {
-    return true;
+  // Только готовая форма входа (.auth-page). Промежуточный .auth-template без
+  // страницы — ещё не контент (иначе recovery на /auth подавляется навсегда).
+  const authPage = target.querySelector('.auth-page');
+  if (!authPage) {
+    return false;
   }
 
-  if (target.querySelector('.auth-page')) {
-    return true;
+  // SSO-редирект уже в процессе: страница в DOM есть, но это не «готовый» вход.
+  if (
+    typeof authPage.getAttribute === 'function'
+    && authPage.getAttribute('data-auth-redirecting') === 'true'
+  ) {
+    return false;
   }
 
-  return false;
+  return true;
 }
 
 export function shouldSuppressGlobalRecovery(path?: string): boolean {
