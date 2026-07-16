@@ -701,6 +701,10 @@ const onDrop = (dropIndex: number) => {
   font-weight: 600;
   color: var(--russ-text-primary);
   font-size: 15px;
+  cursor: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  user-select: text;
 }
 
 .support-phone {
