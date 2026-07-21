@@ -449,7 +449,7 @@ watch(() => props.hideWhenSingle, () => {
 .status-select-wrapper {
   position: relative;
   width: 100%;
-  font-family: 'Onest', sans-serif;
+  font-family: var(--russ-font-family);
   overflow: visible;
 }
 
@@ -482,7 +482,7 @@ watch(() => props.hideWhenSingle, () => {
   background: var(--russ-bg);
   border: 1px solid var(--russ-border);
   border-radius: var(--status-select-radius, var(--filter-control-radius, 10px));
-  font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+  font-family: var(--filter-control-font-family, var(--russ-font-family));
   font-size: var(--status-select-font-size, var(--filter-control-font-size, var(--filter-control-font-size-md, 14px)));
   font-weight: var(--filter-control-font-weight, 500);
   line-height: var(--filter-control-line-height, 1.2);

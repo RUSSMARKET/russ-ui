@@ -192,14 +192,17 @@
                 </div>
               </th>
               <th class="sticky-summary-pack summary-head-cell" scope="colgroup">
-                <div class="summary-inner-head">
+                <div
+                  class="summary-inner-head"
+                  :style="{ '--summary-cols': summaryColumnCount }"
+                >
                   <span title="Сумма часов по плану (черновик + сохранённое)">Часы по плану</span>
                   <span title="Количество смен по плану">Смен</span>
                   <span title="Сумма фактических часов по дням (из отчёта)">Факт ч</span>
                   <span title="Данные API не подключены">Яндекс</span>
                   <span title="Данные API не подключены">ДВД</span>
-                  <span title="Данные API не подключены">Коэф.</span>
-                  <span title="Данные API не подключены">Коэф/ч</span>
+                  <span v-if="showCoeffColumns" title="Сумма коэффициентов пилотных продуктов за месяц">Коэф.</span>
+                  <span v-if="showCoeffColumns" title="Коэффициент на час по плану">Коэф/ч</span>
                 </div>
               </th>
             </tr>
@@ -373,14 +376,17 @@
                 </div>
               </td>
               <td class="sticky-summary-pack summary-body-cell">
-                <div class="summary-inner-body">
+                <div
+                  class="summary-inner-body"
+                  :style="{ '--summary-cols': summaryColumnCount }"
+                >
                   <span>{{ resolveStaffSummary(staff).planHoursTotal }}</span>
                   <span>{{ resolveStaffSummary(staff).planShiftCount }}</span>
                   <span>{{ resolveStaffSummary(staff).factHoursTotal }}</span>
                   <span>{{ resolveStaffSummary(staff).yandex }}</span>
                   <span>{{ resolveStaffSummary(staff).dvd }}</span>
-                  <span>{{ resolveStaffSummary(staff).coeffTotal }}</span>
-                  <span>{{ resolveStaffSummary(staff).coeffPerHour }}</span>
+                  <span v-if="showCoeffColumns">{{ resolveStaffSummary(staff).coeffTotal }}</span>
+                  <span v-if="showCoeffColumns">{{ resolveStaffSummary(staff).coeffPerHour }}</span>
                 </div>
               </td>
             </tr>
@@ -434,6 +440,8 @@ interface Props {
   embedded?: boolean;
   visible: boolean;
   loading: boolean;
+  /** When true, show pilot-product coefficient summary columns (Коэф. / Коэф/ч). */
+  showCoeffColumns?: boolean;
   search: string;
   projectFilter: string | number;
   pointFilter: string | number;
@@ -471,7 +479,10 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   embedded: false,
+  showCoeffColumns: false,
 });
+
+const summaryColumnCount = computed(() => (props.showCoeffColumns ? 7 : 5));
 
 const emit = defineEmits<{
   'close': [];
@@ -1456,7 +1467,7 @@ const handleReset = () => {
 .summary-inner-head,
 .summary-inner-body {
   display: grid;
-  grid-template-columns: repeat(7, minmax(36px, 1fr));
+  grid-template-columns: repeat(var(--summary-cols, 7), minmax(36px, 1fr));
   gap: 2px;
   font-size: 9px;
   text-align: center;
@@ -2217,7 +2228,7 @@ const handleReset = () => {
 
   .summary-inner-head,
   .summary-inner-body {
-    grid-template-columns: repeat(7, minmax(26px, 1fr));
+    grid-template-columns: repeat(var(--summary-cols, 7), minmax(26px, 1fr));
     gap: 1px;
     font-size: 8px;
   }
@@ -2336,7 +2347,7 @@ const handleReset = () => {
 
   .summary-inner-head,
   .summary-inner-body {
-    grid-template-columns: repeat(7, minmax(22px, 1fr));
+    grid-template-columns: repeat(var(--summary-cols, 7), minmax(22px, 1fr));
     font-size: 7px;
   }
 }

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T08:35:55.301Z",
+  "generatedAt": "2026-07-14T10:30:01.988Z",
   "prefix": "rr",
   "count": 583,
   "tokens": {
@@ -2048,21 +2048,21 @@
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-misc-control-control-bg": {
-      "value": "{Fills.Neutral.Primary}",
+      "value": "var(--rr-fills-neutral-primary)",
       "path": "Misc.Control.Control-bg",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-misc-badge-label-contrast": {
-      "value": "{Labels.Static.Dark.Primary}",
+      "value": "var(--rr-labels-static-dark-primary)",
       "path": "Misc.Badge.Label-contrast",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-misc-badge-label-default": {
-      "value": "{Labels.Static.Light.Primary}",
+      "value": "var(--rr-labels-static-light-primary)",
       "path": "Misc.Badge.Label-default",
       "type": "color",
       "group": "semantic",

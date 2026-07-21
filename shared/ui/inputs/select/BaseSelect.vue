@@ -698,7 +698,7 @@ watch(() => props.loading, (isLoading) => {
   padding: var(--base-select-padding, 0 44px 0 var(--filter-control-padding-x, 14px));
   border: var(--base-select-border, 1.5px solid var(--russ-border));
   border-radius: var(--base-select-radius, var(--filter-control-radius, 10px));
-  font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+  font-family: var(--filter-control-font-family, var(--russ-font-family));
   font-size: var(--base-select-font-size, var(--filter-control-font-size, var(--filter-control-font-size-md, 14px)));
   font-weight: var(--filter-control-font-weight, 500);
   line-height: var(--filter-control-line-height, 1.2);
@@ -839,7 +839,7 @@ watch(() => props.loading, (isLoading) => {
   background: var(--base-select-bg, var(--russ-bg-quaternary));
   border: var(--base-select-border, 1.5px solid var(--russ-border));
   border-radius: var(--base-select-radius, var(--filter-control-radius, 10px));
-  font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+  font-family: var(--filter-control-font-family, var(--russ-font-family));
   font-size: var(--base-select-font-size, var(--filter-control-font-size, var(--filter-control-font-size-md, 14px)));
   font-weight: var(--filter-control-font-weight, 500);
   line-height: var(--filter-control-line-height, 1.2);

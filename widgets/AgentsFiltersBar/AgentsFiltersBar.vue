@@ -11,6 +11,7 @@ defineProps<{
   canUseProjectFilter: boolean
   projectOptions: Array<{ id: string | number; name: string }>
   pointOptions: Array<{ id: string | number; name: string }>
+  searchPending?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -25,13 +26,19 @@ const emit = defineEmits<{
 <template>
   <div class="filters-block header-bar">
     <div class="filters-row">
-      <div class="search-wrapper">
+      <div class="search-wrapper" :class="{ 'search-wrapper--pending': searchPending }">
         <SearchInput
           :model-value="filterFio"
           placeholder="Поиск по ФИО или телефону"
           @update:model-value="emit('update:filterFio', $event)"
           @search="emit('search')"
         />
+        <span
+          v-if="searchPending"
+          class="search-pending-spinner"
+          aria-label="Поиск…"
+          aria-live="polite"
+        ></span>
       </div>
       <BaseSelect
         v-if="mainTab === 'staff' || mainTab === 'blocked'"
@@ -92,6 +99,30 @@ const emit = defineEmits<{
   min-width: 180px;
   height: 48px;
   width: 100%;
+}
+
+.search-wrapper--pending :deep(input) {
+  padding-right: 44px;
+}
+
+.search-pending-spinner {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  margin-top: -9px;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  border-top-color: var(--russ-primary, #2563eb);
+  border-radius: 50%;
+  animation: agents-search-spin 0.7s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes agents-search-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .filters-row {

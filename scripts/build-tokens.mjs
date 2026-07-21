@@ -126,7 +126,45 @@ function pathToCssVar(segments, prefix = 'rr') {
   return `--${prefix}-${body}`;
 }
 
-function resolveTokenValue(node) {
+function collectTokenPaths(obj, segments, paths) {
+  if (!obj || typeof obj !== 'object') {
+    return;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(obj, '$type') && Object.prototype.hasOwnProperty.call(obj, '$value')) {
+    paths.add(segments.join('.'));
+    return;
+  }
+
+  for (const [key, child] of Object.entries(obj)) {
+    if (key.startsWith('$')) {
+      continue;
+    }
+    collectTokenPaths(child, [...segments, key], paths);
+  }
+}
+
+function resolveAliasToCssVar(value, tokenPaths) {
+  const match = String(value).match(/^\{([^}]+)\}$/);
+  if (!match) {
+    return null;
+  }
+
+  const segments = match[1].split('.');
+  const path = segments.join('.');
+  if (tokenPaths.has(path)) {
+    return `var(${pathToCssVar(segments)})`;
+  }
+
+  const defaultPath = [...segments, 'Default'].join('.');
+  if (tokenPaths.has(defaultPath)) {
+    return `var(${pathToCssVar([...segments, 'Default'])})`;
+  }
+
+  return null;
+}
+
+function resolveTokenValue(node, tokenPaths) {
   const { $type, $value } = node;
   if ($value === undefined || $value === null) {
     return null;
@@ -134,7 +172,8 @@ function resolveTokenValue(node) {
 
   if ($type === 'color') {
     if (typeof $value === 'string') {
-      return $value;
+      const alias = resolveAliasToCssVar($value, tokenPaths);
+      return alias ?? null;
     }
     if ($value.hex) {
       const a = $value.alpha ?? 1;
@@ -177,13 +216,13 @@ function resolveTokenValue(node) {
   return String($value);
 }
 
-function walkTokens(obj, segments, out) {
+function walkTokens(obj, segments, out, tokenPaths) {
   if (!obj || typeof obj !== 'object') {
     return;
   }
 
   if (Object.prototype.hasOwnProperty.call(obj, '$type') && Object.prototype.hasOwnProperty.call(obj, '$value')) {
-    const cssValue = resolveTokenValue(obj);
+    const cssValue = resolveTokenValue(obj, tokenPaths);
     if (cssValue !== null) {
       out.push({
         name: pathToCssVar(segments),
@@ -199,7 +238,7 @@ function walkTokens(obj, segments, out) {
     if (key.startsWith('$')) {
       continue;
     }
-    walkTokens(child, [...segments, key], out);
+    walkTokens(child, [...segments, key], out, tokenPaths);
   }
 }
 
@@ -240,8 +279,10 @@ function main() {
     }
 
     const raw = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    const tokenPaths = new Set();
+    collectTokenPaths(raw, [], tokenPaths);
     const tokens = [];
-    walkTokens(raw, [], tokens);
+    walkTokens(raw, [], tokens, tokenPaths);
 
     const css = buildCssFile({
       selector: set.selector,

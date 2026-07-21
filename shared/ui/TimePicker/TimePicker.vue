@@ -227,7 +227,7 @@ onBeforeUnmount(() => {
 .time-picker-input.is-focused { border-color: var(--russ-input-border-focus); box-shadow: inset 0 0 0 3px var(--russ-shadow-accent-light); background: var(--russ-input-bg); }
 .time-picker-input.is-disabled { opacity: .6; cursor: not-allowed; background: var(--russ-input-bg-disabled); }
 .time-display {
-  font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+  font-family: var(--filter-control-font-family, var(--russ-font-family));
   font-size: var(--filter-control-font-size, 14px);
   font-weight: var(--filter-control-font-weight, 500);
   line-height: var(--filter-control-line-height, 1.2);

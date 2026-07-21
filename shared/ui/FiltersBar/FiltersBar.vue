@@ -252,7 +252,7 @@ onMounted(() => {
   --filter-control-radius: 10px;
   --filter-control-gap: 12px;
   --filter-control-padding-x: 12px;
-  --filter-control-font-family: 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --filter-control-font-family: var(--russ-font-family);
   --filter-control-font-size-sm: 13px;
   --filter-control-font-size-md: 14px;
   --filter-control-font-size-lg: 16px;
@@ -334,7 +334,7 @@ onMounted(() => {
 }
 
 .filter-label {
-  font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+  font-family: var(--filter-control-font-family, var(--russ-font-family));
   font-size: 13px;
   font-weight: 600;
   color: var(--russ-text-muted);

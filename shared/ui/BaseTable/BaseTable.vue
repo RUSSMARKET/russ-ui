@@ -20,46 +20,70 @@
               @click="column.sortable !== false ? handleSort(column.key) : null">
               <div class="header-content">
                 <span>{{ column.header }}</span>
-                <div v-if="column.sortable !== false" class="sort-indicators">
-                  <i class="pi pi-sort-up sort-icon"
-                    :class="{ 'active': sortColumn === column.key && sortDirection === 'asc' }"></i>
-                  <i class="pi pi-sort-down sort-icon"
-                    :class="{ 'active': sortColumn === column.key && sortDirection === 'desc' }"></i>
-                </div>
               </div>
             </th>
             <th v-if="showActions" class="actions-header">Действия</th>
           </tr>
         </thead>
-        <tbody>
-          <tr v-if="loading" class="table-meta-row">
-            <td class="table-loader-cell" :colspan="tableColspan">
-              <span class="loader"></span>
-              <span>{{ loadingText }}</span>
-            </td>
-          </tr>
-          <tr v-for="(item, index) in sortedItems" :key="item.id || index" class="table-row" :class="rowClass"
-            @click="handleRowClick ? handleRowClick(item) : null">
-            <td v-for="column in columns" :key="column.key"
-              :class="[column.cellClass, columnColClass(column)]"
-              :data-label="column.header">
-              <slot :name="`cell-${column.key}`" :item="item" :column="column"
-                :value="getNestedValue(item, column.key)">
-                {{ getNestedValue(item, column.key) }}
-              </slot>
-            </td>
-            <td v-if="showActions" class="actions-cell" data-label="Действия">
-              <div class="actions-cell-inner">
-                <slot name="actions" :item="item">
+        <tbody :aria-busy="loading" :aria-label="loading ? loadingText : undefined">
+          <template v-if="loading">
+            <tr
+              v-for="row in loadingSkeletonRows"
+              :key="`skeleton-${row}`"
+              class="table-row table-row--skeleton"
+              aria-hidden="true"
+            >
+              <td
+                v-for="(column, colIndex) in columns"
+                :key="column.key"
+                :class="[column.cellClass, columnColClass(column)]"
+              >
+                <span
+                  class="table-skeleton-bar"
+                  :class="skeletonBarClass(colIndex, row)"
+                ></span>
+              </td>
+              <td v-if="showActions" class="actions-cell">
+                <span class="table-skeleton-bar table-skeleton-bar--xs"></span>
+              </td>
+            </tr>
+          </template>
+          <template v-else>
+            <tr
+              v-for="(item, index) in sortedItems"
+              :key="item.id || index"
+              class="table-row"
+              :class="rowClass"
+              @click="handleRowClick ? handleRowClick(item) : null"
+            >
+              <td
+                v-for="column in columns"
+                :key="column.key"
+                :class="[column.cellClass, columnColClass(column)]"
+                :data-label="column.header"
+              >
+                <slot
+                  :name="`cell-${column.key}`"
+                  :item="item"
+                  :column="column"
+                  :value="getNestedValue(item, column.key)"
+                >
+                  {{ getNestedValue(item, column.key) }}
                 </slot>
-              </div>
-            </td>
-          </tr>
-          <tr v-if="!loading && sortedItems.length === 0" class="table-meta-row">
-            <td :colspan="tableColspan" class="no-results">
-              {{ noResultsText }}
-            </td>
-          </tr>
+              </td>
+              <td v-if="showActions" class="actions-cell" data-label="Действия">
+                <div class="actions-cell-inner">
+                  <slot name="actions" :item="item">
+                  </slot>
+                </div>
+              </td>
+            </tr>
+            <tr v-if="sortedItems.length === 0" class="table-meta-row">
+              <td :colspan="tableColspan" class="no-results">
+                {{ noResultsText }}
+              </td>
+            </tr>
+          </template>
         </tbody>
       </table>
     </div>
@@ -88,6 +112,7 @@ interface Props {
   items: any[]
   loading?: boolean
   loadingText?: string
+  loadingSkeletonRows?: number
   noResultsText?: string
   showActions?: boolean
   showFilters?: boolean
@@ -98,6 +123,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   loading: false,
   loadingText: 'Загрузка...',
+  loadingSkeletonRows: 6,
   noResultsText: 'Ничего не найдено',
   showActions: false,
   showFilters: false,
@@ -195,6 +221,13 @@ const columnColClass = (column: TableColumn) => {
     'col--hide-mobile': column.hideOnMobile === true,
   }
 }
+
+const skeletonBarSizes = ['sm', 'md', 'lg', 'md', 'sm', 'lg'] as const
+
+const skeletonBarClass = (colIndex: number, rowIndex: number) => {
+  const size = skeletonBarSizes[(colIndex + rowIndex) % skeletonBarSizes.length]
+  return `table-skeleton-bar--${size}`
+}
 </script>
 
 <style scoped>
@@ -233,7 +266,6 @@ const columnColClass = (column: TableColumn) => {
   overflow-x: auto;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  scrollbar-gutter: stable;
 }
 
 .base-table {
@@ -256,10 +288,65 @@ const columnColClass = (column: TableColumn) => {
   vertical-align: top;
 }
 
-.table-loader-cell {
-  text-align: center;
-  color: var(--russ-text-primary);
-  padding: 18px !important;
+.table-row--skeleton {
+  cursor: default;
+  pointer-events: none;
+}
+
+.table-row--skeleton:hover {
+  background: var(--russ-bg);
+}
+
+.table-skeleton-bar {
+  display: block;
+  height: 14px;
+  border-radius: 6px;
+  background: var(--rr-fx-skeleton-base, var(--russ-bg-tertiary));
+  position: relative;
+  overflow: hidden;
+}
+
+.table-skeleton-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--rr-fx-skeleton-highlight, rgba(255, 255, 255, 0.45)),
+    transparent
+  );
+  animation: table-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.table-skeleton-bar--xs {
+  width: 48px;
+  height: 28px;
+}
+
+.table-skeleton-bar--sm {
+  width: 58%;
+}
+
+.table-skeleton-bar--md {
+  width: 76%;
+}
+
+.table-skeleton-bar--lg {
+  width: 92%;
+}
+
+@keyframes table-skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .table-skeleton-bar::after {
+    animation: none;
+  }
 }
 
 .base-table td {
@@ -333,55 +420,13 @@ const columnColClass = (column: TableColumn) => {
 .header-content {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
-}
-
-.sort-indicators {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.sort-icon {
-  font-size: 12px;
-  color: var(--russ-border-dark);
-  transition: color 0.2s ease;
-}
-
-.sort-icon.active {
-  color: var(--russ-secondary-dark);
-}
-
-.sort-icon:not(.active):hover {
-  color: var(--russ-text-quaternary);
 }
 
 .no-results {
   text-align: center;
   color: var(--russ-text-tertiary);
   font-style: italic;
-}
-
-.loader {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 3px solid var(--russ-border-light);
-  border-top: 3px solid var(--russ-info);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-right: 8px;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
 }
 
 /* Планшет: компактнее, без принудительной ширины; скрываем второстепенные колонки */
@@ -445,10 +490,6 @@ const columnColClass = (column: TableColumn) => {
 
   .header-content {
     gap: 6px;
-  }
-
-  .sort-icon {
-    font-size: 10px;
   }
 }
 </style>

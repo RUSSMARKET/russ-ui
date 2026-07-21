@@ -12,6 +12,14 @@ export { default as MagnetSearchModal } from './MagnetSearchModal/MagnetSearchMo
 export { AnalyticsExportModal } from './AnalyticsExportModal';
 export type { AnalyticsRuchnikType } from './AnalyticsExportModal';
 export { default as StaffResultsModal } from './StaffResultsModal/StaffResultsModal.vue';
+export { default as StaffPasswordChangeModals } from './StaffPassword/StaffPasswordChangeModals.vue';
+export { default as StaffCredentialsRevealModal } from './StaffPassword/StaffCredentialsRevealModal.vue';
+export {
+  STAFF_PASSWORD_SYMBOLS,
+  validateStaffPassword,
+  setUserPasswordErrorMessage,
+} from './StaffPassword/password';
+export type { StaffSetPasswordFn } from './StaffPassword/password';
 export { default as EffectivenessModal } from './EffectivenessModal/EffectivenessModal.vue';
 export { RolePagesModal } from './RolePagesModal';
 export { AddPagesModal } from './AddPagesModal';
@@ -55,3 +63,31 @@ export { default as Toast } from './Toast/Toast.vue';
 export { useToast } from './Toast';
 export type { ToastServiceMethods, ToastMessage, ToastMessageOptions, ToastSeverity } from './Toast';
 export * from './profile';
+export {
+  mergeTheme,
+  generateBrandedQr,
+  extractDominantColorFromLogo,
+  extractDominantColorFromImageData,
+  getPresetTokens,
+  platformPreset,
+  pilotPreset,
+  magnitPreset,
+  yandexPreset,
+  otpPreset,
+  fiveCardsPreset,
+  IssuanceQrShell,
+  IssuanceDualQrShell,
+  IssuanceConsentShell,
+} from '../issuance-themes';
+export type {
+  ThemePreset,
+  IssuanceShellVariant,
+  IssuanceThemeTokens,
+  IssuanceThemeColors,
+  IssuanceThemeBranding,
+  IssuanceThemeLayout,
+  ThemeOverrides,
+  MergeThemeOptions,
+  GenerateBrandedQrOptions,
+  DominantColorInput,
+} from '../issuance-themes';

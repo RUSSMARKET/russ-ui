@@ -91,16 +91,19 @@ function ngramSimilarity(str1: string, str2: string, ngramSize: number = 2): num
 function getEffectiveThreshold(queryLength: number, threshold: number): number {
   const normalizedThreshold = clampThreshold(threshold);
 
+  // Чем длиннее запрос — тем выше требуемая схожесть.
   if (queryLength <= 2) return 1;
-  if (queryLength <= 4) return Math.max(normalizedThreshold, 0.55);
-  return Math.max(normalizedThreshold, 0.45);
+  if (queryLength <= 4) return Math.max(normalizedThreshold, 0.72);
+  if (queryLength <= 8) return Math.max(normalizedThreshold, 0.78);
+  if (queryLength <= 14) return Math.max(normalizedThreshold, 0.85);
+  return Math.max(normalizedThreshold, 0.9);
 }
 
 function getAllowedDistance(queryLength: number): number {
-  if (queryLength <= 2) return 0;
-  if (queryLength <= 5) return 1;
-  if (queryLength <= 10) return 2;
-  return Math.max(2, Math.floor(queryLength * 0.25));
+  // С ростом длины допуск опечаток НЕ растёт — иначе полное ФИО матчит «всех».
+  if (queryLength <= 3) return 0;
+  if (queryLength <= 7) return 1;
+  return 1;
 }
 
 function getMatchScore(
@@ -285,19 +288,37 @@ function tokenMatchesFioPart(
 
   if (fullText.includes(token)) return true;
 
-  return parts.some((part) =>
-    part.includes(token) ||
-    getMatchScore(part, token, Math.max(threshold, 0.45)).matched
+  // Короткие токены — только prefix/includes; fuzzy только для опечаток в слове ≥4.
+  if (token.length < 4) {
+    return parts.some((part) => part.startsWith(token) || part.includes(token));
+  }
+
+  const tokenThreshold = Math.max(
+    threshold,
+    getEffectiveThreshold(token.length, threshold)
   );
+
+  return parts.some((part) => {
+    if (part.startsWith(token) || token.startsWith(part) && part.length >= 3) {
+      return true;
+    }
+    return getMatchScore(
+      part,
+      token,
+      tokenThreshold,
+      getAllowedDistance(token.length)
+    ).matched;
+  });
 }
 
 /**
  * Поиск по ФИО с учётом нескольких слов (логическое И по токенам).
+ * Длинные запросы (полное ФИО) требуют почти точного совпадения.
  */
 export function matchFioQuery(
   text: string,
   query: string,
-  threshold: number = 0.3
+  threshold: number = 0.55
 ): boolean {
   const normalizedQuery = normalizeFioForMatch(query);
   if (!normalizedQuery) return true;
@@ -305,17 +326,31 @@ export function matchFioQuery(
   const normalizedText = normalizeFioForMatch(text);
   if (!normalizedText) return false;
 
+  if (normalizedText === normalizedQuery) return true;
   if (normalizedText.includes(normalizedQuery)) return true;
 
   const tokens = normalizedQuery.split(" ").filter(Boolean);
   const parts = normalizedText.split(" ").filter(Boolean);
 
+  // Полное ФИО (3+ слова или длинная строка) — без «мягкого» n-gram по всей строке.
+  const strictFullName =
+    tokens.length >= 3 || normalizedQuery.replace(/\s+/g, "").length >= 14;
+
   if (tokens.length === 1) {
-    return tokenMatchesFioPart(tokens[0], parts, normalizedText, threshold);
+    return tokenMatchesFioPart(
+      tokens[0],
+      parts,
+      normalizedText,
+      strictFullName ? Math.max(threshold, 0.85) : threshold
+    );
   }
 
+  const effectiveThreshold = strictFullName
+    ? Math.max(threshold, 0.82)
+    : Math.max(threshold, getEffectiveThreshold(normalizedQuery.length, threshold));
+
   return tokens.every((token) =>
-    tokenMatchesFioPart(token, parts, normalizedText, threshold)
+    tokenMatchesFioPart(token, parts, normalizedText, effectiveThreshold)
   );
 }
 

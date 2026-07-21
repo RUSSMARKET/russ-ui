@@ -97,7 +97,7 @@ defineEmits<{
 
 .filters-actions__btn,
 .reset-filters-btn {
-  font-family: var(--filter-control-font-family, 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+  font-family: var(--filter-control-font-family, var(--russ-font-family));
   font-size: var(--filter-control-font-size, 14px);
   font-weight: var(--filter-control-font-weight, 500);
   line-height: var(--filter-control-line-height, 1.2);

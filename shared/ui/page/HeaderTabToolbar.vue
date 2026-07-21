@@ -34,7 +34,7 @@ const emit = defineEmits<{ create: [] }>()
 
 <style scoped>
 .header-tab-toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--ui-tab-gap); width: 100%; min-width: 0; }
-.tab-btn { box-sizing: border-box; min-height: var(--header-control-height, var(--ui-header-control-height)); padding: var(--ui-tab-pad-y) var(--ui-tab-pad-x); border-radius: var(--ui-tab-radius); border: 1px solid var(--russ-primary); background: none; color: var(--russ-info-text); font-family: 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-size: var(--ui-tab-font-size); font-weight: var(--ui-tab-font-weight); line-height: var(--ui-tab-line-height); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; }
+.tab-btn { box-sizing: border-box; min-height: var(--header-control-height, var(--ui-header-control-height)); padding: var(--ui-tab-pad-y) var(--ui-tab-pad-x); border-radius: var(--ui-tab-radius); border: 1px solid var(--russ-primary); background: none; color: var(--russ-info-text); font-family: var(--russ-font-family); font-size: var(--ui-tab-font-size); font-weight: var(--ui-tab-font-weight); line-height: var(--ui-tab-line-height); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; }
 .tab-btn:hover:not(:disabled) { border-color: var(--russ-primary-dark); color: var(--russ-primary-dark); }
 .tab-btn.active { background: var(--russ-primary); color: var(--russ-text-inverse); border-color: var(--russ-primary); }
 .tab-btn.active:hover:not(:disabled) { background: var(--russ-primary-dark); border-color: var(--russ-primary-dark); }

@@ -59,9 +59,9 @@ export function extractUserDigits(value) {
   if (raw.startsWith(PREFIX)) {
     raw = raw.slice(PREFIX.length);
   } else {
-    raw = raw.replace(/^\+7[\s(-]*/u, '');
-    raw = raw.replace(/^8[\s(-]*/u, '');
-    raw = raw.replace(/^7\s*\(\s*(?=9)/u, '');
+    raw = raw.replace(/^\+7[\s\u00a0(-]*/u, '');
+    raw = raw.replace(/^8[\s\u00a0(-]*/u, '');
+    raw = raw.replace(/^7[\s\u00a0(-]*/u, '');
   }
 
   return normalizeRuPhoneDigits(raw);
@@ -183,15 +183,20 @@ export function useRuPhoneMask(props, emit) {
     const credentialDigits = extractUserDigits(credentialRaw);
     const visibleDigits = extractUserDigits(visibleRaw);
 
-    const digits = credentialDigits.length >= visibleDigits.length
-      ? credentialDigits
-      : visibleDigits;
+    const digits =
+      credentialDigits.length >= visibleDigits.length ? credentialDigits : visibleDigits;
 
     const currentDigits = extractUserDigits(localValue.value);
     if (digits !== currentDigits) {
       applyDigits(digits, el, digits.length);
-    } else if (credentialRaw && credentialRaw !== normalizeRawToFull(credentialRaw)) {
-      updateCredentialDom(el, normalizeRawToFull(credentialRaw));
+      return;
+    }
+
+    if (credentialRaw) {
+      const normalizedFull = normalizeRawToFull(credentialRaw);
+      if (normalizedFull && credentialRaw !== normalizedFull) {
+        updateCredentialDom(el, normalizedFull);
+      }
     }
   }
 
@@ -201,10 +206,10 @@ export function useRuPhoneMask(props, emit) {
     }
     const run = () => syncFromDom();
     requestAnimationFrame(run);
-    for (const delay of [50, 150, 350, 700, 1500]) {
+    for (const delay of [50, 150, 350, 700, 1500, 2500]) {
       setTimeout(run, delay);
     }
-    autofillSyncTimer = setTimeout(run, 1500);
+    autofillSyncTimer = setTimeout(run, 2500);
   }
 
   function syncFromModel(newValue) {
