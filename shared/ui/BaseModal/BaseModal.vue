@@ -637,41 +637,40 @@ onUnmounted(() => {
     padding: 1rem;
   }
 
+  /* Троеточие-меню отключено: footer виден в потоке, а не за overflow-кнопкой.
+     Иначе главное действие модалки (напр. «Завершить смену») прячется на мобиле. */
   .base-modal-mobile-menu-btn {
-    display: flex;
+    display: none;
   }
 
   .base-modal-footer {
-    display: none;
-    position: absolute;
-    top: 52px;
-    right: 12px;
+    display: flex;
+    position: static;
+    top: auto;
+    right: auto;
     left: auto;
-    width: min(320px, calc(100% - 24px));
-    max-height: min(60vh, calc(100dvh - 120px));
-    overflow-y: auto;
-    padding: 8px;
-    border: 1px solid var(--russ-border);
-    border-radius: 8px;
+    width: auto;
+    max-height: none;
+    overflow: visible;
+    padding: 1rem;
+    border: none;
     border-top: 1px solid var(--russ-border);
-    background: var(--russ-bg);
-    box-shadow: 0 4px 20px var(--russ-shadow-color);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
     flex-direction: column;
     align-items: stretch;
-    z-index: 21;
+    gap: 8px;
+    z-index: auto;
   }
 
-  .base-modal-footer.base-modal-footer--mobile-open {
-    display: flex;
-  }
-
-  .base-modal-footer.base-modal-footer--mobile-open > * {
+  .base-modal-footer > * {
     width: 100%;
   }
 
-  .base-modal-footer.base-modal-footer--mobile-open :deep(.form-actions),
-  .base-modal-footer.base-modal-footer--mobile-open :deep(.modal-footer-actions),
-  .base-modal-footer.base-modal-footer--mobile-open :deep(.reporting-modal-footer) {
+  .base-modal-footer :deep(.form-actions),
+  .base-modal-footer :deep(.modal-footer-actions),
+  .base-modal-footer :deep(.reporting-modal-footer) {
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
@@ -683,11 +682,11 @@ onUnmounted(() => {
     border-radius: 0;
   }
 
-  .base-modal-footer.base-modal-footer--mobile-open :deep(.btn-block),
-  .base-modal-footer.base-modal-footer--mobile-open :deep(.modal-actions-group),
-  .base-modal-footer.base-modal-footer--mobile-open :deep(.modal-actions-group--process),
-  .base-modal-footer.base-modal-footer--mobile-open :deep(.modal-actions-cluster),
-  .base-modal-footer.base-modal-footer--mobile-open :deep(.modal-actions-buttons) {
+  .base-modal-footer :deep(.btn-block),
+  .base-modal-footer :deep(.modal-actions-group),
+  .base-modal-footer :deep(.modal-actions-group--process),
+  .base-modal-footer :deep(.modal-actions-cluster),
+  .base-modal-footer :deep(.modal-actions-buttons) {
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
@@ -697,7 +696,7 @@ onUnmounted(() => {
     border: none;
   }
 
-  .base-modal-footer.base-modal-footer--mobile-open :deep(button) {
+  .base-modal-footer :deep(button) {
     width: 100%;
     min-width: 0;
     max-width: none;
