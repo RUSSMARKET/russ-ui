@@ -25,7 +25,7 @@ export function magnitPreset(variant: IssuanceShellVariant = 'qr'): IssuanceThem
     layout: {
       fullscreen: false,
       showCloseButton: true,
-      backgroundImage: '/magnit.webp',
+      backgroundImage: '/Magnit.webp',
     },
   };
 }
