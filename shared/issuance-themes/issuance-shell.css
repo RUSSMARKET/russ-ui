@@ -157,8 +157,13 @@
 .issuance-shell--magnit .issuance-shell__qr-frame {
   position: absolute;
   z-index: 2;
-  width: min(50vw, 205px);
-  height: min(50vw, 215px);
+  top: 17.8%;
+  left: 25.5%;
+  transform: translate(-50%, -58%);
+  width: 50vw;
+  height: 50vw;
+  max-width: 200px;
+  max-height: 209px;
   border-radius: 16px;
 }
 
@@ -189,6 +194,11 @@
   box-shadow:
     0 0 0 8px rgba(193, 255, 5, 0.84),
     0 20px 58px rgba(78, 45, 104, 0.3);
+}
+
+.issuance-shell--dual_qr .issuance-shell__panel {
+  width: min(92vw, 420px);
+  padding: 24px;
 }
 
 .issuance-shell--dual_qr .issuance-shell__dual-actions {
