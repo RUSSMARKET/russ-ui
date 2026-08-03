@@ -37,8 +37,6 @@
           </button>
         </div>
 
-        <hr class="issuance-shell__divider" />
-
         <div class="issuance-shell__dual-form">
           <label class="issuance-shell__field-label" for="issuance-dual-id-card">
             ID КАРТЫ КЛИЕНТА
