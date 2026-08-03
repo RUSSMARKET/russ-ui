@@ -109,3 +109,50 @@
   outline: 2px solid var(--rr-input-border-active);
   outline-offset: 2px;
 }
+
+.auth-rr-button--loading {
+  position: relative;
+  cursor: wait;
+}
+
+.auth-rr-button--brand-primary.auth-rr-button--loading:disabled {
+  background-color: var(--rr-button-brand-primary-background-default);
+  color: var(--rr-button-brand-primary-text-default);
+  cursor: wait;
+}
+
+.auth-rr-button--brand-secondary.auth-rr-button--loading:disabled {
+  background-color: var(--rr-button-brand-secondary-background-default);
+  color: var(--rr-button-brand-secondary-text-default);
+  cursor: wait;
+}
+
+.auth-rr-button--neutral-secondary.auth-rr-button--loading:disabled {
+  background-color: var(--rr-button-neutral-secondary-background-default, #f2f3f7);
+  color: var(--rr-button-neutral-secondary-text-default, #101012);
+  cursor: wait;
+}
+
+.auth-rr-button__label--hidden {
+  visibility: hidden;
+}
+
+.auth-rr-button__spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  opacity: 0.9;
+  animation: auth-rr-button-spin 0.7s linear infinite;
+}
+
+@keyframes auth-rr-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
