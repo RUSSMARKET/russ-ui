@@ -20,6 +20,13 @@
               @click="column.sortable !== false ? handleSort(column.key) : null">
               <div class="header-content">
                 <span>{{ column.header }}</span>
+                <!-- Стрелка только при серверной сортировке: иначе внешний вид
+                     таблиц в других проектах остаётся прежним. -->
+                <i
+                  v-if="serverSort && column.sortable !== false && sortKey === column.key"
+                  class="sort-arrow"
+                  :class="sortDir === 'asc' ? 'pi pi-sort-up' : 'pi pi-sort-down'"
+                ></i>
               </div>
             </th>
             <th v-if="showActions" class="actions-header">Действия</th>
@@ -118,6 +125,17 @@ interface Props {
   showFilters?: boolean
   rowClass?: string
   handleRowClick?: (item: any) => void
+  /**
+   * Сортировкой управляет страница: таблица не переставляет строки сама, а
+   * сообщает о клике по заголовку событием `sort`. Нужно там, где на экране
+   * лежит одна страница из многих и локальная сортировка вводит в заблуждение.
+   * По умолчанию выключено — прежнее поведение сохраняется.
+   */
+  serverSort?: boolean
+  /** Активная колонка при serverSort (ключ колонки). */
+  sortKey?: string | null
+  /** Направление активной сортировки при serverSort. */
+  sortDir?: 'asc' | 'desc'
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -128,8 +146,15 @@ const props = withDefaults(defineProps<Props>(), {
   showActions: false,
   showFilters: false,
   rowClass: '',
-  handleRowClick: undefined
+  handleRowClick: undefined,
+  serverSort: false,
+  sortKey: null,
+  sortDir: 'asc',
 })
+
+const emit = defineEmits<{
+  (e: 'sort', payload: { key: string; direction: 'asc' | 'desc' }): void
+}>()
 
 const sortColumn = ref<string>('')
 const sortDirection = ref<'asc' | 'desc'>('asc')
@@ -160,6 +185,8 @@ const filteredItems = computed(() => {
 })
 
 const sortedItems = computed(() => {
+  // Порядок задал сервер — трогать его нельзя, иначе перемешаем страницу.
+  if (props.serverSort) return filteredItems.value
   if (!sortColumn.value) return filteredItems.value
 
   const column = props.columns.find(c => c.key === sortColumn.value)
@@ -195,6 +222,13 @@ const sortedItems = computed(() => {
 })
 
 const handleSort = (columnKey: string) => {
+  if (props.serverSort) {
+    const direction: 'asc' | 'desc' =
+      props.sortKey === columnKey && props.sortDir === 'asc' ? 'desc' : 'asc'
+    emit('sort', { key: columnKey, direction })
+    return
+  }
+
   if (sortColumn.value === columnKey) {
     // Toggle direction if same column
     sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc'
@@ -231,6 +265,12 @@ const skeletonBarClass = (colIndex: number, rowIndex: number) => {
 </script>
 
 <style scoped>
+.sort-arrow {
+  margin-left: 6px;
+  font-size: 12px;
+  color: var(--russ-primary, #2f6fdb);
+}
+
 .table-container {
   width: 100%;
   min-width: 0;
