@@ -123,8 +123,14 @@
   --rr-accent-derivable-blue-blue-80: rgba(86, 150, 255, 0.800000011920929);
   --rr-accent-derivable-yellow-yellow-12: rgba(255, 214, 10, 0.11999999731779099);
   --rr-accent-derivable-teal-teal-12: rgba(100, 210, 255, 0.11999999731779099);
+  --rr-accent-derivable-teal-teal-20: rgba(100, 210, 255, 0.11999999731779099);
+  --rr-accent-derivable-teal-teal-30: rgba(100, 210, 255, 0.11999999731779099);
   --rr-accent-derivable-mint-mint-12: rgba(99, 230, 226, 0.11999999731779099);
+  --rr-accent-derivable-mint-mint-20: rgba(99, 230, 226, 0.11999999731779099);
+  --rr-accent-derivable-mint-mint-30: rgba(99, 230, 226, 0.11999999731779099);
   --rr-accent-derivable-indigo-indigo-12: rgba(94, 92, 230, 0.11999999731779099);
+  --rr-accent-derivable-indigo-indigo-20: rgba(94, 92, 230, 0.11999999731779099);
+  --rr-accent-derivable-indigo-indigo-32: rgba(94, 92, 230, 0.11999999731779099);
   --rr-accent-derivable-purple-purple-12: rgba(175, 82, 222, 0.11999999731779099);
   --rr-accent-derivable-pink-pink-12: rgba(255, 45, 85, 0.11999999731779099);
 }

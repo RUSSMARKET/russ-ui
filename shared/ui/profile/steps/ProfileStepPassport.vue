@@ -9,11 +9,36 @@
         placeholder="Код подразделения *" class="form-input" :class="{ 'error': errors.passport_code }" />
       <div v-if="errors.passport_code" class="error-message">{{ errors.passport_code }}</div>
       <div class="passport-issued-options">
-        <BaseSelect class="form-input" :model-value="form.passport_issued" :options="passportIssuedOptions"
-          label="Кем выдан *"
+        <label class="passport-issued-label" for="passport_issued">Кем выдан *</label>
+        <BaseSelect
+          v-if="!isCustomPassportIssued"
+          id="passport_issued"
+          class="passport-issued-control"
+          :model-value="form.passport_issued"
+          :options="passportIssuedOptions"
           :placeholder="passportIssuedOptions.length ? 'Выберите вариант' : 'Сначала введите код подразделения'"
-          :searchable="false" :disabled="!passportIssuedOptions.length"
-          @update:modelValue="updateField('passport_issued', $event)" />
+          :searchable="false"
+          :disabled="!passportIssuedOptions.length"
+          @update:modelValue="updateField('passport_issued', $event)"
+        />
+        <InputText
+          v-else
+          :model-value="form.passport_issued"
+          name="passport_issued"
+          placeholder="Введите кем выдан"
+          variant="off"
+          class="passport-issued-control"
+          :class="{ error: errors.passport_issued }"
+          @update:model-value="updateField('passport_issued', $event)"
+        />
+        <label class="passport-issued-checkbox">
+          <input
+            type="checkbox"
+            :checked="isCustomPassportIssued"
+            @change="handleCustomPassportIssuedChange"
+          />
+          <span>Свой вариант</span>
+        </label>
       </div>
       <div v-if="errors.passport_issued" class="error-message">{{ errors.passport_issued }}</div>
       <InputDate :model-value="form.passport_date" @update:model-value="updateField('passport_date', $event)"
@@ -54,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { InputPassport, InputCode, InputText, InputDate, Button, BaseSelect } from '@/shared/ui';
 
 interface FormData {
@@ -97,11 +122,37 @@ const emit = defineEmits<{
   (e: 'back'): void;
 }>();
 
+const isCustomPassportIssued = ref(false);
+
 const updateField = (field: keyof FormData, value: any) => {
   emit('update:form', { [field]: value });
 };
 
 const passportIssuedOptions = computed(() => props.passportIssuedOptions || []);
+
+const handleCustomPassportIssuedChange = (event: Event) => {
+  const checked = (event.target as HTMLInputElement).checked;
+  isCustomPassportIssued.value = checked;
+
+  if (!checked) {
+    const current = (props.form.passport_issued || '').trim();
+    if (current && !passportIssuedOptions.value.includes(current)) {
+      updateField('passport_issued', '');
+    }
+  }
+};
+
+watch(
+  [() => props.form.passport_issued, passportIssuedOptions],
+  ([issued, options]) => {
+    const current = (issued || '').trim();
+    if (!current || !options.length) return;
+    if (!options.includes(current)) {
+      isCustomPassportIssued.value = true;
+    }
+  },
+  { immediate: true },
+);
 
 </script>
 
@@ -157,6 +208,88 @@ const passportIssuedOptions = computed(() => props.passportIssuedOptions || []);
 .passport-issued-options {
   margin-top: -0.5rem;
   margin-bottom: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  overflow: visible;
+}
+
+.passport-issued-label {
+  font-size: clamp(12px, calc(12px + (14 - 12) * ((100vw - 320px) / (1920 - 320))), 14px);
+  color: var(--russ-input-text);
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.passport-issued-control {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.passport-issued-control :deep(.base-select-combo),
+.passport-issued-control :deep(.custom-input) {
+  font-family: var(--filter-control-font-family, var(--russ-font-family));
+  font-size: var(--filter-control-font-size, var(--filter-control-font-size-md, 14px));
+  font-weight: var(--filter-control-font-weight, 500);
+  line-height: var(--filter-control-line-height, 1.2);
+  color: var(--russ-text-primary);
+  background: var(--base-select-bg, var(--russ-bg-quaternary));
+  border: var(--base-select-border, 1.5px solid var(--russ-border));
+  border-radius: var(--base-select-radius, var(--filter-control-radius, 10px));
+  box-shadow: 0 1px 4px var(--russ-shadow-accent-light);
+  min-height: var(--base-select-height, var(--ui-control-height, var(--filter-control-height, 40px)));
+  height: var(--base-select-height, var(--ui-control-height, var(--filter-control-height, 40px)));
+  padding: var(--base-select-padding, 0 14px);
+  box-sizing: border-box;
+}
+
+.passport-issued-control :deep(.custom-input::placeholder) {
+  color: var(--russ-text-quaternary, #999);
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 400;
+  line-height: inherit;
+  opacity: 1;
+}
+
+.passport-issued-control :deep(.custom-input:focus) {
+  border-color: var(--base-select-focus-border, var(--russ-input-border-focus));
+  box-shadow: var(--base-select-focus-shadow, inset 0 0 0 1.5px var(--russ-shadow-accent-light));
+  background: var(--base-select-focus-bg, var(--russ-input-bg));
+}
+
+.passport-issued-control :deep(.base-select-text),
+.passport-issued-control :deep(.base-select-placeholder) {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+.passport-issued-control :deep(.base-select-placeholder) {
+  font-weight: 400;
+  color: var(--russ-text-quaternary, #999);
+}
+
+.passport-issued-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--russ-text-secondary);
+  user-select: none;
+}
+
+.passport-issued-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--russ-checkbox-accent);
+}
+
+.passport-issued-checkbox span {
+  font-weight: 500;
 }
 
 .button-row {

@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-07-14T10:30:01.988Z",
+  "generatedAt": "2026-08-03T08:40:46.029Z",
   "prefix": "rr",
-  "count": 583,
+  "count": 589,
   "tokens": {
     "--rr-neutral-0": {
       "value": "#101012",
@@ -864,6 +864,20 @@
       "group": "primitives",
       "source": "Dark-mode.tokens3.1 Primitivies.json"
     },
+    "--rr-accent-derivable-teal-teal-20": {
+      "value": "rgba(100, 210, 255, 0.11999999731779099)",
+      "path": "Accent.Derivable.Teal.Teal@20",
+      "type": "color",
+      "group": "primitives",
+      "source": "Dark-mode.tokens3.1 Primitivies.json"
+    },
+    "--rr-accent-derivable-teal-teal-30": {
+      "value": "rgba(100, 210, 255, 0.11999999731779099)",
+      "path": "Accent.Derivable.Teal.Teal@30",
+      "type": "color",
+      "group": "primitives",
+      "source": "Dark-mode.tokens3.1 Primitivies.json"
+    },
     "--rr-accent-derivable-mint-mint-12": {
       "value": "rgba(99, 230, 226, 0.11999999731779099)",
       "path": "Accent.Derivable.Mint.Mint@12",
@@ -871,9 +885,37 @@
       "group": "primitives",
       "source": "Dark-mode.tokens3.1 Primitivies.json"
     },
+    "--rr-accent-derivable-mint-mint-20": {
+      "value": "rgba(99, 230, 226, 0.11999999731779099)",
+      "path": "Accent.Derivable.Mint.Mint@20",
+      "type": "color",
+      "group": "primitives",
+      "source": "Dark-mode.tokens3.1 Primitivies.json"
+    },
+    "--rr-accent-derivable-mint-mint-30": {
+      "value": "rgba(99, 230, 226, 0.11999999731779099)",
+      "path": "Accent.Derivable.Mint.Mint@30",
+      "type": "color",
+      "group": "primitives",
+      "source": "Dark-mode.tokens3.1 Primitivies.json"
+    },
     "--rr-accent-derivable-indigo-indigo-12": {
       "value": "rgba(94, 92, 230, 0.11999999731779099)",
       "path": "Accent.Derivable.Indigo.Indigo@12",
+      "type": "color",
+      "group": "primitives",
+      "source": "Dark-mode.tokens3.1 Primitivies.json"
+    },
+    "--rr-accent-derivable-indigo-indigo-20": {
+      "value": "rgba(94, 92, 230, 0.11999999731779099)",
+      "path": "Accent.Derivable.Indigo.Indigo@20",
+      "type": "color",
+      "group": "primitives",
+      "source": "Dark-mode.tokens3.1 Primitivies.json"
+    },
+    "--rr-accent-derivable-indigo-indigo-32": {
+      "value": "rgba(94, 92, 230, 0.11999999731779099)",
+      "path": "Accent.Derivable.Indigo.Indigo@32",
       "type": "color",
       "group": "primitives",
       "source": "Dark-mode.tokens3.1 Primitivies.json"
@@ -949,14 +991,14 @@
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-backgrounds-neutral-secondary-default": {
-      "value": "#F8F8F9",
+      "value": "#F8F9FB",
       "path": "Backgrounds.Neutral.Secondary.Default",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-backgrounds-neutral-secondary-hover": {
-      "value": "#E7E7E9",
+      "value": "#E7E8EE",
       "path": "Backgrounds.Neutral.Secondary.Hover",
       "type": "color",
       "group": "semantic",
@@ -970,35 +1012,35 @@
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-backgrounds-neutral-secondary-disable": {
-      "value": "#F8F8F9",
+      "value": "#F8F9FB",
       "path": "Backgrounds.Neutral.Secondary.Disable",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-backgrounds-neutral-tetriary-hover": {
-      "value": "#F8F8F9",
+      "value": "#F8F9FB",
       "path": "Backgrounds.Neutral.Tetriary.Hover",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-backgrounds-neutral-tetriary-active": {
-      "value": "#E7E7E9",
+      "value": "#E7E8EE",
       "path": "Backgrounds.Neutral.Tetriary.Active",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-backgrounds-neutral-quaternary-hover": {
-      "value": "#F8F8F9",
+      "value": "#F8F9FB",
       "path": "Backgrounds.Neutral.Quaternary.Hover",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-backgrounds-neutral-quaternary-active": {
-      "value": "#E7E7E9",
+      "value": "#E7E8EE",
       "path": "Backgrounds.Neutral.Quaternary.Active",
       "type": "color",
       "group": "semantic",
@@ -1012,7 +1054,7 @@
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-backgrounds-neutral-quinary-hover": {
-      "value": "#E7E7E9",
+      "value": "#E7E8EE",
       "path": "Backgrounds.Neutral.Quinary.Hover",
       "type": "color",
       "group": "semantic",
@@ -1208,14 +1250,14 @@
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-backgrounds-brand-secondary-default": {
-      "value": "#F8F8F9",
+      "value": "#F8F9FB",
       "path": "Backgrounds.Brand.Secondary.Default",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-backgrounds-brand-secondary-hover": {
-      "value": "#E7E7E9",
+      "value": "#E7E8EE",
       "path": "Backgrounds.Brand.Secondary.Hover",
       "type": "color",
       "group": "semantic",
@@ -1229,21 +1271,21 @@
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-backgrounds-brand-secondary-disable": {
-      "value": "#F1F1F3",
+      "value": "#F2F3F7",
       "path": "Backgrounds.Brand.Secondary.Disable",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-backgrounds-brand-tetriary-hover": {
-      "value": "#F8F8F9",
+      "value": "#F8F9FB",
       "path": "Backgrounds.Brand.Tetriary.Hover",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-backgrounds-brand-tetriary-active": {
-      "value": "#E7E7E9",
+      "value": "#E7E8EE",
       "path": "Backgrounds.Brand.Tetriary.Active",
       "type": "color",
       "group": "semantic",
@@ -1313,21 +1355,21 @@
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-labels-brand-secondary": {
-      "value": "rgba(91, 125, 236, 0.7200000286102295)",
+      "value": "#89A1F1",
       "path": "Labels.Brand.Secondary",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-labels-brand-tertiary": {
-      "value": "rgba(91, 125, 236, 0.5199999809265137)",
+      "value": "#AABBF5",
       "path": "Labels.Brand.Tertiary",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-labels-brand-quaternary": {
-      "value": "rgba(91, 125, 236, 0.3199999928474426)",
+      "value": "#CBD5F9",
       "path": "Labels.Brand.Quaternary",
       "type": "color",
       "group": "semantic",
@@ -1341,21 +1383,21 @@
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-labels-danger-secondary": {
-      "value": "rgba(220, 38, 38, 0.7200000286102295)",
+      "value": "#E66363",
       "path": "Labels.Danger.Secondary",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-labels-danger-tertiary": {
-      "value": "rgba(220, 38, 38, 0.5199999809265137)",
+      "value": "#ED8E8E",
       "path": "Labels.Danger.Tertiary",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-labels-danger-quaternary": {
-      "value": "rgba(220, 38, 38, 0.3199999928474426)",
+      "value": "#F4BABA",
       "path": "Labels.Danger.Quaternary",
       "type": "color",
       "group": "semantic",
@@ -1607,56 +1649,56 @@
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-fills-brand-primary": {
-      "value": "rgba(91, 125, 236, 0.11999999731779099)",
+      "value": "#EBEFFD",
       "path": "Fills.Brand.Primary",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-fills-brand-secondary": {
-      "value": "rgba(91, 125, 236, 0.07999999821186066)",
+      "value": "#F2F5FD",
       "path": "Fills.Brand.Secondary",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-fills-brand-tertiary": {
-      "value": "rgba(91, 125, 236, 0.03999999910593033)",
+      "value": "#F8FAFE",
       "path": "Fills.Brand.Tertiary",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-fills-brand-quaternary": {
-      "value": "rgba(91, 125, 236, 0.019999999552965164)",
+      "value": "#FCFCFF",
       "path": "Fills.Brand.Quaternary",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-fills-danger-primary": {
-      "value": "rgba(220, 38, 38, 0.11999999731779099)",
+      "value": "#FBE5E5",
       "path": "Fills.Danger.Primary",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-fills-danger-secondary": {
-      "value": "rgba(220, 38, 38, 0.07999999821186066)",
+      "value": "#FCEEEE",
       "path": "Fills.Danger.Secondary",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-fills-danger-tertiary": {
-      "value": "rgba(220, 38, 38, 0.03999999910593033)",
+      "value": "#FEF6F6",
       "path": "Fills.Danger.Tertiary",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-fills-danger-quaternary": {
-      "value": "rgba(220, 38, 38, 0.019999999552965164)",
+      "value": "#FEFBFB",
       "path": "Fills.Danger.Quaternary",
       "type": "color",
       "group": "semantic",
@@ -1845,14 +1887,14 @@
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-border-brand-base": {
-      "value": "rgba(91, 125, 236, 0.20000000298023224)",
+      "value": "#DEE5FB",
       "path": "Border.Brand.Base",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-border-brand-soft": {
-      "value": "rgba(91, 125, 236, 0.11999999731779099)",
+      "value": "#EBEFFD",
       "path": "Border.Brand.Soft",
       "type": "color",
       "group": "semantic",
@@ -1866,14 +1908,14 @@
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-border-danger-base": {
-      "value": "rgba(220, 38, 38, 0.20000000298023224)",
+      "value": "#F8D4D4",
       "path": "Border.Danger.Base",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-border-danger-soft": {
-      "value": "rgba(220, 38, 38, 0.11999999731779099)",
+      "value": "#FBE5E5",
       "path": "Border.Danger.Soft",
       "type": "color",
       "group": "semantic",
@@ -1929,14 +1971,14 @@
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-border-info-base-2": {
-      "value": "rgba(91, 125, 236, 0.20000000298023224)",
+      "value": "#DEE5FB",
       "path": "Border.Info.Base 2",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-border-info-soft-2": {
-      "value": "rgba(91, 125, 236, 0.11999999731779099)",
+      "value": "#EBEFFD",
       "path": "Border.Info.Soft 2",
       "type": "color",
       "group": "semantic",
@@ -1957,14 +1999,14 @@
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-fx-glow-brand": {
-      "value": "rgba(91, 125, 236, 0.5199999809265137)",
+      "value": "#AABBF5",
       "path": "FX.Glow.Brand",
       "type": "color",
       "group": "semantic",
       "source": "Dark-mode.tokens-semantic.json"
     },
     "--rr-fx-glow-danger": {
-      "value": "rgba(220, 38, 38, 0.5199999809265137)",
+      "value": "#ED8E8E",
       "path": "FX.Glow.Danger",
       "type": "color",
       "group": "semantic",
@@ -2125,14 +2167,14 @@
       "source": "Dark-mode.tokens.json"
     },
     "--rr-button-neutral-secondary-background-default": {
-      "value": "#F8F8F9",
+      "value": "#F8F9FB",
       "path": "Button.Neutral.Secondary.Background.Default",
       "type": "color",
       "group": "components",
       "source": "Dark-mode.tokens.json"
     },
     "--rr-button-neutral-secondary-background-hover": {
-      "value": "#E7E7E9",
+      "value": "#E7E8EE",
       "path": "Button.Neutral.Secondary.Background.Hover",
       "type": "color",
       "group": "components",
@@ -2146,7 +2188,7 @@
       "source": "Dark-mode.tokens.json"
     },
     "--rr-button-neutral-secondary-background-disable": {
-      "value": "#F1F1F3",
+      "value": "#F2F3F7",
       "path": "Button.Neutral.Secondary.Background.Disable",
       "type": "color",
       "group": "components",
@@ -2440,14 +2482,14 @@
       "source": "Dark-mode.tokens.json"
     },
     "--rr-button-brand-secondary-background-default": {
-      "value": "#F8F8F9",
+      "value": "#F8F9FB",
       "path": "Button.Brand.Secondary.Background.Default",
       "type": "color",
       "group": "components",
       "source": "Dark-mode.tokens.json"
     },
     "--rr-button-brand-secondary-background-hover": {
-      "value": "#E7E7E9",
+      "value": "#E7E8EE",
       "path": "Button.Brand.Secondary.Background.Hover",
       "type": "color",
       "group": "components",
@@ -2461,7 +2503,7 @@
       "source": "Dark-mode.tokens.json"
     },
     "--rr-button-brand-secondary-background-disable": {
-      "value": "#F1F1F3",
+      "value": "#F2F3F7",
       "path": "Button.Brand.Secondary.Background.Disable",
       "type": "color",
       "group": "components",

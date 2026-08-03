@@ -6,13 +6,9 @@
 @import './auth-rr-typography.css';
 
 html:has(.auth-rr-shell),
-html:has(.auth-rr-shell) body {
-  height: 100%;
-  max-height: 100%;
-  overflow: hidden;
-}
-
-#auth-preview-app {
+html:has(.auth-rr-shell) body,
+html:has(.auth-rr-shell) #__nuxt,
+html:has(.auth-rr-shell) #auth-preview-app {
   display: block;
   height: calc(var(--vvh, 1dvh) * 100);
   max-height: calc(var(--vvh, 1dvh) * 100);
@@ -373,7 +369,9 @@ html:has(.auth-rr-shell) body {
 
 :root[data-rr-compact='3'] .auth-rr-footer,
 :root[data-rr-compact='4'] .auth-rr-footer,
-:root[data-rr-keyboard='open'] .auth-rr-footer {
+:root[data-rr-keyboard='open'] .auth-rr-footer,
+:root[data-rr-viewport='mobile'] .auth-rr-footer,
+:root[data-rr-layout='stacked'] .auth-rr-footer {
   display: none;
 }
 
@@ -384,4 +382,8 @@ html:has(.auth-rr-shell) body {
 :root[data-rr-keyboard='open'] .auth-rr-shell {
   --auth-rr-shell-pad-block-end: var(--rr-spacing-padding-l);
   --auth-rr-main-margin-block: var(--rr-spacing-margin-s);
+}
+
+:root[data-rr-keyboard='open'] .auth-rr-hero--has-mobile {
+  display: none;
 }

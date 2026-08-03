@@ -69,6 +69,12 @@ document.documentElement.dataset.colorMode = 'light'; // | dark
 
 ## Обновление из Figma
 
-1. Экспорт JSON → `bibli/tokens/source/` (или `tockens/`)
-2. `npm run tokens:build`
-3. Коммит `generated/` + `tokens.flat.json`
+1. Экспорт JSON слоёв:
+   - `3.1 Primitives` → `Light/Dark-mode.tokens3.1 Primitivies.json`
+   - `3.2 Semantic` → `Light/Dark-mode.tokens-semantic.json`
+   - `3.3 Component` → `Light/Dark-mode.tokens.json`
+2. Положить файлы в `bibli/tokens/source/` (и при желании в `bibli/tockens/`)
+3. `npm run tokens:build`
+4. Коммит `tokens/source/`, `tockens/`, `shared/tokens/generated/`, `tokens.flat.json`
+
+Канонический пайплайн: `tockens/` синхронизируется в `tokens/source/` при сборке, затем генерируются CSS-слои `--rr-*`.

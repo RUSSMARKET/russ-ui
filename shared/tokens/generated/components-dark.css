@@ -8,10 +8,10 @@
   --rr-button-neutral-primary-text-hover: #FFFFFF;
   --rr-button-neutral-primary-text-active: #FFFFFF;
   --rr-button-neutral-primary-text-disable: #FFFFFF;
-  --rr-button-neutral-secondary-background-default: #F8F8F9;
-  --rr-button-neutral-secondary-background-hover: #E7E7E9;
+  --rr-button-neutral-secondary-background-default: #F8F9FB;
+  --rr-button-neutral-secondary-background-hover: #E7E8EE;
   --rr-button-neutral-secondary-background-active: #CDCDD6;
-  --rr-button-neutral-secondary-background-disable: #F1F1F3;
+  --rr-button-neutral-secondary-background-disable: #F2F3F7;
   --rr-button-neutral-secondary-text-default: #FFFFFF;
   --rr-button-neutral-secondary-text-hover: #FFFFFF;
   --rr-button-neutral-secondary-text-active: #FFFFFF;
@@ -53,10 +53,10 @@
   --rr-button-brand-primary-text-hover: #FFFFFF;
   --rr-button-brand-primary-text-active: #FFFFFF;
   --rr-button-brand-primary-text-disable: #FFFFFF;
-  --rr-button-brand-secondary-background-default: #F8F8F9;
-  --rr-button-brand-secondary-background-hover: #E7E7E9;
+  --rr-button-brand-secondary-background-default: #F8F9FB;
+  --rr-button-brand-secondary-background-hover: #E7E8EE;
   --rr-button-brand-secondary-background-active: #CDCDD6;
-  --rr-button-brand-secondary-background-disable: #F1F1F3;
+  --rr-button-brand-secondary-background-disable: #F2F3F7;
   --rr-button-brand-secondary-text-default: #FFFFFF;
   --rr-button-brand-secondary-text-hover: #FFFFFF;
   --rr-button-brand-secondary-text-active: #FFFFFF;
