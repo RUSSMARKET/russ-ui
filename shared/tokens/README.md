@@ -25,8 +25,10 @@ npm run tokens:build
 ## Подключение в приложении
 
 ```css
-@import '@russ-ui/bibli/shared/theme/theme.css'; /* legacy, опционально */
-@import '@russ-ui/bibli/shared/tokens/index.css';
+@import '@russ-ui/bibli/shared/theme/legacy/theme.css'; /* legacy --russ-* */
+@import '@russ-ui/bibli/shared/tokens/index.css';       /* RR --rr-* */
+/* opt-in bridge RR → --russ-*: */
+/* @import '@russ-ui/bibli/shared/tokens/bridge/index.css'; */
 ```
 
 ```html

@@ -1,6 +1,7 @@
 /**
  * Мост RR → legacy --russ-* (старые компоненты shared/ui/legacy).
- * Подключать с generated/index.css и data-rr на <html>.
+ * Opt-in: `bibli/shared/tokens/bridge` (не входит в tokens/index.css).
+ * Подключать с generated tokens и data-rr на <html>.
  */
 :root[data-rr] {
   --russ-bg: var(--rr-backgrounds-primary, #ffffff);

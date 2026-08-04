@@ -1,22 +1,35 @@
-export { default as AuthRRLayout } from './AuthRRLayout.vue';
-export { default as AuthRRField } from './AuthRRField.vue';
-export { default as AuthRRInputPhone } from './AuthRRInputPhone.vue';
-export { default as AuthRRInputPassword } from './AuthRRInputPassword.vue';
-export { default as AuthRRInputText } from './AuthRRInputText.vue';
-export { default as AuthRRButton } from './AuthRRButton.vue';
-export { default as AuthRRStepProgress } from './AuthRRStepProgress.vue';
-export { default as AuthRROtpInput } from './AuthRROtpInput.vue';
-export { default as AuthRRPasswordRules } from './AuthRRPasswordRules.vue';
+/**
+ * Auth RR surface: layout + callback + re-export of shared form kit.
+ * Form controls: prefer `bibli/shared/ui/rr`.
+ */
+export { default as AuthRRLayout } from './AuthRRLayout.vue'
+export { default as AuthCallbackStatusPage } from './AuthCallbackStatusPage.vue'
+
 export {
+  AuthRRButton,
+  AuthRRField,
+  AuthRRInputPhone,
+  AuthRRInputPassword,
+  AuthRRInputText,
+  AuthRRStepProgress,
+  AuthRROtpInput,
+  AuthRRPasswordRules,
+  RrButton,
+  RrField,
+  RrInputPhone,
+  RrInputPassword,
+  RrInputText,
+  RrStepProgress,
+  RrOtpInput,
+  RrPasswordRules,
   getPasswordRulesList,
   getPasswordRulesState,
   isPasswordRulesValid,
   PASSWORD_SPECIAL_CHARS,
-} from './composables/usePasswordRules.js';
-export {
   CYRILLIC_NAME_ONLY_MESSAGE,
   validateCyrillicName,
-} from './composables/useCyrillicNameValidation.js';
+} from 'bibli/shared/ui/rr'
+
 export {
   authRrAssets,
   authRrBrand,
@@ -29,4 +42,4 @@ export {
   type AuthRrHeroMeta,
   type AuthRrHeroVariant,
   type AuthRrIconKey,
-} from 'bibli/shared/assets/auth/rr';
+} from 'bibli/shared/assets/auth/rr'

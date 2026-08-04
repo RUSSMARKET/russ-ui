@@ -3,7 +3,7 @@ import {
   isBelowSplitLayoutWidth,
   readAdaptivesBreakpoints,
 } from 'bibli/shared/tokens/adaptives.js';
-import { applyRussRedesign } from 'bibli/shared/theme/useRussRedesign';
+import { applyRussRedesign } from 'bibli/shared/theme/rr/useRussRedesign';
 
 type DatasetSnapshot = Record<string, string | undefined>;
 

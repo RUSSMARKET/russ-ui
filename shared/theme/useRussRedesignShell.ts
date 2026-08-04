@@ -1,2 +1,2 @@
 /** @deprecated Import from `bibli/shared/theme/rr` */
-export * from './rr/useRussRedesign'
+export * from './rr/useRussRedesignShell'
