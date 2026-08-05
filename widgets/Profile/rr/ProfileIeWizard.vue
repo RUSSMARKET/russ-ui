@@ -1,0 +1,825 @@
+﻿<template>
+  <div class="profile-ie-wizard">
+    <ProfileStepShell
+      :current="step"
+      :total="IE_WIZARD_TOTAL"
+      :title="shellTitle"
+      :subtitle="shellSubtitle"
+      @back="onBack"
+    >
+      <!-- Step 1: EGRIP upload -->
+      <div v-if="step === 1" class="piw-stack">
+        <div class="piw-hero piw-hero--example">
+          <img
+            class="piw-hero__img piw-hero__img--doc"
+            :src="exampleEgrip"
+            alt="Пример листа записи ЕГРИП"
+          />
+        </div>
+        <p class="piw-reqs">Скачайте на nalog.ru → ИП → Сведения → Лист записи ЕГРИП</p>
+        <input
+          ref="fileInputRef"
+          class="piw-file-input"
+          type="file"
+          accept="image/*,application/pdf"
+          @change="onFilePicked"
+        />
+      </div>
+
+      <!-- Step 2: form -->
+      <div v-else-if="step === 2" class="piw-review">
+        <AuthRRField label="ФИО ИП">
+          <input
+            class="auth-rr-input__control auth-rr-input__control--align-left"
+            type="text"
+            placeholder="Введите ФИО"
+            :value="form.name"
+            @input="onNameInput"
+          />
+        </AuthRRField>
+        <AuthRRField label="ИНН ИП" :error="innFieldError">
+          <input
+            class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!innFieldError }"
+            type="text"
+            inputmode="numeric"
+            placeholder="12 цифр"
+            maxlength="12"
+            :value="form.inn"
+            :aria-invalid="!!innFieldError"
+            @input="onInnInput"
+            @blur="innTouched = true"
+          />
+        </AuthRRField>
+        <AuthRRField label="ОГРНИП" :error="ogrnipFieldError">
+          <input
+            class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!ogrnipFieldError }"
+            type="text"
+            inputmode="numeric"
+            placeholder="15 цифр"
+            maxlength="15"
+            :value="form.ogrnip"
+            :aria-invalid="!!ogrnipFieldError"
+            @input="onOgrnipInput"
+            @blur="ogrnipTouched = true"
+          />
+        </AuthRRField>
+        <AuthRRField label="Расчетный счет" :error="paymentAccountFieldError">
+          <input
+            class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!paymentAccountFieldError }"
+            type="text"
+            inputmode="numeric"
+            placeholder="20 цифр"
+            maxlength="20"
+            :value="form.paymentAccount"
+            :aria-invalid="!!paymentAccountFieldError"
+            @input="onPaymentAccountInput"
+            @blur="paymentAccountTouched = true"
+          />
+        </AuthRRField>
+        <AuthRRField label="Банк">
+          <input
+            class="auth-rr-input__control auth-rr-input__control--align-left"
+            type="text"
+            placeholder="Название банка"
+            :value="form.bank"
+            @input="onBankInput"
+          />
+        </AuthRRField>
+        <AuthRRField label="БИК Банка" :error="bikFieldError">
+          <input
+            class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!bikFieldError }"
+            type="text"
+            inputmode="numeric"
+            placeholder="9 цифр"
+            maxlength="9"
+            :value="form.bankBik"
+            :aria-invalid="!!bikFieldError"
+            @input="onBankBikInput"
+            @blur="bikTouched = true"
+          />
+        </AuthRRField>
+        <AuthRRField label="ИНН банка" :error="bankInnFieldError">
+          <input
+            class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!bankInnFieldError }"
+            type="text"
+            inputmode="numeric"
+            placeholder="10 цифр"
+            maxlength="10"
+            :value="form.bankInn"
+            :aria-invalid="!!bankInnFieldError"
+            @input="onBankInnInput"
+            @blur="bankInnTouched = true"
+          />
+        </AuthRRField>
+        <AuthRRField label="Корреспондентский счет" :error="correspondentFieldError">
+          <input
+            class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!correspondentFieldError }"
+            type="text"
+            inputmode="numeric"
+            placeholder="20 цифр"
+            maxlength="20"
+            :value="form.correspondentAccount"
+            :aria-invalid="!!correspondentFieldError"
+            @input="onCorrInput"
+            @blur="correspondentTouched = true"
+          />
+        </AuthRRField>
+      </div>
+
+      <!-- Step 3: review -->
+      <div v-else class="piw-review">
+        <ProfileDocThumb
+          :src="ogrnipUrl"
+          :is-pdf="form.ogrnipIsPdf"
+          alt="ЕГРИП"
+          pdf-label="ЕГРИП"
+          empty-text="Нет файла"
+          @click="openPreview(ogrnipUrl)"
+        />
+
+        <AuthRRField label="ФИО ИП">
+          <input class="auth-rr-input__control auth-rr-input__control--align-left" :value="form.name" @input="onNameInput" />
+        </AuthRRField>
+        <AuthRRField label="ИНН ИП" :error="innFieldError">
+          <input
+            class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!innFieldError }"
+            inputmode="numeric"
+            maxlength="12"
+            :value="form.inn"
+            :aria-invalid="!!innFieldError"
+            @input="onInnInput"
+            @blur="innTouched = true"
+          />
+        </AuthRRField>
+        <AuthRRField label="ОГРНИП" :error="ogrnipFieldError">
+          <input
+            class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!ogrnipFieldError }"
+            inputmode="numeric"
+            maxlength="15"
+            :value="form.ogrnip"
+            :aria-invalid="!!ogrnipFieldError"
+            @input="onOgrnipInput"
+            @blur="ogrnipTouched = true"
+          />
+        </AuthRRField>
+        <AuthRRField label="Расчетный счет" :error="paymentAccountFieldError">
+          <input
+            class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!paymentAccountFieldError }"
+            inputmode="numeric"
+            maxlength="20"
+            :value="form.paymentAccount"
+            :aria-invalid="!!paymentAccountFieldError"
+            @input="onPaymentAccountInput"
+            @blur="paymentAccountTouched = true"
+          />
+        </AuthRRField>
+        <AuthRRField label="Банк">
+          <input class="auth-rr-input__control auth-rr-input__control--align-left" :value="form.bank" @input="onBankInput" />
+        </AuthRRField>
+        <AuthRRField label="БИК Банка" :error="bikFieldError">
+          <input
+            class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!bikFieldError }"
+            inputmode="numeric"
+            maxlength="9"
+            :value="form.bankBik"
+            :aria-invalid="!!bikFieldError"
+            @input="onBankBikInput"
+            @blur="bikTouched = true"
+          />
+        </AuthRRField>
+        <AuthRRField label="ИНН банка" :error="bankInnFieldError">
+          <input
+            class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!bankInnFieldError }"
+            inputmode="numeric"
+            maxlength="10"
+            :value="form.bankInn"
+            :aria-invalid="!!bankInnFieldError"
+            @input="onBankInnInput"
+            @blur="bankInnTouched = true"
+          />
+        </AuthRRField>
+        <AuthRRField label="Корреспондентский счет" :error="correspondentFieldError">
+          <input
+            class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!correspondentFieldError }"
+            inputmode="numeric"
+            maxlength="20"
+            :value="form.correspondentAccount"
+            :aria-invalid="!!correspondentFieldError"
+            @input="onCorrInput"
+            @blur="correspondentTouched = true"
+          />
+        </AuthRRField>
+
+        <ProfileRrCheckbox v-model="form.dataConfirmed" label="Данные верны, ИП зарегистрировано" />
+      </div>
+
+      <template #footer>
+        <template v-if="step === 1">
+          <AuthRRButton
+            variant="brand-secondary"
+            :label="hasOgrnipFile ? 'Загрузить заново' : 'Загрузить файл'"
+            :disabled="busy"
+            @click="openFilePicker"
+          />
+          <AuthRRButton v-if="hasOgrnipFile" label="Продолжить" :disabled="busy" @click="goToStep(2)" />
+        </template>
+        <AuthRRButton
+          v-else-if="step === 2"
+          label="Продолжить"
+          :disabled="!canContinueForm"
+          :loading="busy"
+          @click="goToStep(3)"
+        />
+        <AuthRRButton
+          v-else
+          label="Отправить на проверку"
+          :disabled="!canSubmit"
+          :loading="busy"
+          @click="submitForReview"
+        />
+        <p v-if="formError" class="piw-error" role="alert">{{ formError }}</p>
+      </template>
+    </ProfileStepShell>
+
+    <PassportCameraCapture
+      v-if="cameraOpen"
+      variant="inn"
+      source="file"
+      :seed-file="captureSeedFile"
+      @close="closeCapture"
+      @save="onCaptureSave"
+      @replace="onCaptureReplace"
+    />
+
+    <Teleport to="body">
+      <div
+        v-if="previewUrl"
+        class="piw-lightbox"
+        role="dialog"
+        aria-modal="true"
+      >
+        <button type="button" class="piw-lightbox__backdrop" aria-label="Закрыть" @click="closePreview" />
+        <button type="button" class="piw-lightbox__close" aria-label="Закрыть" @click="closePreview">✕</button>
+        <iframe
+          v-if="previewIsPdf"
+          class="piw-lightbox__pdf"
+          :src="previewUrl"
+          title="Просмотр документа"
+        />
+        <img
+          v-else
+          class="piw-lightbox__img"
+          :src="previewUrl"
+          alt="Просмотр"
+          @error="previewIsPdf = true"
+        />
+        <div class="piw-lightbox__actions">
+          <button type="button" class="piw-lightbox__btn piw-lightbox__btn--ghost" @click="onReplaceFromPreview">
+            Заменить
+          </button>
+          <button type="button" class="piw-lightbox__btn piw-lightbox__btn--primary" @click="closePreview">
+            Готово
+          </button>
+        </div>
+      </div>
+    </Teleport>
+  </div>
+</template>
+
+<script setup>
+import { computed, onActivated, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import { useProfileApi, useProfileNavigate } from '../composables/useProfileServices'
+import { AuthRRButton, AuthRRField } from 'bibli/shared/ui/rr'
+import { parseApiErrorDetail } from 'bibli/widgets/Profile/lib/parseApiError'
+import {
+  IE_WIZARD_TOTAL,
+  agentTypeChoicePath,
+  createEmptyIeForm,
+  digitsOnly,
+  getIeBankInnFieldError,
+  getIeBikFieldError,
+  getIeCorrespondentAccountFieldError,
+  getIeInnFieldError,
+  getIeOgrnipFieldError,
+  getIePaymentAccountFieldError,
+  ieWizardPath,
+  isIeFormValid,
+  isIeOgrnipFileValid,
+  isIeReadyToSubmit,
+  parseWizardStep,
+} from './lib/agentTypeWizard'
+import {
+  isAllowedUploadFile,
+  isImageFile,
+  isPdfFile,
+  isPdfSource,
+  uploadRejectMessage,
+} from './lib/documentMedia'
+import ProfileStepShell from './personal/ProfileStepShell.vue'
+import ProfileRrCheckbox from './personal/ProfileRrCheckbox.vue'
+import ProfileDocThumb from './personal/ProfileDocThumb.vue'
+import PassportCameraCapture from './passport/PassportCameraCapture.vue'
+import exampleEgrip from './assets/activation/agent-type-examples/example-egrip.webp'
+
+const api = useProfileApi()
+const navigateTo = useProfileNavigate()
+const {
+  getDocumentUrl,
+  getIndividualEntrepreneurData,
+  submitIndividualEntrepreneurData,
+} = api
+
+
+const props = defineProps({
+  step: { type: Number, default: 1 },
+})
+
+const step = computed(() => parseWizardStep(props.step, IE_WIZARD_TOTAL))
+const busy = ref(false)
+const formError = ref('')
+const form = reactive(createEmptyIeForm())
+const previewUrl = ref('')
+const previewIsPdf = ref(false)
+const fileInputRef = ref(null)
+const cameraOpen = ref(false)
+const captureSeedFile = ref(null)
+const innTouched = ref(false)
+const ogrnipTouched = ref(false)
+const paymentAccountTouched = ref(false)
+const bikTouched = ref(false)
+const bankInnTouched = ref(false)
+const correspondentTouched = ref(false)
+
+let ogrnipObjectUrl = null
+
+const shellTitle = computed(() => {
+  if (step.value === 1) return 'Лист записи ЕГРИП'
+  if (step.value === 2) return 'Данные ИП'
+  return 'Проверьте данные'
+})
+
+const shellSubtitle = computed(() => {
+  if (step.value === 1) return 'Документ о регистрации ИП'
+  if (step.value === 2) return 'ОГРНИП и система налогообложения'
+  return ''
+})
+
+const ogrnipUrl = computed(() => {
+  if (form.ogrnipPreviewUrl) return form.ogrnipPreviewUrl
+  if (form.ogrnipServerPath) return getDocumentUrl(form.ogrnipServerPath)
+  return ''
+})
+
+const hasOgrnipFile = computed(() => isIeOgrnipFileValid(form))
+const canContinueForm = computed(() => isIeFormValid(form))
+const canSubmit = computed(() => isIeReadyToSubmit(form))
+const innFieldError = computed(() => getIeInnFieldError(form.inn, innTouched.value))
+const ogrnipFieldError = computed(() => getIeOgrnipFieldError(form.ogrnip, ogrnipTouched.value))
+const paymentAccountFieldError = computed(() =>
+  getIePaymentAccountFieldError(form.paymentAccount, form.bankBik, paymentAccountTouched.value),
+)
+
+const bikFieldError = computed(() =>
+  getIeBikFieldError(
+    form.bankBik,
+    form.paymentAccount,
+    form.correspondentAccount,
+    bikTouched.value,
+  ),
+)
+const bankInnFieldError = computed(() => getIeBankInnFieldError(form.bankInn, bankInnTouched.value))
+const correspondentFieldError = computed(() =>
+  getIeCorrespondentAccountFieldError(
+    form.correspondentAccount,
+    form.bankBik,
+    correspondentTouched.value,
+  ),
+)
+
+function apiError(err, fallback) {
+  return parseApiErrorDetail(err, fallback) || fallback
+}
+
+function goToStep(n, { replace = false } = {}) {
+  formError.value = ''
+  const next = parseWizardStep(n, IE_WIZARD_TOTAL)
+  if (next === step.value) return
+  void navigateTo(ieWizardPath(next), replace ? { replace: true } : undefined)
+}
+
+/** Уже выгруженный документ не показываем — сразу к данным ИП. */
+function skipCompletedPhotoStep() {
+  if (busy.value) return
+  if (step.value === 1 && isIeOgrnipFileValid(form)) {
+    goToStep(2, { replace: true })
+  }
+}
+
+function onBack() {
+  if (step.value <= 1) {
+    void navigateTo(agentTypeChoicePath())
+    return
+  }
+  if (typeof window !== 'undefined' && window.history.length > 1) {
+    window.history.back()
+    return
+  }
+  void navigateTo(ieWizardPath(step.value - 1), { replace: true })
+}
+
+function onNameInput(e) {
+  form.name = e.target.value
+}
+function onInnInput(e) {
+  form.inn = digitsOnly(e.target.value, 12)
+}
+function onOgrnipInput(e) {
+  form.ogrnip = digitsOnly(e.target.value, 15)
+}
+function onPaymentAccountInput(e) {
+  form.paymentAccount = digitsOnly(e.target.value, 20)
+}
+function onBankInput(e) {
+  form.bank = e.target.value
+}
+function onBankBikInput(e) {
+  form.bankBik = digitsOnly(e.target.value, 9)
+}
+function onBankInnInput(e) {
+  form.bankInn = digitsOnly(e.target.value, 10)
+}
+function onCorrInput(e) {
+  form.correspondentAccount = digitsOnly(e.target.value, 20)
+}
+
+function closePreview() {
+  previewUrl.value = ''
+  previewIsPdf.value = false
+}
+
+function openPreview(url) {
+  if (!url) return
+  previewIsPdf.value =
+    form.ogrnipIsPdf || isPdfSource(url, form.ogrnipFile, form.ogrnipServerPath)
+  previewUrl.value = url
+}
+
+function openFilePicker() {
+  fileInputRef.value?.click()
+}
+
+function closeCapture() {
+  cameraOpen.value = false
+  captureSeedFile.value = null
+}
+
+function onCaptureReplace() {
+  formError.value = ''
+  openFilePicker()
+}
+
+function onReplaceFromPreview() {
+  closePreview()
+  fileInputRef.value?.click()
+}
+
+function assignOgrnipFile(file) {
+  const localUrl = URL.createObjectURL(file)
+  if (ogrnipObjectUrl) URL.revokeObjectURL(ogrnipObjectUrl)
+  ogrnipObjectUrl = localUrl
+  form.ogrnipFile = file
+  form.ogrnipPreviewUrl = localUrl
+  form.ogrnipServerPath = null
+  form.ogrnipIsPdf = isPdfFile(file)
+}
+
+function onFilePicked(event) {
+  const input = event.target
+  const file = input?.files?.[0]
+  if (input) input.value = ''
+  if (!file || busy.value) return
+  formError.value = ''
+
+  if (!isAllowedUploadFile(file, 'image-or-pdf')) {
+    formError.value = uploadRejectMessage('image-or-pdf')
+    return
+  }
+
+  if (isImageFile(file)) {
+    captureSeedFile.value = file
+    cameraOpen.value = true
+    return
+  }
+
+  assignOgrnipFile(file)
+}
+
+function onCaptureSave({ file }) {
+  if (!file) return
+  assignOgrnipFile(file)
+  closeCapture()
+}
+
+async function resolveOgrnipFile() {
+  if (form.ogrnipFile) return form.ogrnipFile
+  if (!form.ogrnipServerPath) return null
+  const url = getDocumentUrl(form.ogrnipServerPath)
+  const res = await fetch(url, { credentials: 'include' })
+  if (!res.ok) throw new Error('Не удалось получить файл ЕГРИП')
+  const blob = await res.blob()
+  return new File([blob], 'egrip.pdf', { type: blob.type || 'application/octet-stream' })
+}
+
+async function submitForReview() {
+  if (!canSubmit.value || busy.value) return
+  formError.value = ''
+  busy.value = true
+  try {
+    const file = await resolveOgrnipFile()
+    if (!file) {
+      formError.value = 'Загрузите лист записи ЕГРИП'
+      return
+    }
+    await submitIndividualEntrepreneurData({
+      name: form.name.trim(),
+      inn: digitsOnly(form.inn, 12),
+      ogrnip: digitsOnly(form.ogrnip, 15),
+      file_ogrnip: file,
+      payment_account: digitsOnly(form.paymentAccount, 20),
+      bank: form.bank.trim(),
+      bank_bik: digitsOnly(form.bankBik, 9),
+      bank_inn: digitsOnly(form.bankInn, 10),
+      correspondent_account: digitsOnly(form.correspondentAccount, 20),
+    })
+    await navigateTo('/profile')
+  } catch (err) {
+    formError.value = apiError(err, 'Не удалось отправить данные')
+  } finally {
+    busy.value = false
+  }
+}
+
+async function loadInitial() {
+  try {
+    const res = await getIndividualEntrepreneurData()
+    const row = res?.data || res || {}
+    form.name = row.name || ''
+    form.inn = digitsOnly(row.inn || '', 12)
+    form.ogrnip = digitsOnly(row.ogrnip || '', 15)
+    form.paymentAccount = digitsOnly(row.payment_account || '', 20)
+    form.bank = row.bank || ''
+    form.bankBik = digitsOnly(row.bank_bik || '', 9)
+    form.bankInn = digitsOnly(row.bank_inn || '', 10)
+    form.correspondentAccount = digitsOnly(row.correspondent_account || '', 20)
+    if (row.file_ogrnip) {
+      form.ogrnipServerPath = row.file_ogrnip
+      form.ogrnipPreviewUrl = getDocumentUrl(row.file_ogrnip)
+      form.ogrnipFile = null
+      form.ogrnipIsPdf = false
+    }
+  } catch (err) {
+    console.error('[ie-wizard] load failed', err)
+  } finally {
+    skipCompletedPhotoStep()
+  }
+}
+
+function resetLocalState() {
+  formError.value = ''
+  closePreview()
+  cameraOpen.value = false
+  captureSeedFile.value = null
+  form.dataConfirmed = false
+  innTouched.value = false
+  ogrnipTouched.value = false
+  paymentAccountTouched.value = false
+  bikTouched.value = false
+  bankInnTouched.value = false
+  correspondentTouched.value = false
+  if (ogrnipObjectUrl) URL.revokeObjectURL(ogrnipObjectUrl)
+  ogrnipObjectUrl = null
+  Object.assign(form, createEmptyIeForm())
+}
+
+watch(
+  () => step.value,
+  () => {
+    skipCompletedPhotoStep()
+  },
+)
+
+onMounted(() => {
+  void loadInitial()
+})
+
+const skipNextActivateReload = ref(true)
+onActivated(() => {
+  if (skipNextActivateReload.value) {
+    skipNextActivateReload.value = false
+    return
+  }
+  resetLocalState()
+  void loadInitial()
+})
+
+onBeforeUnmount(() => {
+  if (ogrnipObjectUrl) URL.revokeObjectURL(ogrnipObjectUrl)
+})
+</script>
+
+<style scoped>
+.profile-ie-wizard,
+.profile-ie-wizard *,
+.profile-ie-wizard *::before,
+.profile-ie-wizard *::after {
+  box-sizing: border-box;
+}
+
+.profile-ie-wizard {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  flex: 1 1 0;
+  overflow: hidden;
+}
+
+.profile-ie-wizard :deep(.profile-step-shell__footer) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rr-spacing-padding-m);
+}
+
+.piw-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rr-spacing-padding-l);
+}
+
+.piw-hero {
+  display: grid;
+  place-items: center;
+  padding: var(--rr-spacing-padding-2-xl) var(--rr-spacing-padding-xl);
+  border-radius: var(--rr-radius-xl);
+  background: var(--rr-backgrounds-brand-secondary-default);
+  overflow: hidden;
+}
+
+.piw-hero--example {
+  align-items: end;
+  justify-items: center;
+  min-height: 220px;
+  padding-top: var(--rr-spacing-padding-3-xl);
+  padding-bottom: 0;
+}
+
+.piw-hero__img {
+  display: block;
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  border-radius: var(--rr-radius-m);
+  object-fit: contain;
+  box-shadow: 0 var(--rr-spacing-padding-m) var(--rr-spacing-padding-3-xl) var(--rr-fx-shadow-major);
+}
+
+.piw-hero__img--doc {
+  max-width: 240px;
+  margin: 0;
+  border-radius: var(--rr-radius-m) var(--rr-radius-m) 0 0;
+  box-shadow: 0 var(--rr-spacing-padding-s) var(--rr-spacing-padding-2-xl) var(--rr-fx-shadow-major);
+  object-position: bottom center;
+}
+
+.piw-reqs {
+  margin: 0;
+  font-family: var(--rr-font-family-font-family, Manrope, system-ui, sans-serif);
+  font-weight: 400;
+  font-size: var(--rr-font-size-font-size-m);
+  line-height: var(--rr-line-height-line-height-m);
+  letter-spacing: var(--rr-tracking-tracking-m);
+  color: var(--rr-labels-neutral-primary);
+  text-align: left;
+}
+
+.piw-file-input {
+  display: none;
+}
+
+.piw-review {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rr-spacing-padding-l);
+}
+
+
+.piw-error {
+  margin: var(--rr-spacing-padding-m) 0 0;
+  color: var(--rr-labels-danger-primary);
+  font-size: var(--rr-font-size-font-size-s);
+  text-align: center;
+}
+
+.piw-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--rr-spacing-padding-xl);
+  padding: var(--rr-spacing-padding-3-xl) var(--rr-spacing-padding-xl)
+    calc(var(--rr-spacing-padding-3-xl) + env(safe-area-inset-bottom, 0px));
+  pointer-events: auto;
+}
+
+.piw-lightbox__backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: rgba(16, 16, 18, 0.88);
+  cursor: pointer;
+}
+
+.piw-lightbox__img,
+.piw-lightbox__pdf,
+.piw-lightbox__close,
+.piw-lightbox__actions {
+  position: relative;
+  z-index: 1;
+}
+
+.piw-lightbox__img {
+  max-width: min(100%, 480px);
+  max-height: 70vh;
+  border-radius: var(--rr-radius-l);
+  object-fit: contain;
+}
+
+.piw-lightbox__pdf {
+  width: min(100%, 480px);
+  height: min(70vh, 640px);
+  border: none;
+  border-radius: var(--rr-radius-l);
+  background: #fff;
+}
+
+.piw-lightbox__close {
+  position: absolute;
+  top: calc(var(--rr-spacing-padding-xl) + env(safe-area-inset-top, 0px));
+  right: var(--rr-spacing-padding-xl);
+  z-index: 2;
+  width: var(--rr-size-3-xl);
+  height: var(--rr-size-3-xl);
+  border: none;
+  border-radius: var(--rr-radius-full);
+  background: var(--rr-backgrounds-overlay-strong, rgba(255, 255, 255, 0.2));
+  color: #fff;
+  cursor: pointer;
+}
+
+.piw-lightbox__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--rr-spacing-padding-l);
+  width: min(100%, 400px);
+}
+
+.piw-lightbox__btn {
+  min-height: var(--rr-size-4-xl);
+  border: none;
+  border-radius: var(--rr-radius-xl);
+  font: inherit;
+  font-size: var(--rr-font-size-font-size-m);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.piw-lightbox__btn--ghost {
+  background: var(--rr-backgrounds-brand-secondary-hover);
+  color: var(--rr-labels-brand-primary);
+}
+
+.piw-lightbox__btn--primary {
+  background: var(--rr-labels-brand-primary);
+  color: var(--rr-labels-neutral-inverted-primary);
+}
+</style>

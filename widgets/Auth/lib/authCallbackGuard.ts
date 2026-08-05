@@ -175,6 +175,7 @@ export function isAuthEntryContentPresent(doc?: Document): boolean {
 
   // Только готовая форма входа (.auth-page). Промежуточный .auth-template без
   // страницы — ещё не контент (иначе recovery на /auth подавляется навсегда).
+  // Пока loading / SSO (data-auth-redirecting) — форму «готовой» не считаем.
   const authPage = target.querySelector('.auth-page');
   if (!authPage) {
     return false;
