@@ -22,7 +22,14 @@ function measureOverflow(): boolean {
   if (!shell) {
     return false;
   }
-  return shell.scrollHeight > shell.clientHeight + 1;
+  if (shell.scrollHeight > shell.clientHeight + 1) {
+    return true;
+  }
+
+  // Скролл живёт в .auth-rr-main (overflow-y: auto) — без этой проверки
+  // compact не включается, и на десктопе остаётся полоса прокрутки.
+  const main = document.querySelector('.auth-rr-main');
+  return Boolean(main && main.scrollHeight > main.clientHeight + 1);
 }
 
 function syncVisualHeightUnit(): void {
