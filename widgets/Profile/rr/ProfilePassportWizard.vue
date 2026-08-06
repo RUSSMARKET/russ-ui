@@ -602,7 +602,7 @@ async function onCameraSave({ file }) {
         return
       }
       cameraOpen.value = false
-      goToStep(2)
+      if (step.value <= 1) goToStep(2)
     } else {
       if (regPreviewObjectUrl) URL.revokeObjectURL(regPreviewObjectUrl)
       regPreviewObjectUrl = localUrl
@@ -619,7 +619,7 @@ async function onCameraSave({ file }) {
         return
       }
       cameraOpen.value = false
-      goToStep(3)
+      if (step.value <= 2) goToStep(3)
     }
   } catch (err) {
     if (!isActionCurrent(gen)) return

@@ -426,7 +426,7 @@ async function onCameraSave({ file }) {
       return
     }
     closeCapture()
-    goToStep(2)
+    if (step.value < 2) goToStep(2)
   } catch (err) {
     if (!isActionCurrent(gen)) return
     formError.value = apiError(err, 'Не удалось загрузить фото реквизитов')
@@ -457,7 +457,7 @@ async function onFilePicked(event) {
         formError.value = 'Не удалось подтвердить загрузку файла реквизитов'
         return
       }
-      goToStep(2)
+      if (step.value < 2) goToStep(2)
     } catch (err) {
       if (!isActionCurrent(gen)) return
       formError.value = apiError(err, 'Не удалось загрузить файл реквизитов')
