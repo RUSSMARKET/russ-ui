@@ -367,15 +367,14 @@ html:has(.auth-rr-shell) #auth-preview-app {
   justify-content: flex-start;
 }
 
-:root[data-rr-compact='3'] .auth-rr-footer,
+/* Cookie виден на мобилке; прячем только при клавиатуре / экстремальном compact */
 :root[data-rr-compact='4'] .auth-rr-footer,
-:root[data-rr-keyboard='open'] .auth-rr-footer,
-:root[data-rr-viewport='mobile'] .auth-rr-footer,
-:root[data-rr-layout='stacked'] .auth-rr-footer {
+:root[data-rr-keyboard='open'] .auth-rr-footer {
   display: none;
 }
 
-:root[data-rr-compact='2'] .auth-rr-footer {
+:root[data-rr-compact='2'] .auth-rr-footer,
+:root[data-rr-compact='3'] .auth-rr-footer {
   padding-top: var(--rr-spacing-padding-m);
 }
 

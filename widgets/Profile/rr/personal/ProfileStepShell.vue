@@ -85,8 +85,8 @@ function syncKeyboardOpen() {
 }
 
 /**
- * Один раз сдвигает body так, чтобы поле было над клавиатурой,
- * затем скролл блокируется CSS (overflow: hidden).
+ * Держим поле в видимой области visualViewport через scroll body.
+ * Не трогаем overflow после — иначе контент «съезжает» и нельзя доскроллить.
  */
 function revealFocusedInput(target) {
   const body = getBodyEl()
@@ -97,15 +97,12 @@ function revealFocusedInput(target) {
   const visibleTop = (vv?.offsetTop ?? 0) + 12
   const visibleBottom = (vv?.offsetTop ?? 0) + (vv?.height ?? window.innerHeight) - 12
 
-  // На миг разрешаем скролл только для позиционирования
-  body.style.overflowY = 'auto'
   const rect = field.getBoundingClientRect()
   if (rect.bottom > visibleBottom) {
-    body.scrollTop += rect.bottom - visibleBottom
+    body.scrollTop += Math.ceil(rect.bottom - visibleBottom)
   } else if (rect.top < visibleTop) {
-    body.scrollTop -= visibleTop - rect.top
+    body.scrollTop -= Math.ceil(visibleTop - rect.top)
   }
-  body.style.overflowY = ''
 }
 
 function onFocusIn(event) {
@@ -117,8 +114,8 @@ function onFocusIn(event) {
   if (focusTimer) window.clearTimeout(focusTimer)
 
   const apply = () => {
-    revealFocusedInput(target)
     syncKeyboardOpen()
+    revealFocusedInput(target)
   }
 
   // Клавиатура уже открыта (переход между полями) — сразу; иначе ждём анимацию
@@ -130,12 +127,20 @@ function onFocusIn(event) {
 }
 
 function onFocusOut() {
-  window.setTimeout(syncKeyboardOpen, 50)
+  window.setTimeout(syncKeyboardOpen, 80)
 }
 
 function onViewportResize() {
-  // Только класс; без повторного скролла — иначе всё прыгает
   syncKeyboardOpen()
+  const active = document.activeElement
+  if (
+    keyboardOpen.value &&
+    active instanceof HTMLElement &&
+    rootEl.value?.contains(active) &&
+    active.matches('input, textarea, select, [contenteditable="true"]')
+  ) {
+    revealFocusedInput(active)
+  }
 }
 
 onMounted(() => {
@@ -182,18 +187,22 @@ onBeforeUnmount(() => {
 }
 
 .profile-step-shell--keyboard {
-  padding-bottom: 0;
+  /* Высота shell уже зафиксирована через --vh; не схлопываем отступы */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+/* Футер остаётся в потоке (без display:none — иначе всё прыгает),
+   визуально уходит под клавиатуру за счёт overflow shell. */
 .profile-step-shell--keyboard .profile-step-shell__footer {
-  display: none;
+  visibility: hidden;
+  pointer-events: none;
 }
 
-/* Клавиатура открыта: скролл запрещён, поле уже выведено в зону видимости */
+/* Клавиатура открыта: поле поднимаем скроллом body, скролл оставляем */
 .profile-step-shell--keyboard .profile-step-shell__body {
-  overflow-y: hidden;
-  overscroll-behavior: none;
-  touch-action: manipulation;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
 .profile-step-shell__header {

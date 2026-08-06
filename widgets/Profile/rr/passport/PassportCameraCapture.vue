@@ -134,8 +134,8 @@
 
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import iconFlashOff from '../assets/activation/passport-tips/cam-flash-off.svg'
-import iconSwitch from '../assets/activation/passport-tips/cam-switch.svg'
+import iconFlashOff from '../assets/activation/passport-tips/cam-flash-off.svg?url'
+import iconSwitch from '../assets/activation/passport-tips/cam-switch.svg?url'
 
 const props = defineProps({
   /** main — разворот с фото; registration — страница регистрации; inn — свидетельство ИНН; snils — СНИЛС; bank — реквизиты; profile — фото профиля */

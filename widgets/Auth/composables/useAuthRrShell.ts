@@ -9,12 +9,22 @@ type DatasetSnapshot = Record<string, string | undefined>;
 
 const COMPACT_LEVELS = ['', '1', '2', '3', '4'] as const;
 const KEYBOARD_HEIGHT_RATIO = 0.78;
+const KEYBOARD_GAP_PX = 120;
+
+let lockedLayoutH = 0;
 
 function getVisualHeight(): number {
   if (typeof window === 'undefined') {
     return 0;
   }
   return window.visualViewport?.height ?? window.innerHeight;
+}
+
+function getLayoutHeight(): number {
+  if (typeof window === 'undefined') {
+    return 0;
+  }
+  return window.innerHeight;
 }
 
 function measureOverflow(): boolean {
@@ -33,17 +43,28 @@ function measureOverflow(): boolean {
 }
 
 function syncVisualHeightUnit(): void {
-  const h = getVisualHeight();
-  document.documentElement.style.setProperty('--vvh', `${h * 0.01}px`);
+  const layoutH = getLayoutHeight();
+  const visualH = getVisualHeight();
+  if (!lockedLayoutH || layoutH > lockedLayoutH) {
+    lockedLayoutH = layoutH;
+  }
+  document.documentElement.style.setProperty('--vvh', `${lockedLayoutH * 0.01}px`);
+  document.documentElement.style.setProperty('--auth-vvh-visual', `${visualH * 0.01}px`);
 }
 
 function syncKeyboardState(): void {
-  const vv = window.visualViewport;
-  if (!vv || vv.height >= window.innerHeight * KEYBOARD_HEIGHT_RATIO) {
-    delete document.documentElement.dataset.rrKeyboard;
+  const layoutH = lockedLayoutH || getLayoutHeight();
+  const visualH = getVisualHeight();
+  if (layoutH - visualH > KEYBOARD_GAP_PX) {
+    document.documentElement.dataset.rrKeyboard = 'open';
     return;
   }
-  document.documentElement.dataset.rrKeyboard = 'open';
+  const vv = window.visualViewport;
+  if (vv && vv.height < window.innerHeight * KEYBOARD_HEIGHT_RATIO) {
+    document.documentElement.dataset.rrKeyboard = 'open';
+    return;
+  }
+  delete document.documentElement.dataset.rrKeyboard;
 }
 
 function syncLayoutMode(): void {
@@ -53,13 +74,19 @@ function syncLayoutMode(): void {
 }
 
 function syncViewportTokens(): void {
-  const mobile =
-    isBelowSplitLayoutWidth() ||
-    document.documentElement.dataset.rrKeyboard === 'open';
-  document.documentElement.dataset.rrViewport = mobile ? 'mobile' : 'desktop';
+  document.documentElement.dataset.rrViewport = isBelowSplitLayoutWidth()
+    ? 'mobile'
+    : 'desktop';
 }
 
 function syncCompactLevel(forceStackedRetry = false): void {
+  if (document.documentElement.dataset.rrKeyboard === 'open') {
+    delete document.documentElement.dataset.rrCompact;
+    delete document.documentElement.dataset.rrScroll;
+    syncViewportTokens();
+    return;
+  }
+
   if (!forceStackedRetry) {
     delete document.documentElement.dataset.rrCompact;
     delete document.documentElement.dataset.rrScroll;
@@ -106,31 +133,24 @@ function shiftFocusedFieldIntoView(target: HTMLElement): void {
     return;
   }
 
+  resetFormShift();
+
+  const main = document.querySelector('.auth-rr-main') as HTMLElement | null;
   const vv = window.visualViewport;
-  if (!vv) {
+  if (!main || !vv) {
+    field.scrollIntoView({ block: 'center', inline: 'nearest' });
     return;
   }
 
-  const rect = field.getBoundingClientRect();
-  const safeBottom = vv.offsetTop + vv.height - 12;
-  const overflow = rect.bottom - safeBottom;
-  if (overflow > 0) {
-    document.documentElement.style.setProperty(
-      '--auth-rr-shift-y',
-      `-${Math.ceil(overflow)}px`,
-    );
-  } else {
-    resetFormShift();
-  }
+  const fieldRect = field.getBoundingClientRect();
+  const mainRect = main.getBoundingClientRect();
+  const safeTop = Math.max(vv.offsetTop + 8, mainRect.top + 8);
+  const safeBottom = vv.offsetTop + vv.height - 16;
 
-  const main = document.querySelector('.auth-rr-main') as HTMLElement | null;
-  if (main) {
-    const mainRect = main.getBoundingClientRect();
-    const fieldTopInMain = rect.top - mainRect.top + main.scrollTop;
-    const targetScroll = Math.max(0, fieldTopInMain - 16);
-    if (Math.abs(main.scrollTop - targetScroll) > 8) {
-      main.scrollTo({ top: targetScroll, behavior: 'smooth' });
-    }
+  if (fieldRect.bottom > safeBottom) {
+    main.scrollTop += Math.ceil(fieldRect.bottom - safeBottom);
+  } else if (fieldRect.top < safeTop) {
+    main.scrollTop -= Math.ceil(safeTop - fieldRect.top);
   }
 }
 
@@ -237,27 +257,31 @@ function restoreRrDocumentState(snapshot: ReturnType<typeof snapshotRrDocumentSt
 export function useAuthRrShell(): void {
   let snapshot: ReturnType<typeof snapshotRrDocumentState> | null = null;
 
+  function onOrientationChange(): void {
+    lockedLayoutH = 0;
+    onViewportChange();
+  }
+
   onMounted(() => {
     snapshot = snapshotRrDocumentState();
     applyRussRedesign({ enabled: true, colorMode: 'light', density: '100' });
     onViewportChange();
 
     window.addEventListener('resize', onViewportChange);
-    window.addEventListener('orientationchange', onViewportChange);
+    window.addEventListener('orientationchange', onOrientationChange);
     window.visualViewport?.addEventListener('resize', onViewportChange);
-    window.visualViewport?.addEventListener('scroll', onViewportChange);
     document.addEventListener('focusin', onFocusIn);
     document.addEventListener('focusout', onFocusOut);
   });
 
   onBeforeUnmount(() => {
     window.removeEventListener('resize', onViewportChange);
-    window.removeEventListener('orientationchange', onViewportChange);
+    window.removeEventListener('orientationchange', onOrientationChange);
     window.visualViewport?.removeEventListener('resize', onViewportChange);
-    window.visualViewport?.removeEventListener('scroll', onViewportChange);
     document.removeEventListener('focusin', onFocusIn);
     document.removeEventListener('focusout', onFocusOut);
     resetFormShift();
+    lockedLayoutH = 0;
 
     if (snapshot) {
       restoreRrDocumentState(snapshot);
