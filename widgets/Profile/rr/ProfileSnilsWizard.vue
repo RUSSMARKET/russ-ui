@@ -5,6 +5,7 @@
       :total="SNILS_WIZARD_TOTAL"
       :title="shellTitle"
       :subtitle="shellSubtitle"
+      :hide-progress="viewOnly"
       @back="onBack"
     >
       <!-- Step 1: upload document -->
@@ -72,15 +73,23 @@
             inputmode="numeric"
             maxlength="14"
             :value="form.snils"
+            :readonly="viewOnly"
             @input="onSnilsInput"
           />
         </AuthRRField>
 
-        <ProfileRrCheckbox v-model="form.dataConfirmed" label="Данные верны" />
+        <ProfileRrCheckbox
+          v-if="!viewOnly"
+          v-model="form.dataConfirmed"
+          label="Данные верны"
+        />
       </div>
 
       <template #footer>
-        <template v-if="step === 1">
+        <template v-if="viewOnly">
+          <AuthRRButton label="Назад к профилю" @click="navigateTo('/profile')" />
+        </template>
+        <template v-else-if="step === 1">
           <AuthRRButton
             label="Продолжить"
             :loading="busy"
@@ -94,14 +103,14 @@
           />
         </template>
         <AuthRRButton
-          v-else-if="step === 2"
+          v-else-if="!viewOnly && step === 2"
           label="Продолжить"
           :disabled="!canContinueSnils"
           :loading="busy"
           @click="submitSnilsStep"
         />
         <AuthRRButton
-          v-else
+          v-else-if="!viewOnly"
           label="Отправить на проверку"
           :disabled="!canSubmit"
           :loading="busy"
@@ -162,7 +171,12 @@
         </button>
         <img class="piw-lightbox__img" :src="previewUrl" alt="Просмотр фото" />
         <div class="piw-lightbox__actions">
-          <button type="button" class="piw-lightbox__btn piw-lightbox__btn--ghost" @click="onReplaceFromPreview">
+          <button
+            v-if="!viewOnly"
+            type="button"
+            class="piw-lightbox__btn piw-lightbox__btn--ghost"
+            @click="onReplaceFromPreview"
+          >
             Заменить
           </button>
           <button type="button" class="piw-lightbox__btn piw-lightbox__btn--primary" @click="previewUrl = ''">
@@ -190,6 +204,7 @@ import {
   maskSnils,
   parseSnilsWizardStep,
 } from './lib/snilsWizard'
+import { isActivationStepLocked } from './lib/activationSteps'
 import {
   isAllowedUploadFile,
   uploadRejectMessage,
@@ -206,6 +221,7 @@ const api = useProfileApi()
 const navigateTo = useProfileNavigate()
 const {
   getDocumentUrl,
+  getUserData,
   getPassportData,
   getPassportFiles,
   SubmitPassportData,
@@ -222,6 +238,7 @@ const props = defineProps({
 const step = computed(() => parseSnilsWizardStep(props.step))
 const busy = ref(false)
 const formError = ref('')
+const viewOnly = ref(false)
 const form = reactive(createEmptySnilsForm())
 const helpOpen = ref(false)
 const cameraOpen = ref(false)
@@ -256,12 +273,14 @@ const canSubmit = computed(() => isSnilsReadyToSubmit(form))
 const hasUploadedPhoto = computed(() => isSnilsPhotoValid(form))
 
 const shellTitle = computed(() => {
+  if (viewOnly.value) return 'СНИЛС'
   if (step.value === 1) return 'Загрузите документ СНИЛС'
   if (step.value === 2) return 'Введите номер СНИЛС'
   return 'Проверьте данные'
 })
 
 const shellSubtitle = computed(() => {
+  if (viewOnly.value) return 'Изменение недоступно'
   if (step.value === 1) return 'Сфотографируйте или загрузите готовый файл'
   if (step.value === 2) return '11 цифр из свидетельства'
   return ''
@@ -278,6 +297,7 @@ function apiError(err, fallback) {
 }
 
 function goToStep(n, { replace = false } = {}) {
+  if (viewOnly.value && parseSnilsWizardStep(n) !== SNILS_WIZARD_TOTAL) return
   formError.value = ''
   const next = parseSnilsWizardStep(n)
   if (next === step.value) return
@@ -286,14 +306,14 @@ function goToStep(n, { replace = false } = {}) {
 
 /** Уже выгруженное фото не показываем — сразу к номеру. */
 function skipCompletedPhotoStep() {
-  if (!initialLoaded.value || busy.value) return
+  if (!initialLoaded.value || busy.value || viewOnly.value) return
   if (step.value === 1 && isSnilsPhotoValid(form)) {
     goToStep(2, { replace: true })
   }
 }
 
 function onBack() {
-  if (step.value <= 1) {
+  if (viewOnly.value || step.value <= 1) {
     void navigateTo('/profile')
     return
   }
@@ -304,7 +324,16 @@ function onBack() {
   void navigateTo(snilsWizardPath(step.value - 1), { replace: true })
 }
 
+function enforceViewOnly(user) {
+  const locked = isActivationStepLocked(user?.activation?.steps?.snils)
+  viewOnly.value = locked
+  if (locked && step.value !== SNILS_WIZARD_TOTAL) {
+    void navigateTo(snilsWizardPath(SNILS_WIZARD_TOTAL), { replace: true })
+  }
+}
+
 function onSnilsInput(event) {
+  if (viewOnly.value) return
   form.snils = maskSnils(event.target.value)
 }
 
@@ -446,7 +475,11 @@ async function submitForReview() {
 
 async function loadInitial() {
   try {
-    const [data, files] = await Promise.all([getPassportData(), getPassportFiles()])
+    const [data, files, userRes] = await Promise.all([
+      getPassportData(),
+      getPassportFiles(),
+      getUserData(),
+    ])
     const row = data?.data || data || {}
     form.snils = maskSnils(row.snils || '')
     form.passport = row.passport || ''
@@ -475,6 +508,8 @@ async function loadInitial() {
         photoPreviewObjectUrl = null
       }
     }
+
+    enforceViewOnly(userRes?.data ?? userRes)
   } catch (err) {
     formError.value = apiError(err, 'Не удалось загрузить данные СНИЛС')
     console.error('[snils-wizard] load failed', err)

@@ -27,9 +27,15 @@
       </header>
 
       <div class="profile-activation__intro">
-        <h1 class="profile-activation__title">Активация профиля</h1>
+        <h1 class="profile-activation__title">
+          {{ profileLocked ? 'Профиль' : 'Активация профиля' }}
+        </h1>
         <p class="profile-activation__subtitle">
-          Шаги можно заполнять в любом порядке
+          {{
+            profileLocked
+              ? 'Данные отправлены. Можно только просмотреть'
+              : 'Шаги можно заполнять в любом порядке'
+          }}
         </p>
       </div>
 
@@ -145,14 +151,23 @@ import {
   ACTIVATION_STEPS,
   EMPTY_ACTIVATION_STATUSES,
   activationStatusLabel,
+  isActivationStepLocked,
   normalizeActivationSteps,
 } from './lib/activationSteps'
-import { personalWizardPath } from './lib/personalWizard'
-import { passportWizardPath } from './lib/passportWizard'
-import { innWizardPath } from './lib/innWizard'
-import { snilsWizardPath } from './lib/snilsWizard'
-import { bankWizardPath } from './lib/bankWizard'
-import { agentTypeChoicePath } from './lib/agentTypeWizard'
+import { personalWizardPath, PERSONAL_WIZARD_TOTAL } from './lib/personalWizard'
+import { passportWizardPath, PASSPORT_WIZARD_TOTAL } from './lib/passportWizard'
+import { innWizardPath, INN_WIZARD_TOTAL } from './lib/innWizard'
+import { snilsWizardPath, SNILS_WIZARD_TOTAL } from './lib/snilsWizard'
+import { bankWizardPath, BANK_WIZARD_TOTAL } from './lib/bankWizard'
+import {
+  AGENT_TYPE_IE,
+  AGENT_TYPE_SELF_EMPLOYED,
+  agentTypeChoicePath,
+  IE_WIZARD_TOTAL,
+  SE_WIZARD_TOTAL,
+  ieWizardPath,
+  seWizardPath,
+} from './lib/agentTypeWizard'
 import ProfileBottomSheet from './personal/ProfileBottomSheet.vue'
 
 const api = useProfileApi()
@@ -171,6 +186,8 @@ const isClearingData = ref(false)
 const clearError = ref('')
 
 const stepStatuses = reactive({ ...EMPTY_ACTIVATION_STATUSES })
+/** account_type из GET /api/user — для перехода к СЗ/ИП в режиме просмотра */
+const accountType = ref(null)
 
 const completedCount = computed(() =>
   ACTIVATION_STEPS.filter(
@@ -178,6 +195,13 @@ const completedCount = computed(() =>
       step.countsTowardProgress &&
       (stepStatuses[step.id] === 'done' || stepStatuses[step.id] === 'review'),
   ).length,
+)
+
+/** Все шаги прогресса уже отправлены — только просмотр. */
+const profileLocked = computed(() =>
+  ACTIVATION_STEPS.filter((step) => step.countsTowardProgress).every((step) =>
+    isActivationStepLocked(stepStatuses[step.id]),
+  ),
 )
 
 function statusLabel(status) {
@@ -190,6 +214,11 @@ function applyActivationFromUser(user) {
   for (const id of Object.keys(EMPTY_ACTIVATION_STATUSES)) {
     stepStatuses[id] = next[id]
   }
+  const rawType = user?.account_type
+  accountType.value =
+    rawType === null || rawType === undefined || rawType === ''
+      ? null
+      : Number(rawType)
 }
 
 async function loadActivationStatuses() {
@@ -213,27 +242,39 @@ function onBack() {
 }
 
 function onOpenStep(stepId) {
+  const locked = isActivationStepLocked(stepStatuses[stepId])
+
   if (stepId === 'personal') {
-    void navigateTo(personalWizardPath(1))
+    void navigateTo(personalWizardPath(locked ? PERSONAL_WIZARD_TOTAL : 1))
     return
   }
   if (stepId === 'passport') {
-    void navigateTo(passportWizardPath(1))
+    void navigateTo(passportWizardPath(locked ? PASSPORT_WIZARD_TOTAL : 1))
     return
   }
   if (stepId === 'inn') {
-    void navigateTo(innWizardPath(1))
+    void navigateTo(innWizardPath(locked ? INN_WIZARD_TOTAL : 1))
     return
   }
   if (stepId === 'snils') {
-    void navigateTo(snilsWizardPath(1))
+    void navigateTo(snilsWizardPath(locked ? SNILS_WIZARD_TOTAL : 1))
     return
   }
   if (stepId === 'bank') {
-    void navigateTo(bankWizardPath(1))
+    void navigateTo(bankWizardPath(locked ? BANK_WIZARD_TOTAL : 1))
     return
   }
   if (stepId === 'agent-type') {
+    if (locked) {
+      if (accountType.value === AGENT_TYPE_SELF_EMPLOYED) {
+        void navigateTo(seWizardPath(SE_WIZARD_TOTAL))
+        return
+      }
+      if (accountType.value === AGENT_TYPE_IE) {
+        void navigateTo(ieWizardPath(IE_WIZARD_TOTAL))
+        return
+      }
+    }
     void navigateTo(agentTypeChoicePath())
     return
   }
@@ -254,6 +295,7 @@ async function handleClearPersonalData() {
     for (const id of Object.keys(EMPTY_ACTIVATION_STATUSES)) {
       stepStatuses[id] = 'empty'
     }
+    accountType.value = null
     statusesUnavailable.value = false
     try {
       if (typeof sessionStorage !== 'undefined') {

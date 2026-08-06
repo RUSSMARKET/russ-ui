@@ -21,12 +21,12 @@
           />
         </svg>
       </button>
-      <p class="profile-step-shell__step" aria-live="polite">
+      <p v-if="!hideProgress" class="profile-step-shell__step" aria-live="polite">
         {{ stepLabel }}
       </p>
     </header>
 
-    <AuthRRStepProgress :current="current" :total="total" />
+    <AuthRRStepProgress v-if="!hideProgress" :current="current" :total="total" />
 
     <div class="profile-step-shell__body">
       <div v-if="title || subtitle" class="profile-step-shell__intro">
@@ -52,6 +52,8 @@ const props = defineProps({
   title: { type: String, default: '' },
   subtitle: { type: String, default: '' },
   stepText: { type: String, default: '' },
+  /** Режим просмотра: без счётчика шага и полоски прогресса */
+  hideProgress: { type: Boolean, default: false },
 })
 
 defineEmits(['back'])

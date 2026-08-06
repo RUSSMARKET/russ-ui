@@ -33,10 +33,10 @@
           <span class="patc-card__body">
             <span class="patc-card__title">Самозанятый</span>
             <span class="patc-card__desc">Налог на профессиональный доход</span>
-            <span class="patc-card__tags">
-              <span class="patc-tag patc-tag--brand">Самый простой</span>
-              <span class="patc-tag">Налог 6%</span>
-            </span>
+          </span>
+          <span class="patc-card__tags">
+            <span class="patc-tag patc-tag--brand">Самый простой</span>
+            <span class="patc-tag">Налог 6%</span>
           </span>
           <img class="patc-card__illust" :src="illustSe" alt="" width="160" height="85" aria-hidden="true" />
         </button>
@@ -52,10 +52,10 @@
           <span class="patc-card__radio" aria-hidden="true" />
           <span class="patc-card__body">
             <span class="patc-card__title">Индивидуальный предприниматель</span>
-            <span class="patc-card__tags">
-              <span class="patc-tag">Гибкость в выводе</span>
-              <span class="patc-tag">Свой счет</span>
-            </span>
+          </span>
+          <span class="patc-card__tags">
+            <span class="patc-tag">Гибкость в выводе</span>
+            <span class="patc-tag">Свой счет</span>
           </span>
           <img class="patc-card__illust" :src="illustIe" alt="" width="160" height="85" aria-hidden="true" />
         </button>
@@ -75,22 +75,25 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useProfileApi, useProfileNavigate } from '../composables/useProfileServices'
 import { AuthRRButton } from 'bibli/shared/ui/rr'
 import { parseApiErrorDetail } from 'bibli/widgets/Profile/lib/parseApiError'
 import {
   AGENT_TYPE_IE,
   AGENT_TYPE_SELF_EMPLOYED,
+  IE_WIZARD_TOTAL,
+  SE_WIZARD_TOTAL,
   ieWizardPath,
   seWizardPath,
 } from './lib/agentTypeWizard'
+import { isActivationStepLocked } from './lib/activationSteps'
 import illustSe from './assets/activation/agent-type-examples/illust-self-employed.png'
 import illustIe from './assets/activation/agent-type-examples/illust-ie.png'
 
 const api = useProfileApi()
 const navigateTo = useProfileNavigate()
-const { setAgentType } = api
+const { setAgentType, getUserData } = api
 
 const selected = ref('')
 const busy = ref(false)
@@ -98,6 +101,23 @@ const formError = ref('')
 
 function onBack() {
   void navigateTo('/profile')
+}
+
+async function redirectIfLocked() {
+  try {
+    const userRes = await getUserData()
+    const user = userRes?.data ?? userRes
+    if (!isActivationStepLocked(user?.activation?.steps?.['agent-type'])) return
+
+    const accountType = Number(user?.account_type)
+    if (accountType === AGENT_TYPE_SELF_EMPLOYED) {
+      void navigateTo(seWizardPath(SE_WIZARD_TOTAL), { replace: true })
+    } else if (accountType === AGENT_TYPE_IE) {
+      void navigateTo(ieWizardPath(IE_WIZARD_TOTAL), { replace: true })
+    }
+  } catch (err) {
+    console.error('[agent-type-choice] failed to check lock', err)
+  }
 }
 
 async function onContinue() {
@@ -121,6 +141,10 @@ async function onContinue() {
     busy.value = false
   }
 }
+
+onMounted(() => {
+  void redirectIfLocked()
+})
 </script>
 
 <style scoped>
@@ -214,9 +238,7 @@ async function onContinue() {
   width: 100%;
   min-height: 160px;
   margin: 0;
-  padding: var(--rr-spacing-padding-xl);
-  padding-right: 132px;
-  padding-bottom: var(--rr-spacing-padding-xl);
+  padding: var(--rr-spacing-padding-l, 12px);
   border: 1.5px solid transparent;
   border-radius: var(--rr-radius-xl);
   background: var(--rr-backgrounds-primary, #fff);
@@ -233,8 +255,9 @@ async function onContinue() {
 
 .patc-card__radio {
   position: absolute;
-  top: var(--rr-spacing-padding-xl);
-  right: var(--rr-spacing-padding-xl);
+  top: var(--rr-spacing-padding-l, 12px);
+  right: var(--rr-spacing-padding-l, 12px);
+  z-index: 2;
   width: 22px;
   height: 22px;
   border-radius: 50%;
@@ -250,10 +273,11 @@ async function onContinue() {
 
 .patc-card__body {
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
   gap: var(--rr-spacing-padding-s);
   min-width: 0;
-  padding-right: 28px;
+  padding-right: 140px;
 }
 
 .patc-card__title {
@@ -272,7 +296,10 @@ async function onContinue() {
   display: flex;
   flex-wrap: wrap;
   gap: var(--rr-spacing-padding-s);
-  margin-top: var(--rr-spacing-padding-m);
+  width: 100%;
+  margin-top: auto;
+  padding-top: var(--rr-spacing-padding-m);
+  box-sizing: border-box;
 }
 
 .patc-tag {
@@ -307,8 +334,8 @@ async function onContinue() {
   z-index: 0;
 }
 
-.patc-card__radio,
-.patc-card__body {
+.patc-card__body,
+.patc-card__tags {
   position: relative;
   z-index: 1;
 }

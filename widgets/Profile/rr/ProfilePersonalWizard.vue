@@ -6,6 +6,7 @@
     :title="shellTitle"
     :subtitle="shellSubtitle"
     :step-text="step === 5 ? '5 из 5' : ''"
+    :hide-progress="viewOnly"
     @back="onBack"
   >
     <!-- Step 1: identity -->
@@ -185,7 +186,14 @@
       <section class="ppw-card">
         <header class="ppw-card__head">
           <h2>Личные данные</h2>
-          <button type="button" class="ppw-link" @click="goToStep(1)">Изменить</button>
+          <button
+            v-if="!viewOnly"
+            type="button"
+            class="ppw-link"
+            @click="goToStep(1)"
+          >
+            Изменить
+          </button>
         </header>
         <div class="ppw-stack">
           <div class="ppw-fio-group">
@@ -225,7 +233,14 @@
       <section class="ppw-card">
         <header class="ppw-card__head">
           <h2>Контакты</h2>
-          <button type="button" class="ppw-link" @click="goToStep(2)">Изменить</button>
+          <button
+            v-if="!viewOnly"
+            type="button"
+            class="ppw-link"
+            @click="goToStep(2)"
+          >
+            Изменить
+          </button>
         </header>
         <div class="ppw-stack">
           <AuthRRInputPhone v-model="form.phone" label="Номер телефона" readonly />
@@ -245,62 +260,67 @@
         />
       </section>
 
-      <section class="ppw-card">
+      <section v-if="!viewOnly" class="ppw-card">
         <ProfileRrCheckbox v-model="form.dataConfirmed" label="Данные верны" />
       </section>
     </div>
 
     <template #footer>
-      <AuthRRButton
-        v-if="step === 1"
-        label="Продолжить"
-        :disabled="!canContinueIdentity"
-        :loading="busy"
-        @click="submitIdentity"
-      />
-      <AuthRRButton
-        v-else-if="step === 2"
-        :label="needsEmailVerification ? 'Подтвердить почту' : 'Продолжить'"
-        :disabled="!canContinueContacts"
-        :loading="busy"
-        @click="startEmailConfirm"
-      />
-      <AuthRRButton
-        v-else-if="step === 3"
-        variant="neutral-secondary"
-        label="Изменить почту"
-        :disabled="busy"
-        @click="goToStep(2)"
-      />
-      <template v-else-if="step === 4">
-        <template v-if="photoLocked || form.photoPreviewUrl">
-          <AuthRRButton
-            label="Продолжить"
-            :loading="busy"
-            @click="onPhotoContinue"
-          />
-        </template>
-        <template v-else>
-          <AuthRRButton
-            label="Сфотографироваться"
-            :loading="busy"
-            @click="openPhotoCamera"
-          />
-          <AuthRRButton
-            variant="brand-secondary"
-            label="Загрузить из галереи"
-            :disabled="busy"
-            @click="openPhotoGallery"
-          />
-        </template>
+      <template v-if="viewOnly">
+        <AuthRRButton label="Назад к профилю" @click="navigateTo('/profile')" />
       </template>
-      <AuthRRButton
-        v-else
-        label="Отправить на проверку"
-        :disabled="!form.dataConfirmed"
-        :loading="busy"
-        @click="submitForReview"
-      />
+      <template v-else>
+        <AuthRRButton
+          v-if="step === 1"
+          label="Продолжить"
+          :disabled="!canContinueIdentity"
+          :loading="busy"
+          @click="submitIdentity"
+        />
+        <AuthRRButton
+          v-else-if="step === 2"
+          :label="needsEmailVerification ? 'Подтвердить почту' : 'Продолжить'"
+          :disabled="!canContinueContacts"
+          :loading="busy"
+          @click="startEmailConfirm"
+        />
+        <AuthRRButton
+          v-else-if="step === 3"
+          variant="neutral-secondary"
+          label="Изменить почту"
+          :disabled="busy"
+          @click="goToStep(2)"
+        />
+        <template v-else-if="step === 4">
+          <template v-if="photoLocked || form.photoPreviewUrl">
+            <AuthRRButton
+              label="Продолжить"
+              :loading="busy"
+              @click="onPhotoContinue"
+            />
+          </template>
+          <template v-else>
+            <AuthRRButton
+              label="Сфотографироваться"
+              :loading="busy"
+              @click="openPhotoCamera"
+            />
+            <AuthRRButton
+              variant="brand-secondary"
+              label="Загрузить из галереи"
+              :disabled="busy"
+              @click="openPhotoGallery"
+            />
+          </template>
+        </template>
+        <AuthRRButton
+          v-else
+          label="Отправить на проверку"
+          :disabled="!form.dataConfirmed"
+          :loading="busy"
+          @click="submitForReview"
+        />
+      </template>
       <p v-if="formError" class="ppw-error" role="alert">{{ formError }}</p>
     </template>
   </ProfileStepShell>
@@ -421,6 +441,7 @@ import {
   writeOtpResendAt,
   writePendingOtpEmail,
 } from './lib/personalWizard'
+import { isActivationStepLocked } from './lib/activationSteps'
 import {
   isAllowedUploadFile,
   uploadRejectMessage,
@@ -465,6 +486,8 @@ const props = defineProps({
 const step = computed(() => parsePersonalWizardStep(props.step))
 const busy = ref(false)
 const formError = ref('')
+/** Уже отправлено на проверку — только просмотр. */
+const viewOnly = ref(false)
 const otpCode = ref('')
 const otpError = ref('')
 const otpEmail = ref(typeof sessionStorage !== 'undefined' ? readPendingOtpEmail() : '')
@@ -523,6 +546,7 @@ const needsEmailVerification = computed(() => {
 })
 
 const shellTitle = computed(() => {
+  if (viewOnly.value) return 'Личные данные'
   if (step.value === 1) return 'Как вас зовут?'
   if (step.value === 2) return 'Контактные данные'
   if (step.value === 3) return 'Введите код'
@@ -531,6 +555,7 @@ const shellTitle = computed(() => {
 })
 
 const shellSubtitle = computed(() => {
+  if (viewOnly.value) return 'Изменение недоступно'
   if (step.value === 1) return 'Укажите данные как в паспорте'
   if (step.value === 2) return 'Как с вами связаться'
   if (step.value === 3) {
@@ -601,6 +626,7 @@ function onPhoneLockedInteract() {
 }
 
 function goToStep(n) {
+  if (viewOnly.value) return
   formError.value = ''
   otpError.value = ''
   phoneLockHint.value = false
@@ -611,7 +637,7 @@ function goToStep(n) {
 }
 
 function onBack() {
-  if (step.value <= 1) {
+  if (viewOnly.value || step.value <= 1) {
     void navigateTo('/profile')
     return
   }
@@ -622,6 +648,14 @@ function onBack() {
   let prev = step.value - 1
   if (prev === 4 && photoLocked.value) prev = 3
   void navigateTo(personalWizardPath(prev), { replace: true })
+}
+
+function enforceViewOnly(user) {
+  const locked = isActivationStepLocked(user?.activation?.steps?.personal)
+  viewOnly.value = locked
+  if (locked && step.value !== PERSONAL_WIZARD_TOTAL) {
+    void navigateTo(personalWizardPath(PERSONAL_WIZARD_TOTAL), { replace: true })
+  }
 }
 
 function startResendCountdown(seconds = OTP_RESEND_COOLDOWN_SEC) {
@@ -734,6 +768,8 @@ async function loadInitial() {
       } else {
         await refreshPhotoFromApi()
       }
+
+      enforceViewOnly(user)
 
       const missingFio =
         !String(form.name || '').trim() && !String(form.surname || '').trim()
@@ -968,11 +1004,18 @@ onMounted(() => {
   void loadInitial()
 })
 
+const skipNextActivateReload = ref(true)
 onActivated(() => {
   restoreResendCountdown()
+  if (skipNextActivateReload.value) {
+    skipNextActivateReload.value = false
+    return
+  }
+  void loadInitial()
 })
 
 watch(step, (n) => {
+  if (viewOnly.value) return
   if (n === 3) restoreResendCountdown()
   if (n === 4 && photoLocked.value) {
     void navigateTo(personalWizardPath(5), { replace: true })
@@ -980,6 +1023,7 @@ watch(step, (n) => {
 })
 
 watch(photoLocked, (locked) => {
+  if (viewOnly.value) return
   if (locked && step.value === 4) {
     void navigateTo(personalWizardPath(5), { replace: true })
   }
@@ -1094,12 +1138,30 @@ onBeforeUnmount(() => {
 }
 
 .ppw-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 6px var(--rr-spacing-padding-m, 8px);
   border: none;
-  background: none;
-  padding: 0;
-  color: var(--rr-labels-brand-primary, #1c4ae5);
-  font: inherit;
+  border-radius: var(--rr-radius-m, 8px);
+  background: var(--rr-button-brand-secondary-background-default, #e8edfc);
+  color: var(--rr-button-brand-secondary-text-default, #1c4ae5);
+  font-family: var(--rr-font-family-font-family, Manrope, system-ui, sans-serif);
+  font-weight: 400;
+  font-size: var(--rr-font-size-font-size-xs, 12px);
+  line-height: var(--rr-line-height-line-height-xs, 16px);
+  letter-spacing: var(--rr-tracking-tracking-s, 0px);
+  text-align: center;
   cursor: pointer;
+}
+
+.ppw-link:hover {
+  background: var(--rr-button-brand-secondary-background-hover, #d2dbfa);
+}
+
+.ppw-link:active {
+  background: var(--rr-button-brand-secondary-background-active, #bbc9f7);
 }
 
 .ppw-examples {

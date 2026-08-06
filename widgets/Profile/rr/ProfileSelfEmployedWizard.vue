@@ -5,6 +5,7 @@
       :total="SE_WIZARD_TOTAL"
       :title="shellTitle"
       :subtitle="shellSubtitle"
+      :hide-progress="viewOnly"
       @back="onBack"
     >
       <!-- Steps 1–2: upload -->
@@ -66,30 +67,39 @@
           />
         </div>
 
-        <ProfileRrCheckbox v-model="form.dataConfirmed" label="Документы действительны и не истекли" />
+        <ProfileRrCheckbox
+          v-if="!viewOnly"
+          v-model="form.dataConfirmed"
+          label="Документы действительны и не истекли"
+        />
       </div>
 
       <template #footer>
-        <AuthRRButton
-          v-if="step === 1 || step === 2"
-          variant="brand-secondary"
-          :label="currentHasFile ? 'Загрузить заново' : 'Загрузить файл'"
-          :disabled="busy"
-          @click="openFilePicker"
-        />
-        <AuthRRButton
-          v-if="step < 3 && currentHasFile"
-          label="Продолжить"
-          :disabled="busy"
-          @click="goToStep(step + 1)"
-        />
-        <AuthRRButton
-          v-if="step === 3"
-          label="Отправить на проверку"
-          :disabled="!canSubmit"
-          :loading="busy"
-          @click="submitForReview"
-        />
+        <template v-if="viewOnly">
+          <AuthRRButton label="Назад к профилю" @click="navigateTo('/profile')" />
+        </template>
+        <template v-else>
+          <AuthRRButton
+            v-if="step === 1 || step === 2"
+            variant="brand-secondary"
+            :label="currentHasFile ? 'Загрузить заново' : 'Загрузить файл'"
+            :disabled="busy"
+            @click="openFilePicker"
+          />
+          <AuthRRButton
+            v-if="step < 3 && currentHasFile"
+            label="Продолжить"
+            :disabled="busy"
+            @click="goToStep(step + 1)"
+          />
+          <AuthRRButton
+            v-if="step === 3"
+            label="Отправить на проверку"
+            :disabled="!canSubmit"
+            :loading="busy"
+            @click="submitForReview"
+          />
+        </template>
         <p v-if="formError" class="piw-error" role="alert">{{ formError }}</p>
       </template>
     </ProfileStepShell>
@@ -127,7 +137,12 @@
           @error="previewIsPdf = true"
         />
         <div class="piw-lightbox__actions">
-          <button type="button" class="piw-lightbox__btn piw-lightbox__btn--ghost" @click="onReplaceFromPreview">
+          <button
+            v-if="!viewOnly"
+            type="button"
+            class="piw-lightbox__btn piw-lightbox__btn--ghost"
+            @click="onReplaceFromPreview"
+          >
             Заменить
           </button>
           <button type="button" class="piw-lightbox__btn piw-lightbox__btn--primary" @click="closePreview">
@@ -154,6 +169,7 @@ import {
   parseWizardStep,
   seWizardPath,
 } from './lib/agentTypeWizard'
+import { isActivationStepLocked } from './lib/activationSteps'
 import {
   isAllowedUploadFile,
   isImageFile,
@@ -172,6 +188,7 @@ const api = useProfileApi()
 const navigateTo = useProfileNavigate()
 const {
   getDocumentUrl,
+  getUserData,
   getSelfEmployedData,
   submitSelfEmployedData,
 } = api
@@ -184,6 +201,7 @@ const props = defineProps({
 const step = computed(() => parseWizardStep(props.step, SE_WIZARD_TOTAL))
 const busy = ref(false)
 const formError = ref('')
+const viewOnly = ref(false)
 const form = reactive(createEmptySeForm())
 const previewUrl = ref('')
 const previewIsPdf = ref(false)
@@ -197,12 +215,14 @@ let registrationObjectUrl = null
 let incomeObjectUrl = null
 
 const shellTitle = computed(() => {
+  if (viewOnly.value) return 'Тип оформления'
   if (step.value === 1) return 'Справка о постановке на учёт'
   if (step.value === 2) return 'Справка о доходах'
   return 'Проверьте перед отправкой'
 })
 
 const shellSubtitle = computed(() => {
+  if (viewOnly.value) return 'Изменение недоступно'
   if (step.value === 1) return 'Подтвердите статус самозанятого'
   if (step.value === 2) return 'По форме КНД 1122036, актуальная'
   return 'Всё ли правильно?'
@@ -229,6 +249,7 @@ function apiError(err, fallback) {
 }
 
 function goToStep(n, { replace = false } = {}) {
+  if (viewOnly.value && parseWizardStep(n, SE_WIZARD_TOTAL) !== SE_WIZARD_TOTAL) return
   formError.value = ''
   const next = parseWizardStep(n, SE_WIZARD_TOTAL)
   if (next === step.value) return
@@ -237,7 +258,7 @@ function goToStep(n, { replace = false } = {}) {
 
 /** Уже выгруженные фото-шаги не показываем — сразу дальше. */
 function skipCompletedPhotoSteps() {
-  if (busy.value) return
+  if (busy.value || viewOnly.value) return
   if (step.value === 1 && isSeRegistrationValid(form)) {
     goToStep(isSeIncomeValid(form) ? 3 : 2, { replace: true })
     return
@@ -248,6 +269,10 @@ function skipCompletedPhotoSteps() {
 }
 
 function onBack() {
+  if (viewOnly.value) {
+    void navigateTo('/profile')
+    return
+  }
   if (step.value <= 1) {
     void navigateTo(agentTypeChoicePath())
     return
@@ -257,6 +282,14 @@ function onBack() {
     return
   }
   void navigateTo(seWizardPath(step.value - 1), { replace: true })
+}
+
+function enforceViewOnly(user) {
+  const locked = isActivationStepLocked(user?.activation?.steps?.['agent-type'])
+  viewOnly.value = locked
+  if (locked && step.value !== SE_WIZARD_TOTAL) {
+    void navigateTo(seWizardPath(SE_WIZARD_TOTAL), { replace: true })
+  }
 }
 
 function closePreview() {
@@ -385,7 +418,7 @@ async function submitForReview() {
 
 async function loadInitial() {
   try {
-    const res = await getSelfEmployedData()
+    const [res, userRes] = await Promise.all([getSelfEmployedData(), getUserData()])
     const row = res?.data || res || {}
     if (row.file_self_employed) {
       form.registrationServerPath = row.file_self_employed
@@ -399,6 +432,7 @@ async function loadInitial() {
       form.incomeFile = null
       form.incomeIsPdf = false
     }
+    enforceViewOnly(userRes?.data ?? userRes)
   } catch (err) {
     console.error('[se-wizard] load failed', err)
   } finally {

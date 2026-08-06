@@ -6,6 +6,7 @@
       :title="shellTitle"
       :subtitle="shellSubtitle"
       :step-text="step === 4 ? '4 из 4' : ''"
+      :hide-progress="viewOnly"
       @back="onBack"
     >
       <!-- Step 1: main passport photo -->
@@ -173,7 +174,14 @@
         <section class="ppass-card">
           <header class="ppass-card__head">
             <h2>Паспорт РФ</h2>
-            <button type="button" class="ppass-link" @click="goToStep(3)">Изменить</button>
+            <button
+              v-if="!viewOnly"
+              type="button"
+              class="ppass-link"
+              @click="goToStep(3)"
+            >
+              Изменить
+            </button>
           </header>
           <div class="ppw-stack">
             <AuthRRField label="Серия и номер">
@@ -204,31 +212,36 @@
       </div>
 
       <template #footer>
-        <AuthRRButton
-          v-if="step === 1"
-          label="Сделать фото"
-          :loading="busy"
-          @click="openMainCamera"
-        />
-        <AuthRRButton
-          v-else-if="step === 2"
-          label="Сделать фото"
-          :loading="busy"
-          @click="openRegCamera"
-        />
-        <AuthRRButton
-          v-else-if="step === 3"
-          label="Продолжить"
-          :disabled="!canContinueForm"
-          :loading="busy"
-          @click="submitFormStep"
-        />
-        <AuthRRButton
-          v-else
-          label="Отправить на проверку"
-          :loading="busy"
-          @click="submitForReview"
-        />
+        <template v-if="viewOnly">
+          <AuthRRButton label="Назад к профилю" @click="navigateTo('/profile')" />
+        </template>
+        <template v-else>
+          <AuthRRButton
+            v-if="step === 1"
+            label="Сделать фото"
+            :loading="busy"
+            @click="openMainCamera"
+          />
+          <AuthRRButton
+            v-else-if="step === 2"
+            label="Сделать фото"
+            :loading="busy"
+            @click="openRegCamera"
+          />
+          <AuthRRButton
+            v-else-if="step === 3"
+            label="Продолжить"
+            :disabled="!canContinueForm"
+            :loading="busy"
+            @click="submitFormStep"
+          />
+          <AuthRRButton
+            v-else
+            label="Отправить на проверку"
+            :loading="busy"
+            @click="submitForReview"
+          />
+        </template>
         <p v-if="formError" class="ppass-error" role="alert">{{ formError }}</p>
       </template>
     </ProfileStepShell>
@@ -279,6 +292,7 @@ import {
   passportDigits,
   passportWizardPath,
 } from './lib/passportWizard'
+import { isActivationStepLocked } from './lib/activationSteps'
 import ProfileStepShell from './personal/ProfileStepShell.vue'
 import ProfileRrCheckbox from './personal/ProfileRrCheckbox.vue'
 import ProfileDocThumb from './personal/ProfileDocThumb.vue'
@@ -292,6 +306,7 @@ const api = useProfileApi()
 const navigateTo = useProfileNavigate()
 const {
   getDocumentUrl,
+  getUserData,
   getPassportData,
   getPassportFiles,
   SubmitPassportData,
@@ -307,6 +322,7 @@ const props = defineProps({
 const step = computed(() => parsePassportWizardStep(props.step))
 const busy = ref(false)
 const formError = ref('')
+const viewOnly = ref(false)
 const form = reactive(createEmptyPassportForm())
 const issuedOptions = ref([])
 const previewUrl = ref('')
@@ -330,6 +346,7 @@ const canContinueForm = computed(() => isPassportFormValid(form))
 const initialLoaded = ref(false)
 
 const shellTitle = computed(() => {
+  if (viewOnly.value) return 'Паспорт'
   if (step.value === 1) return 'Сделайте фото паспорта'
   if (step.value === 2) return 'Сделайте фото страницы с штампом регистрации'
   if (step.value === 3) return 'Заполните данные'
@@ -337,6 +354,7 @@ const shellTitle = computed(() => {
 })
 
 const shellSubtitle = computed(() => {
+  if (viewOnly.value) return 'Изменение недоступно'
   if (step.value === 1) return 'Главная страница с фотографией'
   if (step.value === 2) return 'Если нет регистрации всё равно сфотографируйте 5-ю страницу'
   if (step.value === 3) return 'Перепишите с разворота паспорта'
@@ -405,6 +423,7 @@ function apiError(err, fallback) {
 }
 
 function goToStep(n, { replace = false } = {}) {
+  if (viewOnly.value && parsePassportWizardStep(n) !== PASSPORT_WIZARD_TOTAL) return
   formError.value = ''
   const next = parsePassportWizardStep(n)
   if (next === step.value) return
@@ -413,7 +432,7 @@ function goToStep(n, { replace = false } = {}) {
 
 /** Уже выгруженные фото-шаги не показываем — сразу дальше. */
 function skipCompletedPhotoSteps() {
-  if (!initialLoaded.value || busy.value) return
+  if (!initialLoaded.value || busy.value || viewOnly.value) return
   if (step.value === 1 && isMainPhotoValid(form)) {
     goToStep(isRegPhotoValid(form) ? 3 : 2, { replace: true })
     return
@@ -424,7 +443,7 @@ function skipCompletedPhotoSteps() {
 }
 
 function onBack() {
-  if (step.value <= 1) {
+  if (viewOnly.value || step.value <= 1) {
     void navigateTo('/profile')
     return
   }
@@ -433,6 +452,14 @@ function onBack() {
     return
   }
   void navigateTo(passportWizardPath(step.value - 1), { replace: true })
+}
+
+function enforceViewOnly(user) {
+  const locked = isActivationStepLocked(user?.activation?.steps?.passport)
+  viewOnly.value = locked
+  if (locked && step.value !== PASSPORT_WIZARD_TOTAL) {
+    void navigateTo(passportWizardPath(PASSPORT_WIZARD_TOTAL), { replace: true })
+  }
 }
 
 function onPassportInput(event) {
@@ -564,7 +591,11 @@ function buildPayload() {
 
 async function loadInitial() {
   try {
-    const [data, files] = await Promise.all([getPassportData(), getPassportFiles()])
+    const [data, files, userRes] = await Promise.all([
+      getPassportData(),
+      getPassportFiles(),
+      getUserData(),
+    ])
     const row = data?.data || data || {}
     form.passport = maskPassportNumber(row.passport || '')
     form.passportDate = birthdayFromApi(row.passport_date)
@@ -607,6 +638,8 @@ async function loadInitial() {
     if (!form.issuedManual && passportCodeDigits(form.passportCode).length === 6) {
       issuedOptions.value = await getFmsUnitNamesByCode(form.passportCode)
     }
+
+    enforceViewOnly(userRes?.data ?? userRes)
   } catch (err) {
     formError.value = apiError(err, 'Не удалось загрузить данные паспорта')
     console.error('[passport-wizard] load failed', err)
@@ -800,12 +833,30 @@ onBeforeUnmount(() => {
 
 
 .ppass-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 6px var(--rr-spacing-padding-m, 8px);
   border: none;
-  background: none;
-  padding: 0;
-  color: var(--rr-labels-brand-primary);
-  font: inherit;
+  border-radius: var(--rr-radius-m, 8px);
+  background: var(--rr-button-brand-secondary-background-default, #e8edfc);
+  color: var(--rr-button-brand-secondary-text-default, #1c4ae5);
+  font-family: var(--rr-font-family-font-family, Manrope, system-ui, sans-serif);
+  font-weight: 400;
+  font-size: var(--rr-font-size-font-size-xs, 12px);
+  line-height: var(--rr-line-height-line-height-xs, 16px);
+  letter-spacing: var(--rr-tracking-tracking-s, 0px);
+  text-align: center;
   cursor: pointer;
+}
+
+.ppass-link:hover {
+  background: var(--rr-button-brand-secondary-background-hover, #d2dbfa);
+}
+
+.ppass-link:active {
+  background: var(--rr-button-brand-secondary-background-active, #bbc9f7);
 }
 
 .ppass-error {

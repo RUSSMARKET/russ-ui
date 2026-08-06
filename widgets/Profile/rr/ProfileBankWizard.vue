@@ -5,6 +5,7 @@
       :total="BANK_WIZARD_TOTAL"
       :title="shellTitle"
       :subtitle="shellSubtitle"
+      :hide-progress="viewOnly"
       @back="onBack"
     >
       <!-- Step 1: upload -->
@@ -62,6 +63,7 @@
             placeholder="9 цифр"
             maxlength="9"
             :value="form.bankBik"
+            :readonly="viewOnly"
             :aria-invalid="!!bikFieldError"
             @input="onBikInput"
             @blur="bikTouched = true"
@@ -77,6 +79,7 @@
             placeholder="20 цифр"
             maxlength="20"
             :value="form.bankAccount"
+            :readonly="viewOnly"
             :aria-invalid="!!accountFieldError"
             @input="onAccountInput"
             @blur="accountTouched = true"
@@ -90,15 +93,19 @@
             placeholder="Например, ПАО Сбербанк"
             maxlength="255"
             :value="form.bankName"
+            :readonly="viewOnly"
             @input="onBankNameInput"
           />
         </AuthRRField>
 
-        <ProfileRrCheckbox v-model="form.dataConfirmed" label="Данные верны" />
+        <ProfileRrCheckbox v-if="!viewOnly" v-model="form.dataConfirmed" label="Данные верны" />
       </div>
 
       <template #footer>
-        <template v-if="step === 1">
+        <template v-if="viewOnly">
+          <AuthRRButton label="Назад к профилю" @click="navigateTo('/profile')" />
+        </template>
+        <template v-else-if="step === 1">
           <AuthRRButton
             :label="hasUploadedPhoto ? 'Продолжить' : 'Сфотографировать'"
             :loading="busy"
@@ -112,7 +119,7 @@
           />
         </template>
         <AuthRRButton
-          v-else
+          v-else-if="!viewOnly"
           label="Отправить на проверку"
           :disabled="!canSubmit"
           :loading="busy"
@@ -177,7 +184,12 @@
           @error="previewIsPdf = true"
         />
         <div class="piw-lightbox__actions">
-          <button type="button" class="piw-lightbox__btn piw-lightbox__btn--ghost" @click="onReplaceFromPreview">
+          <button
+            v-if="!viewOnly"
+            type="button"
+            class="piw-lightbox__btn piw-lightbox__btn--ghost"
+            @click="onReplaceFromPreview"
+          >
             Заменить
           </button>
           <button type="button" class="piw-lightbox__btn piw-lightbox__btn--primary" @click="closePreview">
@@ -207,6 +219,7 @@ import {
   isBankReadyToSubmit,
   parseBankWizardStep,
 } from './lib/bankWizard'
+import { isActivationStepLocked } from './lib/activationSteps'
 import {
   isAllowedUploadFile,
   isImageFile,
@@ -226,6 +239,7 @@ const api = useProfileApi()
 const navigateTo = useProfileNavigate()
 const {
   getDocumentUrl,
+  getUserData,
   getPassportData,
   getPassportFiles,
   SubmitPassportData,
@@ -241,6 +255,7 @@ const props = defineProps({
 const step = computed(() => parseBankWizardStep(props.step))
 const busy = ref(false)
 const formError = ref('')
+const viewOnly = ref(false)
 const form = reactive(createEmptyBankForm())
 const helpOpen = ref(false)
 const cameraOpen = ref(false)
@@ -273,11 +288,13 @@ const accountFieldError = computed(() =>
 )
 
 const shellTitle = computed(() => {
+  if (viewOnly.value) return 'Банковские реквизиты'
   if (step.value === 1) return 'Сделайте фото банковских реквизитов'
   return 'Введите реквизиты'
 })
 
 const shellSubtitle = computed(() => {
+  if (viewOnly.value) return 'Изменение недоступно'
   if (step.value === 1) return 'Из приложения банка или с бумажной справки'
   return 'Перепишите с фото, которое сделали'
 })
@@ -293,6 +310,7 @@ function apiError(err, fallback) {
 }
 
 function goToStep(n, { replace = false } = {}) {
+  if (viewOnly.value && parseBankWizardStep(n) !== BANK_WIZARD_TOTAL) return
   formError.value = ''
   const next = parseBankWizardStep(n)
   if (next === step.value) return
@@ -301,14 +319,14 @@ function goToStep(n, { replace = false } = {}) {
 
 /** Уже выгруженное фото не показываем — сразу к реквизитам. */
 function skipCompletedPhotoStep() {
-  if (!initialLoaded.value || busy.value) return
+  if (!initialLoaded.value || busy.value || viewOnly.value) return
   if (step.value === 1 && isBankPhotoValid(form)) {
     goToStep(2, { replace: true })
   }
 }
 
 function onBack() {
-  if (step.value <= 1) {
+  if (viewOnly.value || step.value <= 1) {
     void navigateTo('/profile')
     return
   }
@@ -319,15 +337,26 @@ function onBack() {
   void navigateTo(bankWizardPath(step.value - 1), { replace: true })
 }
 
+function enforceViewOnly(user) {
+  const locked = isActivationStepLocked(user?.activation?.steps?.bank)
+  viewOnly.value = locked
+  if (locked && step.value !== BANK_WIZARD_TOTAL) {
+    void navigateTo(bankWizardPath(BANK_WIZARD_TOTAL), { replace: true })
+  }
+}
+
 function onBikInput(event) {
+  if (viewOnly.value) return
   form.bankBik = bankBikDigits(event.target.value)
 }
 
 function onAccountInput(event) {
+  if (viewOnly.value) return
   form.bankAccount = bankAccountDigits(event.target.value)
 }
 
 function onBankNameInput(event) {
+  if (viewOnly.value) return
   form.bankName = String(event.target.value || '')
 }
 
@@ -483,7 +512,11 @@ async function submitForReview() {
 
 async function loadInitial() {
   try {
-    const [data, files] = await Promise.all([getPassportData(), getPassportFiles()])
+    const [data, files, userRes] = await Promise.all([
+      getPassportData(),
+      getPassportFiles(),
+      getUserData(),
+    ])
     const row = data?.data || data || {}
     form.bankBik = bankBikDigits(row.bank_bik || '')
     form.bankAccount = bankAccountDigits(row.bank_account || '')
@@ -505,6 +538,8 @@ async function loadInitial() {
         photoPreviewObjectUrl = null
       }
     }
+
+    enforceViewOnly(userRes?.data ?? userRes)
   } catch (err) {
     formError.value = apiError(err, 'Не удалось загрузить банковские данные')
     console.error('[bank-wizard] load failed', err)

@@ -5,6 +5,7 @@
       :total="IE_WIZARD_TOTAL"
       :title="shellTitle"
       :subtitle="shellSubtitle"
+      :hide-progress="viewOnly"
       @back="onBack"
     >
       <!-- Step 1: EGRIP upload -->
@@ -34,6 +35,7 @@
             type="text"
             placeholder="Введите ФИО"
             :value="form.name"
+            :readonly="viewOnly"
             @input="onNameInput"
           />
         </AuthRRField>
@@ -46,6 +48,7 @@
             placeholder="12 цифр"
             maxlength="12"
             :value="form.inn"
+            :readonly="viewOnly"
             :aria-invalid="!!innFieldError"
             @input="onInnInput"
             @blur="innTouched = true"
@@ -60,6 +63,7 @@
             placeholder="15 цифр"
             maxlength="15"
             :value="form.ogrnip"
+            :readonly="viewOnly"
             :aria-invalid="!!ogrnipFieldError"
             @input="onOgrnipInput"
             @blur="ogrnipTouched = true"
@@ -74,6 +78,7 @@
             placeholder="20 цифр"
             maxlength="20"
             :value="form.paymentAccount"
+            :readonly="viewOnly"
             :aria-invalid="!!paymentAccountFieldError"
             @input="onPaymentAccountInput"
             @blur="paymentAccountTouched = true"
@@ -85,6 +90,7 @@
             type="text"
             placeholder="Название банка"
             :value="form.bank"
+            :readonly="viewOnly"
             @input="onBankInput"
           />
         </AuthRRField>
@@ -97,6 +103,7 @@
             placeholder="9 цифр"
             maxlength="9"
             :value="form.bankBik"
+            :readonly="viewOnly"
             :aria-invalid="!!bikFieldError"
             @input="onBankBikInput"
             @blur="bikTouched = true"
@@ -111,6 +118,7 @@
             placeholder="10 цифр"
             maxlength="10"
             :value="form.bankInn"
+            :readonly="viewOnly"
             :aria-invalid="!!bankInnFieldError"
             @input="onBankInnInput"
             @blur="bankInnTouched = true"
@@ -125,6 +133,7 @@
             placeholder="20 цифр"
             maxlength="20"
             :value="form.correspondentAccount"
+            :readonly="viewOnly"
             :aria-invalid="!!correspondentFieldError"
             @input="onCorrInput"
             @blur="correspondentTouched = true"
@@ -144,7 +153,12 @@
         />
 
         <AuthRRField label="ФИО ИП">
-          <input class="auth-rr-input__control auth-rr-input__control--align-left" :value="form.name" @input="onNameInput" />
+          <input
+            class="auth-rr-input__control auth-rr-input__control--align-left"
+            :value="form.name"
+            :readonly="viewOnly"
+            @input="onNameInput"
+          />
         </AuthRRField>
         <AuthRRField label="ИНН ИП" :error="innFieldError">
           <input
@@ -153,6 +167,7 @@
             inputmode="numeric"
             maxlength="12"
             :value="form.inn"
+            :readonly="viewOnly"
             :aria-invalid="!!innFieldError"
             @input="onInnInput"
             @blur="innTouched = true"
@@ -165,6 +180,7 @@
             inputmode="numeric"
             maxlength="15"
             :value="form.ogrnip"
+            :readonly="viewOnly"
             :aria-invalid="!!ogrnipFieldError"
             @input="onOgrnipInput"
             @blur="ogrnipTouched = true"
@@ -177,13 +193,19 @@
             inputmode="numeric"
             maxlength="20"
             :value="form.paymentAccount"
+            :readonly="viewOnly"
             :aria-invalid="!!paymentAccountFieldError"
             @input="onPaymentAccountInput"
             @blur="paymentAccountTouched = true"
           />
         </AuthRRField>
         <AuthRRField label="Банк">
-          <input class="auth-rr-input__control auth-rr-input__control--align-left" :value="form.bank" @input="onBankInput" />
+          <input
+            class="auth-rr-input__control auth-rr-input__control--align-left"
+            :value="form.bank"
+            :readonly="viewOnly"
+            @input="onBankInput"
+          />
         </AuthRRField>
         <AuthRRField label="БИК Банка" :error="bikFieldError">
           <input
@@ -192,6 +214,7 @@
             inputmode="numeric"
             maxlength="9"
             :value="form.bankBik"
+            :readonly="viewOnly"
             :aria-invalid="!!bikFieldError"
             @input="onBankBikInput"
             @blur="bikTouched = true"
@@ -204,6 +227,7 @@
             inputmode="numeric"
             maxlength="10"
             :value="form.bankInn"
+            :readonly="viewOnly"
             :aria-invalid="!!bankInnFieldError"
             @input="onBankInnInput"
             @blur="bankInnTouched = true"
@@ -216,17 +240,25 @@
             inputmode="numeric"
             maxlength="20"
             :value="form.correspondentAccount"
+            :readonly="viewOnly"
             :aria-invalid="!!correspondentFieldError"
             @input="onCorrInput"
             @blur="correspondentTouched = true"
           />
         </AuthRRField>
 
-        <ProfileRrCheckbox v-model="form.dataConfirmed" label="Данные верны, ИП зарегистрировано" />
+        <ProfileRrCheckbox
+          v-if="!viewOnly"
+          v-model="form.dataConfirmed"
+          label="Данные верны, ИП зарегистрировано"
+        />
       </div>
 
       <template #footer>
-        <template v-if="step === 1">
+        <template v-if="viewOnly">
+          <AuthRRButton label="Назад к профилю" @click="navigateTo('/profile')" />
+        </template>
+        <template v-else-if="step === 1">
           <AuthRRButton
             variant="brand-secondary"
             :label="hasOgrnipFile ? 'Загрузить заново' : 'Загрузить файл'"
@@ -236,14 +268,14 @@
           <AuthRRButton v-if="hasOgrnipFile" label="Продолжить" :disabled="busy" @click="goToStep(2)" />
         </template>
         <AuthRRButton
-          v-else-if="step === 2"
+          v-else-if="!viewOnly && step === 2"
           label="Продолжить"
           :disabled="!canContinueForm"
           :loading="busy"
           @click="goToStep(3)"
         />
         <AuthRRButton
-          v-else
+          v-else-if="!viewOnly"
           label="Отправить на проверку"
           :disabled="!canSubmit"
           :loading="busy"
@@ -286,7 +318,12 @@
           @error="previewIsPdf = true"
         />
         <div class="piw-lightbox__actions">
-          <button type="button" class="piw-lightbox__btn piw-lightbox__btn--ghost" @click="onReplaceFromPreview">
+          <button
+            v-if="!viewOnly"
+            type="button"
+            class="piw-lightbox__btn piw-lightbox__btn--ghost"
+            @click="onReplaceFromPreview"
+          >
             Заменить
           </button>
           <button type="button" class="piw-lightbox__btn piw-lightbox__btn--primary" @click="closePreview">
@@ -320,6 +357,7 @@ import {
   isIeReadyToSubmit,
   parseWizardStep,
 } from './lib/agentTypeWizard'
+import { isActivationStepLocked } from './lib/activationSteps'
 import {
   isAllowedUploadFile,
   isImageFile,
@@ -337,6 +375,7 @@ const api = useProfileApi()
 const navigateTo = useProfileNavigate()
 const {
   getDocumentUrl,
+  getUserData,
   getIndividualEntrepreneurData,
   submitIndividualEntrepreneurData,
 } = api
@@ -349,6 +388,7 @@ const props = defineProps({
 const step = computed(() => parseWizardStep(props.step, IE_WIZARD_TOTAL))
 const busy = ref(false)
 const formError = ref('')
+const viewOnly = ref(false)
 const form = reactive(createEmptyIeForm())
 const previewUrl = ref('')
 const previewIsPdf = ref(false)
@@ -365,12 +405,14 @@ const correspondentTouched = ref(false)
 let ogrnipObjectUrl = null
 
 const shellTitle = computed(() => {
+  if (viewOnly.value) return 'Тип оформления'
   if (step.value === 1) return 'Лист записи ЕГРИП'
   if (step.value === 2) return 'Данные ИП'
   return 'Проверьте данные'
 })
 
 const shellSubtitle = computed(() => {
+  if (viewOnly.value) return 'Изменение недоступно'
   if (step.value === 1) return 'Документ о регистрации ИП'
   if (step.value === 2) return 'ОГРНИП и система налогообложения'
   return ''
@@ -413,6 +455,7 @@ function apiError(err, fallback) {
 }
 
 function goToStep(n, { replace = false } = {}) {
+  if (viewOnly.value && parseWizardStep(n, IE_WIZARD_TOTAL) !== IE_WIZARD_TOTAL) return
   formError.value = ''
   const next = parseWizardStep(n, IE_WIZARD_TOTAL)
   if (next === step.value) return
@@ -421,13 +464,17 @@ function goToStep(n, { replace = false } = {}) {
 
 /** Уже выгруженный документ не показываем — сразу к данным ИП. */
 function skipCompletedPhotoStep() {
-  if (busy.value) return
+  if (busy.value || viewOnly.value) return
   if (step.value === 1 && isIeOgrnipFileValid(form)) {
     goToStep(2, { replace: true })
   }
 }
 
 function onBack() {
+  if (viewOnly.value) {
+    void navigateTo('/profile')
+    return
+  }
   if (step.value <= 1) {
     void navigateTo(agentTypeChoicePath())
     return
@@ -439,28 +486,44 @@ function onBack() {
   void navigateTo(ieWizardPath(step.value - 1), { replace: true })
 }
 
+function enforceViewOnly(user) {
+  const locked = isActivationStepLocked(user?.activation?.steps?.['agent-type'])
+  viewOnly.value = locked
+  if (locked && step.value !== IE_WIZARD_TOTAL) {
+    void navigateTo(ieWizardPath(IE_WIZARD_TOTAL), { replace: true })
+  }
+}
+
 function onNameInput(e) {
+  if (viewOnly.value) return
   form.name = e.target.value
 }
 function onInnInput(e) {
+  if (viewOnly.value) return
   form.inn = digitsOnly(e.target.value, 12)
 }
 function onOgrnipInput(e) {
+  if (viewOnly.value) return
   form.ogrnip = digitsOnly(e.target.value, 15)
 }
 function onPaymentAccountInput(e) {
+  if (viewOnly.value) return
   form.paymentAccount = digitsOnly(e.target.value, 20)
 }
 function onBankInput(e) {
+  if (viewOnly.value) return
   form.bank = e.target.value
 }
 function onBankBikInput(e) {
+  if (viewOnly.value) return
   form.bankBik = digitsOnly(e.target.value, 9)
 }
 function onBankInnInput(e) {
+  if (viewOnly.value) return
   form.bankInn = digitsOnly(e.target.value, 10)
 }
 function onCorrInput(e) {
+  if (viewOnly.value) return
   form.correspondentAccount = digitsOnly(e.target.value, 20)
 }
 
@@ -573,7 +636,10 @@ async function submitForReview() {
 
 async function loadInitial() {
   try {
-    const res = await getIndividualEntrepreneurData()
+    const [res, userRes] = await Promise.all([
+      getIndividualEntrepreneurData(),
+      getUserData(),
+    ])
     const row = res?.data || res || {}
     form.name = row.name || ''
     form.inn = digitsOnly(row.inn || '', 12)
@@ -589,6 +655,7 @@ async function loadInitial() {
       form.ogrnipFile = null
       form.ogrnipIsPdf = false
     }
+    enforceViewOnly(userRes?.data ?? userRes)
   } catch (err) {
     console.error('[ie-wizard] load failed', err)
   } finally {

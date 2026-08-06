@@ -86,6 +86,13 @@ export function activationStatusLabel(status: ActivationStepStatus): string {
   return 'Не заполнено'
 }
 
+/** Шаг уже отправлен: только просмотр, без правок. */
+export function isActivationStepLocked(
+  status: ActivationStepStatus | string | null | undefined,
+): boolean {
+  return status === 'review' || status === 'done'
+}
+
 /** Нормализует `user.activation.steps` из GET /api/user. */
 export function normalizeActivationSteps(
   steps: Partial<Record<string, string>> | null | undefined,
