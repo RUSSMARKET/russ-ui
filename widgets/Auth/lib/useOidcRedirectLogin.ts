@@ -29,7 +29,7 @@ export function useOidcRedirectLogin(startLogin: () => void) {
     } catch (e) {
       console.error('Ошибка запуска авторизации:', e);
       loading.value = false;
-      authError.value = 'Не удалось открыть страницу входа. Проверьте настройки и попробуйте снова.';
+      authError.value = 'Не удалось открыть вход. Проверьте настройки и попробуйте снова.';
       return;
     }
 
@@ -37,7 +37,7 @@ export function useOidcRedirectLogin(startLogin: () => void) {
       if (!loading.value) return;
       loading.value = false;
       authError.value =
-        'Переход на страницу входа не начался. Проверьте доступность сервиса и повторите попытку.';
+        'Переход к авторизации не начался. Проверьте доступность сервиса и повторите попытку.';
     }, LOGIN_FALLBACK_MS);
   };
 

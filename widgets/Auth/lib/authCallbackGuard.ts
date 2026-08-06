@@ -192,6 +192,19 @@ export function isAuthEntryContentPresent(doc?: Document): boolean {
   return true;
 }
 
+/** Auth.vue держит data-auth-busy, пока идёт авто-редирект без формы. */
+export function isAuthRouteBusy(doc?: Document): boolean {
+  const target = doc ?? (typeof document !== 'undefined' ? document : null);
+  if (!target || typeof target.querySelector !== 'function') {
+    return false;
+  }
+  const root = target.querySelector('.auth-route-root');
+  if (!root || typeof root.getAttribute !== 'function') {
+    return false;
+  }
+  return root.getAttribute('data-auth-busy') === 'true';
+}
+
 export function shouldSuppressGlobalRecovery(path?: string): boolean {
   const resolvedPath = path ?? (typeof window !== 'undefined' ? window.location.pathname : '');
 
@@ -207,6 +220,11 @@ export function shouldSuppressGlobalRecovery(path?: string): boolean {
       return true;
     }
     if (isEarlyAuthRedirectPending() && isBootstrapShellVisible()) {
+      return true;
+    }
+    // Auth.vue смонтирован и уводит на SSO без формы — не считаем белым экраном.
+    // Мёртвый чанк (нет .auth-route-root) по-прежнему не подавляет recovery.
+    if (isAuthRouteBusy() && isBootstrapShellVisible()) {
       return true;
     }
     return false;

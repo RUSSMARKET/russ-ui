@@ -184,7 +184,7 @@
   max-height: var(--auth-rr-phone-h);
   border: 1px solid var(--rr-input-border-default);
   border-radius: var(--rr-radius-l);
-  background-color: var(--rr-backgrounds-primary);
+  background-color: var(--rr-backgrounds-quaternary);
   overflow: hidden;
 }
 
@@ -195,14 +195,14 @@
 
 .auth-rr-input-phone:focus-within:not(.auth-rr-input-phone--error) {
   border-color: var(--rr-input-border-active);
-  background-color: var(--rr-backgrounds-primary);
+  background-color: var(--rr-backgrounds-quaternary);
 }
 
 .auth-rr-input-phone--error,
 .auth-rr-input-phone--error:hover,
 .auth-rr-input-phone--error:focus-within {
   border-color: var(--rr-input-border-error);
-  background-color: var(--rr-backgrounds-primary);
+  background-color: var(--rr-backgrounds-quaternary);
 }
 
 .auth-rr-input-phone__editor,
