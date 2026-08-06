@@ -264,7 +264,7 @@
 .issuance-shell__input-row {
   display: flex;
   gap: 8px;
-  align-items: center;
+  align-items: stretch;
   width: 100%;
   min-width: 0;
 }
@@ -275,11 +275,14 @@
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  padding: 10px 12px;
+  height: 40px;
+  padding: 0 12px;
   border: 1px solid var(--issuance-border);
   border-radius: 8px;
   background: var(--issuance-surface);
   color: var(--issuance-text);
+  font-size: 0.875rem;
+  line-height: 1.25;
   box-sizing: border-box;
 }
 
@@ -291,16 +294,24 @@
   height: 40px;
   width: 40px;
   min-width: 40px;
+  padding: 0;
   border-radius: 8px;
   border: 1px solid var(--issuance-border);
   background: var(--issuance-surface);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   color: var(--issuance-text-secondary);
-  font-size: 1.1rem;
+  font-size: 1rem;
+  line-height: 1;
   flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.issuance-shell__cam-btn .pi {
+  font-size: 1rem;
+  line-height: 1;
 }
 
 .issuance-shell__cam-btn:hover {
