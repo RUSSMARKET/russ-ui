@@ -271,10 +271,10 @@ const isOtpType = computed(
 const sanitizeDigits = (value: string) => value.replace(/\D/g, "");
 
 const formatOtpCode = (digits: string) => {
-  const limited = sanitizeDigits(digits).slice(0, 11); // 6 + 1 + 4
+  const limited = sanitizeDigits(digits).slice(0, 12); // 6 + 1 + 5
   const part1 = limited.slice(0, 6);
   const part2 = limited.slice(6, 7);
-  const part3 = limited.slice(7, 11);
+  const part3 = limited.slice(7, 12);
 
   let formatted = part1;
   if (part2) formatted += `-${part2}`;
@@ -344,7 +344,7 @@ const allowRuchnikCharacters = (event: KeyboardEvent) => {
 
   // Для Альфы и ОТП вводим только цифры (без ручного "-")
   const digitsOnly = isAlfaType.value || isOtpType.value;
-  const maxDigits = isAlfaType.value ? 7 : isOtpType.value ? 11 : null;
+  const maxDigits = isAlfaType.value ? 7 : isOtpType.value ? 12 : null;
 
   if (
     isDigit &&

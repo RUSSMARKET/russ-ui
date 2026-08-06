@@ -11,7 +11,7 @@
       :class="['custom-input', { 'input-error': touched && error }]"
       type="text"
       inputmode="numeric"
-      maxlength="13"
+      maxlength="12"
     />
     <label v-if="variant === 'on' && placeholder" :for="name" :class="['input-label', { 'label-active': displayValue || isFocused }]">
       {{ placeholder }}
@@ -40,15 +40,16 @@ const isFocused = ref(false);
 const displayValue = computed(() => localValue.value);
 
 function formatPassport(value: string): string {
-  const digits = value.replace(/\D/g, '');
+  const digits = value.replace(/\D/g, "").slice(0, 10);
   if (digits.length <= 2) return digits;
   if (digits.length <= 4) return `${digits.slice(0, 2)} ${digits.slice(2)}`;
-  return `${digits.slice(0, 2)} ${digits.slice(2, 4)} ${digits.slice(4, 10)}`;
+  return `${digits.slice(0, 2)} ${digits.slice(2, 4)} ${digits.slice(4)}`;
 }
 
 function handleInput(event: Event) {
   const target = event.target as HTMLInputElement;
   const formatted = formatPassport(target.value);
+  target.value = formatted;
   localValue.value = formatted;
   emit("update:value", formatted);
 }
