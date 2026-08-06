@@ -714,14 +714,15 @@ const typeSelectOptions = computed(() =>
   }))
 );
 
-const sanitizeRuchnikDigits = (value: string, maxLen = 11) =>
+const sanitizeRuchnikDigits = (value: string, maxLen = 12) =>
   String(value || "").replace(/\D/g, "").slice(0, maxLen);
 
 const formatOtpCode = (digits: string): string => {
-  const limited = sanitizeRuchnikDigits(digits, 11);
+  // 6 (дата) + 1 (тип) + до 5 (порядковый) = 12 цифр
+  const limited = sanitizeRuchnikDigits(digits, 12);
   const part1 = limited.slice(0, 6);
   const part2 = limited.slice(6, 7);
-  const part3 = limited.slice(7, 11);
+  const part3 = limited.slice(7, 12);
   let formatted = part1;
   if (part2) formatted += `-${part2}`;
   if (part3) formatted += `-${part3}`;
@@ -750,7 +751,7 @@ const resolveTypeSlug = (
 
 const validateRuchnikCodeByType = (value: string, typeSlug: string | null) => {
   const slug = (typeSlug || "").toLowerCase();
-  const digits = sanitizeRuchnikDigits(value, slug.includes("alfa") ? 7 : 11);
+  const digits = sanitizeRuchnikDigits(value, slug.includes("alfa") ? 7 : 12);
 
   if (slug.includes("alfa")) {
     const normalized = digits.slice(0, 7);
@@ -765,7 +766,7 @@ const validateRuchnikCodeByType = (value: string, typeSlug: string | null) => {
     const normalized = formatOtpCode(digits);
     return {
       normalized,
-      valid: /^\d{6}-\d-\d{2,4}$/.test(normalized),
+      valid: /^\d{6}-\d-\d{2,5}$/.test(normalized),
       error: "Для ОТП используйте формат: 251102-2-26",
     };
   }
@@ -773,7 +774,7 @@ const validateRuchnikCodeByType = (value: string, typeSlug: string | null) => {
   const normalized = String(value || "").trim();
   return {
     normalized,
-    valid: normalized.length === 7 || /^\d{6}-\d-\d{2,4}$/.test(normalized),
+    valid: normalized.length === 7 || /^\d{6}-\d-\d{2,5}$/.test(normalized),
     error: "Введите 7 цифр (Альфа) или формат ОТП: 251102-2-26",
   };
 };
