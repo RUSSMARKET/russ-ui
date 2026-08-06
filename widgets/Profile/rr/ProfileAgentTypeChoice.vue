@@ -27,6 +27,7 @@
           :class="{ 'patc-card--selected': selected === 'self-employed' }"
           role="radio"
           :aria-checked="selected === 'self-employed'"
+          :disabled="choiceLocked"
           @click="selected = 'self-employed'"
         >
           <span class="patc-card__radio" aria-hidden="true" />
@@ -47,6 +48,7 @@
           :class="{ 'patc-card--selected': selected === 'ie' }"
           role="radio"
           :aria-checked="selected === 'ie'"
+          :disabled="choiceLocked"
           @click="selected = 'ie'"
         >
           <span class="patc-card__radio" aria-hidden="true" />
@@ -64,11 +66,14 @@
       <div class="patc-footer">
         <AuthRRButton
           label="Продолжить"
-          :disabled="!selected"
+          :disabled="choiceLocked || !selected"
           :loading="busy"
           @click="onContinue"
         />
-        <p v-if="formError" class="patc-error" role="alert">{{ formError }}</p>
+        <p v-if="choiceLocked" class="patc-error" role="alert">
+          Тип оформления уже отправлен. Изменение недоступно.
+        </p>
+        <p v-else-if="formError" class="patc-error" role="alert">{{ formError }}</p>
       </div>
     </div>
   </div>
@@ -98,6 +103,7 @@ const { setAgentType, getUserData } = api
 const selected = ref('')
 const busy = ref(false)
 const formError = ref('')
+const choiceLocked = ref(false)
 
 function onBack() {
   void navigateTo('/profile')
@@ -112,16 +118,22 @@ async function redirectIfLocked() {
     const accountType = Number(user?.account_type)
     if (accountType === AGENT_TYPE_SELF_EMPLOYED) {
       void navigateTo(seWizardPath(SE_WIZARD_TOTAL), { replace: true })
-    } else if (accountType === AGENT_TYPE_IE) {
-      void navigateTo(ieWizardPath(IE_WIZARD_TOTAL), { replace: true })
+      return
     }
+    if (accountType === AGENT_TYPE_IE) {
+      void navigateTo(ieWizardPath(IE_WIZARD_TOTAL), { replace: true })
+      return
+    }
+    // Locked without known type — return to hub (do not allow re-picking type).
+    void navigateTo('/profile', { replace: true })
+    return
   } catch (err) {
     console.error('[agent-type-choice] failed to check lock', err)
   }
 }
 
 async function onContinue() {
-  if (!selected.value || busy.value) return
+  if (choiceLocked.value || !selected.value || busy.value) return
   formError.value = ''
   busy.value = true
   try {
@@ -163,7 +175,7 @@ onMounted(() => {
   min-height: 0;
   flex: 1 1 0;
   overflow: hidden;
-  background: var(--rr-backgrounds-secondary, #f8f8f9);
+  background: var(--rr-backgrounds-primary, #fff);
   font-family: var(--rr-font-family-font-family, Manrope, system-ui, sans-serif);
   color: var(--rr-labels-neutral-primary);
 }

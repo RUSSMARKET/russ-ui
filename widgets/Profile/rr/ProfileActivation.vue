@@ -44,6 +44,7 @@
           <button
             type="button"
             class="profile-activation__card"
+            :disabled="statusesUnavailable"
             @click="onOpenStep(step.id)"
           >
             <img
@@ -234,14 +235,12 @@ async function loadActivationStatuses() {
 }
 
 function onBack() {
-  if (typeof window !== 'undefined' && window.history.length > 1) {
-    window.history.back()
-    return
-  }
-  navigateTo('/')
+  void navigateTo('/')
 }
 
 function onOpenStep(stepId) {
+  if (statusesUnavailable.value) return
+
   const locked = isActivationStepLocked(stepStatuses[stepId])
 
   if (stepId === 'personal') {
@@ -274,6 +273,10 @@ function onOpenStep(stepId) {
         void navigateTo(ieWizardPath(IE_WIZARD_TOTAL))
         return
       }
+      // Locked, but type unknown — open choice only if somehow unlocked; otherwise SE review as safe fallback is wrong.
+      // Keep agent on hub: cannot safely open editable choice.
+      console.warn('[profile-activation] agent-type locked without account_type')
+      return
     }
     void navigateTo(agentTypeChoicePath())
     return
@@ -472,6 +475,11 @@ onActivated(() => {
   text-align: left;
   cursor: pointer;
   box-shadow: 0 var(--rr-px-1, 1px) var(--rr-px-2, 2px) var(--rr-fx-shadow-penumbra);
+}
+
+.profile-activation__card:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .profile-activation__card:hover {

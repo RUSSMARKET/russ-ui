@@ -181,5 +181,48 @@ export function isContactsStepValid(form: PersonalWizardForm): boolean {
 }
 
 export function isPhotoStepValid(form: PersonalWizardForm): boolean {
-  return Boolean(form.photoFile || form.photoServerPath || form.photoPreviewUrl)
+  return Boolean(form.photoServerPath)
+}
+
+export function getPersonalNameFieldError(value: string, touched = false): string {
+  if (!touched) return ''
+  return value.trim() ? '' : 'Укажите имя'
+}
+
+export function getPersonalSurnameFieldError(value: string, touched = false): string {
+  if (!touched) return ''
+  return value.trim() ? '' : 'Укажите фамилию'
+}
+
+export function getPersonalPatronymicFieldError(
+  value: string,
+  noPatronymic: boolean,
+  touched = false,
+): string {
+  if (!touched || noPatronymic) return ''
+  return value.trim() ? '' : 'Укажите отчество или отметьте «Нет отчества»'
+}
+
+export function getPersonalBirthdayFieldError(value: string, touched = false): string {
+  if (!touched) return ''
+  const raw = value.trim()
+  if (!raw) return 'Укажите дату рождения'
+  if (!birthdayToApi(raw)) return 'Укажите дату в формате ДД.ММ.ГГГГ'
+  return ''
+}
+
+export function getPersonalEmailFieldError(value: string, touched = false): string {
+  if (!touched) return ''
+  const email = value.trim()
+  if (!email) return 'Укажите почту'
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return 'Укажите корректный email'
+  return ''
+}
+
+export function getPersonalTelegramFieldError(value: string, touched = false): string {
+  if (!touched) return ''
+  const tg = value.replace(/^@+/, '').trim()
+  if (!tg) return 'Укажите ник в Telegram'
+  if (tg.length < 5) return 'Ник должен содержать минимум 5 символов'
+  return ''
 }

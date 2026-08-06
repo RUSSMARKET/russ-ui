@@ -11,6 +11,8 @@
       :autocomplete="autocomplete"
       :disabled="disabled"
       :readonly="readonly"
+      @blur="emit('blur', $event)"
+      @focus="emit('focus', $event)"
     />
   </AuthRRField>
 </template>
@@ -47,7 +49,11 @@ const props = withDefaults(
   },
 );
 
-const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
+const emit = defineEmits<{
+  'update:modelValue': [value: string];
+  blur: [event: FocusEvent];
+  focus: [event: FocusEvent];
+}>();
 
 const autoId = useId();
 const fieldId = computed(() => props.fieldId || `auth-rr-text-${autoId}`);

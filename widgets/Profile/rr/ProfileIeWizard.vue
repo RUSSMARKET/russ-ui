@@ -84,14 +84,17 @@
             @blur="paymentAccountTouched = true"
           />
         </AuthRRField>
-        <AuthRRField label="Банк">
+        <AuthRRField label="Банк" :error="bankNameFieldError">
           <input
             class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!bankNameFieldError }"
             type="text"
             placeholder="Название банка"
             :value="form.bank"
             :readonly="viewOnly"
+            :aria-invalid="!!bankNameFieldError"
             @input="onBankInput"
+            @blur="bankNameTouched = true"
           />
         </AuthRRField>
         <AuthRRField label="БИК Банка" :error="bikFieldError">
@@ -156,94 +159,56 @@
           <input
             class="auth-rr-input__control auth-rr-input__control--align-left"
             :value="form.name"
-            :readonly="viewOnly"
-            @input="onNameInput"
+            readonly
           />
         </AuthRRField>
-        <AuthRRField label="ИНН ИП" :error="innFieldError">
+        <AuthRRField label="ИНН ИП">
           <input
             class="auth-rr-input__control auth-rr-input__control--align-left"
-            :class="{ 'auth-rr-input__control--error': !!innFieldError }"
-            inputmode="numeric"
-            maxlength="12"
             :value="form.inn"
-            :readonly="viewOnly"
-            :aria-invalid="!!innFieldError"
-            @input="onInnInput"
-            @blur="innTouched = true"
+            readonly
           />
         </AuthRRField>
-        <AuthRRField label="ОГРНИП" :error="ogrnipFieldError">
+        <AuthRRField label="ОГРНИП">
           <input
             class="auth-rr-input__control auth-rr-input__control--align-left"
-            :class="{ 'auth-rr-input__control--error': !!ogrnipFieldError }"
-            inputmode="numeric"
-            maxlength="15"
             :value="form.ogrnip"
-            :readonly="viewOnly"
-            :aria-invalid="!!ogrnipFieldError"
-            @input="onOgrnipInput"
-            @blur="ogrnipTouched = true"
+            readonly
           />
         </AuthRRField>
-        <AuthRRField label="Расчетный счет" :error="paymentAccountFieldError">
+        <AuthRRField label="Расчетный счет">
           <input
             class="auth-rr-input__control auth-rr-input__control--align-left"
-            :class="{ 'auth-rr-input__control--error': !!paymentAccountFieldError }"
-            inputmode="numeric"
-            maxlength="20"
             :value="form.paymentAccount"
-            :readonly="viewOnly"
-            :aria-invalid="!!paymentAccountFieldError"
-            @input="onPaymentAccountInput"
-            @blur="paymentAccountTouched = true"
+            readonly
           />
         </AuthRRField>
         <AuthRRField label="Банк">
           <input
             class="auth-rr-input__control auth-rr-input__control--align-left"
             :value="form.bank"
-            :readonly="viewOnly"
-            @input="onBankInput"
+            readonly
           />
         </AuthRRField>
-        <AuthRRField label="БИК Банка" :error="bikFieldError">
+        <AuthRRField label="БИК Банка">
           <input
             class="auth-rr-input__control auth-rr-input__control--align-left"
-            :class="{ 'auth-rr-input__control--error': !!bikFieldError }"
-            inputmode="numeric"
-            maxlength="9"
             :value="form.bankBik"
-            :readonly="viewOnly"
-            :aria-invalid="!!bikFieldError"
-            @input="onBankBikInput"
-            @blur="bikTouched = true"
+            readonly
           />
         </AuthRRField>
-        <AuthRRField label="ИНН банка" :error="bankInnFieldError">
+        <AuthRRField label="ИНН банка">
           <input
             class="auth-rr-input__control auth-rr-input__control--align-left"
-            :class="{ 'auth-rr-input__control--error': !!bankInnFieldError }"
-            inputmode="numeric"
-            maxlength="10"
             :value="form.bankInn"
-            :readonly="viewOnly"
-            :aria-invalid="!!bankInnFieldError"
-            @input="onBankInnInput"
-            @blur="bankInnTouched = true"
+            readonly
           />
         </AuthRRField>
-        <AuthRRField label="Корреспондентский счет" :error="correspondentFieldError">
+        <AuthRRField label="Корреспондентский счет">
           <input
             class="auth-rr-input__control auth-rr-input__control--align-left"
-            :class="{ 'auth-rr-input__control--error': !!correspondentFieldError }"
-            inputmode="numeric"
-            maxlength="20"
             :value="form.correspondentAccount"
-            :readonly="viewOnly"
-            :aria-invalid="!!correspondentFieldError"
-            @input="onCorrInput"
-            @blur="correspondentTouched = true"
+            readonly
           />
         </AuthRRField>
 
@@ -295,43 +260,19 @@
       @replace="onCaptureReplace"
     />
 
-    <Teleport to="body">
-      <div
-        v-if="previewUrl"
-        class="piw-lightbox"
-        role="dialog"
-        aria-modal="true"
-      >
-        <button type="button" class="piw-lightbox__backdrop" aria-label="Закрыть" @click="closePreview" />
-        <button type="button" class="piw-lightbox__close" aria-label="Закрыть" @click="closePreview">✕</button>
-        <iframe
-          v-if="previewIsPdf"
-          class="piw-lightbox__pdf"
-          :src="previewUrl"
-          title="Просмотр документа"
-        />
-        <img
-          v-else
-          class="piw-lightbox__img"
-          :src="previewUrl"
-          alt="Просмотр"
-          @error="previewIsPdf = true"
-        />
-        <div class="piw-lightbox__actions">
-          <button
-            v-if="!viewOnly"
-            type="button"
-            class="piw-lightbox__btn piw-lightbox__btn--ghost"
-            @click="onReplaceFromPreview"
-          >
-            Заменить
-          </button>
-          <button type="button" class="piw-lightbox__btn piw-lightbox__btn--primary" @click="closePreview">
-            Готово
-          </button>
-        </div>
-      </div>
-    </Teleport>
+    <ProfilePhotoReviewOverlay
+      v-if="previewUrl"
+      :src="previewUrl"
+      :is-pdf="previewIsPdf"
+      alt="Просмотр"
+      aria-label="Просмотр документа"
+      :show-secondary="!viewOnly"
+      secondary-label="Заменить"
+      primary-label="Готово"
+      @close="closePreview"
+      @primary="closePreview"
+      @secondary="onReplaceFromPreview"
+    />
   </div>
 </template>
 
@@ -342,10 +283,10 @@ import { AuthRRButton, AuthRRField } from 'bibli/shared/ui/rr'
 import { parseApiErrorDetail } from 'bibli/widgets/Profile/lib/parseApiError'
 import {
   IE_WIZARD_TOTAL,
-  agentTypeChoicePath,
   createEmptyIeForm,
   digitsOnly,
   getIeBankInnFieldError,
+  getIeBankNameFieldError,
   getIeBikFieldError,
   getIeCorrespondentAccountFieldError,
   getIeInnFieldError,
@@ -368,6 +309,7 @@ import {
 import ProfileStepShell from './personal/ProfileStepShell.vue'
 import ProfileRrCheckbox from './personal/ProfileRrCheckbox.vue'
 import ProfileDocThumb from './personal/ProfileDocThumb.vue'
+import ProfilePhotoReviewOverlay from './personal/ProfilePhotoReviewOverlay.vue'
 import PassportCameraCapture from './passport/PassportCameraCapture.vue'
 import exampleEgrip from './assets/activation/agent-type-examples/example-egrip.webp'
 
@@ -395,12 +337,15 @@ const previewIsPdf = ref(false)
 const fileInputRef = ref(null)
 const cameraOpen = ref(false)
 const captureSeedFile = ref(null)
+/** После «Назад» не автоперескакиваем через уже загруженный документ. */
+const allowPhotoStepRevisit = ref(false)
 const innTouched = ref(false)
 const ogrnipTouched = ref(false)
 const paymentAccountTouched = ref(false)
 const bikTouched = ref(false)
 const bankInnTouched = ref(false)
 const correspondentTouched = ref(false)
+const bankNameTouched = ref(false)
 
 let ogrnipObjectUrl = null
 
@@ -449,12 +394,13 @@ const correspondentFieldError = computed(() =>
     correspondentTouched.value,
   ),
 )
+const bankNameFieldError = computed(() => getIeBankNameFieldError(form.bank, bankNameTouched.value))
 
 function apiError(err, fallback) {
   return parseApiErrorDetail(err, fallback) || fallback
 }
 
-function goToStep(n, { replace = false } = {}) {
+function goToStep(n, { replace = true } = {}) {
   if (viewOnly.value && parseWizardStep(n, IE_WIZARD_TOTAL) !== IE_WIZARD_TOTAL) return
   formError.value = ''
   const next = parseWizardStep(n, IE_WIZARD_TOTAL)
@@ -464,25 +410,19 @@ function goToStep(n, { replace = false } = {}) {
 
 /** Уже выгруженный документ не показываем — сразу к данным ИП. */
 function skipCompletedPhotoStep() {
-  if (busy.value || viewOnly.value) return
+  if (busy.value || viewOnly.value || allowPhotoStepRevisit.value) return
   if (step.value === 1 && isIeOgrnipFileValid(form)) {
     goToStep(2, { replace: true })
   }
 }
 
 function onBack() {
-  if (viewOnly.value) {
+  if (busy.value) return
+  if (viewOnly.value || step.value <= 1) {
     void navigateTo('/profile')
     return
   }
-  if (step.value <= 1) {
-    void navigateTo(agentTypeChoicePath())
-    return
-  }
-  if (typeof window !== 'undefined' && window.history.length > 1) {
-    window.history.back()
-    return
-  }
+  allowPhotoStepRevisit.value = true
   void navigateTo(ieWizardPath(step.value - 1), { replace: true })
 }
 
@@ -544,6 +484,7 @@ function openFilePicker() {
 }
 
 function closeCapture() {
+  if (busy.value) return
   cameraOpen.value = false
   captureSeedFile.value = null
 }
@@ -653,7 +594,7 @@ async function loadInitial() {
       form.ogrnipServerPath = row.file_ogrnip
       form.ogrnipPreviewUrl = getDocumentUrl(row.file_ogrnip)
       form.ogrnipFile = null
-      form.ogrnipIsPdf = false
+      form.ogrnipIsPdf = isPdfSource(form.ogrnipPreviewUrl, null, row.file_ogrnip)
     }
     enforceViewOnly(userRes?.data ?? userRes)
   } catch (err) {
@@ -668,6 +609,7 @@ function resetLocalState() {
   closePreview()
   cameraOpen.value = false
   captureSeedFile.value = null
+  allowPhotoStepRevisit.value = false
   form.dataConfirmed = false
   innTouched.value = false
   ogrnipTouched.value = false
@@ -675,6 +617,7 @@ function resetLocalState() {
   bikTouched.value = false
   bankInnTouched.value = false
   correspondentTouched.value = false
+  bankNameTouched.value = false
   if (ogrnipObjectUrl) URL.revokeObjectURL(ogrnipObjectUrl)
   ogrnipObjectUrl = null
   Object.assign(form, createEmptyIeForm())
@@ -801,92 +744,4 @@ onBeforeUnmount(() => {
   text-align: center;
 }
 
-.piw-lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 10050;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--rr-spacing-padding-xl);
-  padding: var(--rr-spacing-padding-3-xl) var(--rr-spacing-padding-xl)
-    calc(var(--rr-spacing-padding-3-xl) + env(safe-area-inset-bottom, 0px));
-  pointer-events: auto;
-}
-
-.piw-lightbox__backdrop {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: rgba(16, 16, 18, 0.88);
-  cursor: pointer;
-}
-
-.piw-lightbox__img,
-.piw-lightbox__pdf,
-.piw-lightbox__close,
-.piw-lightbox__actions {
-  position: relative;
-  z-index: 1;
-}
-
-.piw-lightbox__img {
-  max-width: min(100%, 480px);
-  max-height: 70vh;
-  border-radius: var(--rr-radius-l);
-  object-fit: contain;
-}
-
-.piw-lightbox__pdf {
-  width: min(100%, 480px);
-  height: min(70vh, 640px);
-  border: none;
-  border-radius: var(--rr-radius-l);
-  background: #fff;
-}
-
-.piw-lightbox__close {
-  position: absolute;
-  top: calc(var(--rr-spacing-padding-xl) + env(safe-area-inset-top, 0px));
-  right: var(--rr-spacing-padding-xl);
-  z-index: 2;
-  width: var(--rr-size-3-xl);
-  height: var(--rr-size-3-xl);
-  border: none;
-  border-radius: var(--rr-radius-full);
-  background: var(--rr-backgrounds-overlay-strong, rgba(255, 255, 255, 0.2));
-  color: #fff;
-  cursor: pointer;
-}
-
-.piw-lightbox__actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--rr-spacing-padding-l);
-  width: min(100%, 400px);
-}
-
-.piw-lightbox__btn {
-  min-height: var(--rr-size-4-xl);
-  border: none;
-  border-radius: var(--rr-radius-xl);
-  font: inherit;
-  font-size: var(--rr-font-size-font-size-m);
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.piw-lightbox__btn--ghost {
-  background: var(--rr-backgrounds-brand-secondary-hover);
-  color: var(--rr-labels-brand-primary);
-}
-
-.piw-lightbox__btn--primary {
-  background: var(--rr-labels-brand-primary);
-  color: var(--rr-labels-neutral-inverted-primary);
-}
 </style>

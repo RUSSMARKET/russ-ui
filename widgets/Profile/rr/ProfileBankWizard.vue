@@ -86,15 +86,18 @@
           />
         </AuthRRField>
 
-        <AuthRRField label="Название банка">
+        <AuthRRField label="Название банка" :error="bankNameFieldError">
           <input
             class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!bankNameFieldError }"
             type="text"
             placeholder="Например, ПАО Сбербанк"
             maxlength="255"
             :value="form.bankName"
             :readonly="viewOnly"
+            :aria-invalid="!!bankNameFieldError"
             @input="onBankNameInput"
+            @blur="bankNameTouched = true"
           />
         </AuthRRField>
 
@@ -161,48 +164,25 @@
       </template>
     </ProfileBottomSheet>
 
-    <Teleport to="body">
-      <div
-        v-if="previewUrl"
-        class="piw-lightbox"
-        role="dialog"
-        aria-modal="true"
-      >
-        <button type="button" class="piw-lightbox__backdrop" aria-label="Закрыть" @click="closePreview" />
-        <button type="button" class="piw-lightbox__close" aria-label="Закрыть" @click="closePreview">✕</button>
-        <iframe
-          v-if="previewIsPdf"
-          class="piw-lightbox__pdf"
-          :src="previewUrl"
-          title="Просмотр документа"
-        />
-        <img
-          v-else
-          class="piw-lightbox__img"
-          :src="previewUrl"
-          alt="Просмотр"
-          @error="previewIsPdf = true"
-        />
-        <div class="piw-lightbox__actions">
-          <button
-            v-if="!viewOnly"
-            type="button"
-            class="piw-lightbox__btn piw-lightbox__btn--ghost"
-            @click="onReplaceFromPreview"
-          >
-            Заменить
-          </button>
-          <button type="button" class="piw-lightbox__btn piw-lightbox__btn--primary" @click="closePreview">
-            Готово
-          </button>
-        </div>
-      </div>
-    </Teleport>
+    <ProfilePhotoReviewOverlay
+      v-if="previewUrl"
+      :src="previewUrl"
+      :is-pdf="previewIsPdf"
+      alt="Просмотр"
+      aria-label="Просмотр документа"
+      pdf-label="Открыть PDF"
+      :show-secondary="!viewOnly"
+      secondary-label="Заменить"
+      primary-label="Готово"
+      @close="closePreview"
+      @primary="closePreview"
+      @secondary="onReplaceFromPreview"
+    />
   </div>
 </template>
 
 <script setup>
-import { computed, onActivated, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, reactive, ref, watch } from 'vue'
 import { useProfileApi, useProfileNavigate } from '../composables/useProfileServices'
 import { AuthRRButton, AuthRRField } from 'bibli/shared/ui/rr'
 import { parseApiErrorDetail } from 'bibli/widgets/Profile/lib/parseApiError'
@@ -215,6 +195,7 @@ import {
   createEmptyBankForm,
   getBankAccountFieldError,
   getBankBikFieldError,
+  getBankNameFieldError,
   isBankPhotoValid,
   isBankReadyToSubmit,
   parseBankWizardStep,
@@ -231,8 +212,9 @@ import ProfileStepShell from './personal/ProfileStepShell.vue'
 import ProfileRrCheckbox from './personal/ProfileRrCheckbox.vue'
 import ProfileDocThumb from './personal/ProfileDocThumb.vue'
 import ProfileBottomSheet from './personal/ProfileBottomSheet.vue'
+import ProfilePhotoReviewOverlay from './personal/ProfilePhotoReviewOverlay.vue'
 import PassportCameraCapture from './passport/PassportCameraCapture.vue'
-import exampleBank from './assets/activation/bank-examples/example-bank.png'
+import exampleBank from './assets/activation/bank-examples/example-bank.webp'
 import helpCircleIcon from './assets/activation/help-circle-contained.svg'
 
 const api = useProfileApi()
@@ -265,8 +247,11 @@ const previewUrl = ref('')
 const previewIsPdf = ref(false)
 const fileInputRef = ref(null)
 const initialLoaded = ref(false)
+/** После «Назад» со шага формы не автоперескакиваем снова на шаг 2. */
+const allowPhotoStepRevisit = ref(false)
 const bikTouched = ref(false)
 const accountTouched = ref(false)
+const bankNameTouched = ref(false)
 
 let photoPreviewObjectUrl = null
 
@@ -285,6 +270,9 @@ const bikFieldError = computed(() =>
 
 const accountFieldError = computed(() =>
   getBankAccountFieldError(form.bankAccount, form.bankBik, accountTouched.value),
+)
+const bankNameFieldError = computed(() =>
+  getBankNameFieldError(form.bankName, bankNameTouched.value),
 )
 
 const shellTitle = computed(() => {
@@ -309,7 +297,7 @@ function apiError(err, fallback) {
   return parseApiErrorDetail(err, fallback) || fallback
 }
 
-function goToStep(n, { replace = false } = {}) {
+function goToStep(n, { replace = true } = {}) {
   if (viewOnly.value && parseBankWizardStep(n) !== BANK_WIZARD_TOTAL) return
   formError.value = ''
   const next = parseBankWizardStep(n)
@@ -319,21 +307,19 @@ function goToStep(n, { replace = false } = {}) {
 
 /** Уже выгруженное фото не показываем — сразу к реквизитам. */
 function skipCompletedPhotoStep() {
-  if (!initialLoaded.value || busy.value || viewOnly.value) return
+  if (!initialLoaded.value || busy.value || viewOnly.value || allowPhotoStepRevisit.value) return
   if (step.value === 1 && isBankPhotoValid(form)) {
     goToStep(2, { replace: true })
   }
 }
 
 function onBack() {
+  if (busy.value) return
   if (viewOnly.value || step.value <= 1) {
     void navigateTo('/profile')
     return
   }
-  if (typeof window !== 'undefined' && window.history.length > 1) {
-    window.history.back()
-    return
-  }
+  allowPhotoStepRevisit.value = true
   void navigateTo(bankWizardPath(step.value - 1), { replace: true })
 }
 
@@ -376,6 +362,7 @@ function openFilePicker() {
 }
 
 function closeCapture() {
+  if (busy.value) return
   cameraOpen.value = false
   captureSeedFile.value = null
   captureSource.value = 'camera'
@@ -396,18 +383,21 @@ function onStep1Primary() {
   openCameraCapture()
 }
 
+function onCaptureReplace() {
+  formError.value = ''
+  openFilePicker()
+}
+
 function onReplaceFromPreview() {
+  if (busy.value || viewOnly.value) return
   closePreview()
-  if (form.photoIsPdf) {
+  const isPdf =
+    form.photoIsPdf || isPdfSource(form.photoPreviewUrl, form.photoFile, form.photoServerPath)
+  if (isPdf) {
     openFilePicker()
     return
   }
   openCameraCapture()
-}
-
-function onCaptureReplace() {
-  formError.value = ''
-  openFilePicker()
 }
 
 async function uploadBankFile(file) {
@@ -427,11 +417,18 @@ async function onCameraSave({ file }) {
   if (!file || busy.value) return
   formError.value = ''
   busy.value = true
+  const gen = actionGen
   try {
     await uploadBankFile(file)
+    if (!isActionCurrent(gen)) return
+    if (!form.photoServerPath) {
+      formError.value = 'Не удалось подтвердить загрузку файла реквизитов'
+      return
+    }
     closeCapture()
     goToStep(2)
   } catch (err) {
+    if (!isActionCurrent(gen)) return
     formError.value = apiError(err, 'Не удалось загрузить фото реквизитов')
   } finally {
     busy.value = false
@@ -452,10 +449,17 @@ async function onFilePicked(event) {
 
   if (isPdfFile(file)) {
     busy.value = true
+    const gen = actionGen
     try {
       await uploadBankFile(file)
+      if (!isActionCurrent(gen)) return
+      if (!form.photoServerPath) {
+        formError.value = 'Не удалось подтвердить загрузку файла реквизитов'
+        return
+      }
       goToStep(2)
     } catch (err) {
+      if (!isActionCurrent(gen)) return
       formError.value = apiError(err, 'Не удалось загрузить файл реквизитов')
     } finally {
       busy.value = false
@@ -527,7 +531,11 @@ async function loadInitial() {
       form.photoServerPath = fileRow.file_banking_details
       form.photoPreviewUrl = getDocumentUrl(fileRow.file_banking_details)
       form.photoFile = null
-      form.photoIsPdf = false
+      form.photoIsPdf = isPdfSource(
+        form.photoPreviewUrl,
+        null,
+        fileRow.file_banking_details,
+      )
     } else {
       form.photoServerPath = null
       form.photoPreviewUrl = null
@@ -554,6 +562,8 @@ function resetLocalState() {
   helpOpen.value = false
   closeCapture()
   previewUrl.value = ''
+  previewIsPdf.value = false
+  allowPhotoStepRevisit.value = false
   form.dataConfirmed = false
   if (photoPreviewObjectUrl) {
     URL.revokeObjectURL(photoPreviewObjectUrl)
@@ -575,6 +585,16 @@ onMounted(() => {
 })
 
 const skipNextActivateReload = ref(true)
+let actionGen = 0
+
+function isActionCurrent(gen) {
+  return gen === actionGen
+}
+
+function bumpActionGen() {
+  actionGen += 1
+}
+
 onActivated(() => {
   let forceReload = false
   try {
@@ -595,7 +615,12 @@ onActivated(() => {
   void loadInitial()
 })
 
+onDeactivated(() => {
+  bumpActionGen()
+})
+
 onBeforeUnmount(() => {
+  bumpActionGen()
   if (photoPreviewObjectUrl) URL.revokeObjectURL(photoPreviewObjectUrl)
 })
 </script>
@@ -775,94 +800,5 @@ onBeforeUnmount(() => {
   line-height: var(--rr-line-height-line-height-m);
   letter-spacing: var(--rr-tracking-tracking-m);
   color: var(--rr-labels-neutral-primary);
-}
-
-.piw-lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 10050;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--rr-spacing-padding-xl);
-  padding: var(--rr-spacing-padding-3-xl) var(--rr-spacing-padding-xl)
-    calc(var(--rr-spacing-padding-3-xl) + env(safe-area-inset-bottom, 0px));
-  pointer-events: auto;
-}
-
-.piw-lightbox__backdrop {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: rgba(16, 16, 18, 0.88);
-  cursor: pointer;
-}
-
-.piw-lightbox__img,
-.piw-lightbox__pdf,
-.piw-lightbox__close,
-.piw-lightbox__actions {
-  position: relative;
-  z-index: 1;
-}
-
-.piw-lightbox__img {
-  max-width: min(100%, 480px);
-  max-height: 70vh;
-  border-radius: var(--rr-radius-l);
-  object-fit: contain;
-}
-
-.piw-lightbox__pdf {
-  width: min(100%, 480px);
-  height: min(70vh, 640px);
-  border: none;
-  border-radius: var(--rr-radius-l);
-  background: #fff;
-}
-
-.piw-lightbox__close {
-  position: absolute;
-  top: calc(var(--rr-spacing-padding-xl) + env(safe-area-inset-top, 0px));
-  right: var(--rr-spacing-padding-xl);
-  z-index: 2;
-  width: var(--rr-size-3-xl);
-  height: var(--rr-size-3-xl);
-  border: none;
-  border-radius: var(--rr-radius-full);
-  background: var(--rr-backgrounds-overlay-strong, rgba(255, 255, 255, 0.2));
-  color: #fff;
-  cursor: pointer;
-}
-
-.piw-lightbox__actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--rr-spacing-padding-l);
-  width: min(100%, 400px);
-}
-
-.piw-lightbox__btn {
-  min-height: var(--rr-size-4-xl);
-  border: none;
-  border-radius: var(--rr-radius-xl);
-  font: inherit;
-  font-size: var(--rr-font-size-font-size-m);
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.piw-lightbox__btn--ghost {
-  background: var(--rr-backgrounds-brand-secondary-hover);
-  color: var(--rr-labels-brand-primary);
-}
-
-.piw-lightbox__btn--primary {
-  background: var(--rr-labels-brand-primary);
-  color: var(--rr-labels-neutral-inverted-primary);
 }
 </style>

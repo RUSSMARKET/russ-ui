@@ -177,7 +177,7 @@ onBeforeUnmount(() => {
   min-height: 0;
   flex: 1 1 0;
   overflow: hidden;
-  background: var(--rr-backgrounds-secondary);
+  background: var(--rr-backgrounds-primary);
   color: var(--rr-labels-neutral-primary);
   font-family: var(--rr-font-family-font-family, Manrope, system-ui, sans-serif);
   padding:
@@ -301,7 +301,7 @@ onBeforeUnmount(() => {
   position: relative;
   z-index: 1;
   padding-top: var(--rr-spacing-padding-l);
-  background: var(--rr-backgrounds-secondary);
+  background: var(--rr-backgrounds-primary);
 }
 
 .profile-step-shell :deep(.auth-rr-input__control) {

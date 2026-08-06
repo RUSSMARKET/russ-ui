@@ -76,9 +76,17 @@ export function isSnilsValid(form: SnilsWizardForm): boolean {
 }
 
 export function isSnilsPhotoValid(form: SnilsWizardForm): boolean {
-  return Boolean(form.photoFile || form.photoServerPath || form.photoPreviewUrl)
+  return Boolean(form.photoServerPath || form.photoFile)
 }
 
 export function isSnilsReadyToSubmit(form: SnilsWizardForm): boolean {
   return isSnilsPhotoValid(form) && isSnilsValid(form) && form.dataConfirmed
+}
+
+export function getSnilsFieldError(value: string, touched = false): string {
+  if (!touched) return ''
+  const digits = snilsDigits(value)
+  if (!digits) return 'Укажите СНИЛС'
+  if (digits.length < 11) return 'СНИЛС должен содержать 11 цифр'
+  return ''
 }

@@ -14,42 +14,60 @@
       <div class="ppw-fio-group">
         <p class="ppw-fio-label">ФИО</p>
         <div class="ppw-fio-fields">
-          <input
-            v-model="form.name"
-            class="auth-rr-input__control auth-rr-input__control--align-left"
-            type="text"
-            autocomplete="given-name"
-            placeholder="Имя"
-          />
-          <input
-            v-model="form.surname"
-            class="auth-rr-input__control auth-rr-input__control--align-left"
-            type="text"
-            autocomplete="family-name"
-            placeholder="Фамилия"
-          />
-          <input
-            v-model="form.patronymic"
-            class="auth-rr-input__control auth-rr-input__control--align-left"
-            type="text"
-            autocomplete="additional-name"
-            placeholder="Отчество"
-            :disabled="form.noPatronymic"
-          />
+          <AuthRRField :error="nameFieldError">
+            <input
+              v-model="form.name"
+              class="auth-rr-input__control auth-rr-input__control--align-left"
+              :class="{ 'auth-rr-input__control--error': !!nameFieldError }"
+              type="text"
+              autocomplete="given-name"
+              placeholder="Имя"
+              :aria-invalid="!!nameFieldError"
+              @blur="nameTouched = true"
+            />
+          </AuthRRField>
+          <AuthRRField :error="surnameFieldError">
+            <input
+              v-model="form.surname"
+              class="auth-rr-input__control auth-rr-input__control--align-left"
+              :class="{ 'auth-rr-input__control--error': !!surnameFieldError }"
+              type="text"
+              autocomplete="family-name"
+              placeholder="Фамилия"
+              :aria-invalid="!!surnameFieldError"
+              @blur="surnameTouched = true"
+            />
+          </AuthRRField>
+          <AuthRRField :error="patronymicFieldError">
+            <input
+              v-model="form.patronymic"
+              class="auth-rr-input__control auth-rr-input__control--align-left"
+              :class="{ 'auth-rr-input__control--error': !!patronymicFieldError }"
+              type="text"
+              autocomplete="additional-name"
+              placeholder="Отчество"
+              :disabled="form.noPatronymic"
+              :aria-invalid="!!patronymicFieldError"
+              @blur="patronymicTouched = true"
+            />
+          </AuthRRField>
         </div>
         <ProfileRrCheckbox v-model="form.noPatronymic" label="Нет отчества" />
       </div>
       <div class="ppw-row">
         <ProfileRrGender v-model="form.gender" />
-        <AuthRRField label="Дата рождения">
+        <AuthRRField label="Дата рождения" :error="birthdayFieldError">
           <input
             class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!birthdayFieldError }"
             type="text"
             inputmode="numeric"
             placeholder="ДД.ММ.ГГГГ"
             :value="form.birthday"
             maxlength="10"
+            :aria-invalid="!!birthdayFieldError"
             @input="onBirthdayInput"
+            @blur="birthdayTouched = true"
           />
         </AuthRRField>
       </div>
@@ -77,14 +95,18 @@
         type="email"
         autocomplete="email"
         placeholder="email@example.com"
+        :error="emailFieldError"
+        @blur="emailTouched = true"
       />
       <AuthRRInputText
         :model-value="form.telegram"
         label="Ник в тг (через @)"
         autocomplete="off"
         placeholder="@username"
+        :error="telegramFieldError"
         @update:model-value="onTelegramInput"
-        @focusin="onTelegramFocus"
+        @focus="onTelegramFocus"
+        @blur="telegramTouched = true"
       />
     </div>
 
@@ -289,10 +311,10 @@
           variant="neutral-secondary"
           label="Изменить почту"
           :disabled="busy"
-          @click="goToStep(2)"
+          @click="onChangeEmailFromOtp"
         />
         <template v-else-if="step === 4">
-          <template v-if="photoLocked || form.photoPreviewUrl">
+          <template v-if="photoLocked">
             <AuthRRButton
               label="Продолжить"
               :loading="busy"
@@ -316,7 +338,7 @@
         <AuthRRButton
           v-else
           label="Отправить на проверку"
-          :disabled="!form.dataConfirmed"
+          :disabled="!form.dataConfirmed || !form.photoServerPath"
           :loading="busy"
           @click="submitForReview"
         />
@@ -387,30 +409,23 @@
       </template>
     </ProfileBottomSheet>
 
-    <Teleport to="body">
-      <div
-        v-if="photoPreviewOpenUrl"
-        class="ppw-lightbox"
-        role="dialog"
-        aria-modal="true"
-        @click.self="photoPreviewOpenUrl = ''"
-      >
-        <button
-          type="button"
-          class="ppw-lightbox__close"
-          aria-label="Закрыть"
-          @click="photoPreviewOpenUrl = ''"
-        >
-          ✕
-        </button>
-        <img class="ppw-lightbox__img" :src="photoPreviewOpenUrl" alt="Просмотр фото профиля" />
-      </div>
-    </Teleport>
+    <ProfilePhotoReviewOverlay
+      v-if="photoPreviewOpenUrl"
+      :src="photoPreviewOpenUrl"
+      alt="Просмотр фото профиля"
+      aria-label="Просмотр фото профиля"
+      :show-secondary="!viewOnly && !photoLocked"
+      secondary-label="Заменить"
+      primary-label="Готово"
+      @close="photoPreviewOpenUrl = ''"
+      @primary="photoPreviewOpenUrl = ''"
+      @secondary="onReplaceFromPhotoPreview"
+    />
   </div>
 </template>
 
 <script setup>
-import { computed, onActivated, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, reactive, ref, watch } from 'vue'
 import { useProfileApi, useProfileNavigate } from '../composables/useProfileServices'
 import {
   AuthRRButton,
@@ -428,6 +443,12 @@ import {
   birthdayToApi,
   clearPendingOtpEmail,
   createEmptyPersonalForm,
+  getPersonalBirthdayFieldError,
+  getPersonalEmailFieldError,
+  getPersonalNameFieldError,
+  getPersonalPatronymicFieldError,
+  getPersonalSurnameFieldError,
+  getPersonalTelegramFieldError,
   isContactsStepValid,
   isIdentityStepValid,
   isPhotoStepValid,
@@ -451,6 +472,7 @@ import ProfileRrCheckbox from './personal/ProfileRrCheckbox.vue'
 import ProfileDocThumb from './personal/ProfileDocThumb.vue'
 import ProfileRrGender from './personal/ProfileRrGender.vue'
 import ProfileBottomSheet from './personal/ProfileBottomSheet.vue'
+import ProfilePhotoReviewOverlay from './personal/ProfilePhotoReviewOverlay.vue'
 import PassportCameraCapture from './passport/PassportCameraCapture.vue'
 import exampleOk from './assets/activation/photo-examples/example-ok.webp'
 import exampleSelfie from './assets/activation/photo-examples/example-selfie.webp'
@@ -500,6 +522,28 @@ const photoCaptureSource = ref('camera')
 const photoSeedFile = ref(null)
 const photoPreviewOpenUrl = ref('')
 const form = reactive(createEmptyPersonalForm())
+
+const nameTouched = ref(false)
+const surnameTouched = ref(false)
+const patronymicTouched = ref(false)
+const birthdayTouched = ref(false)
+const emailTouched = ref(false)
+const telegramTouched = ref(false)
+
+const nameFieldError = computed(() => getPersonalNameFieldError(form.name, nameTouched.value))
+const surnameFieldError = computed(() =>
+  getPersonalSurnameFieldError(form.surname, surnameTouched.value),
+)
+const patronymicFieldError = computed(() =>
+  getPersonalPatronymicFieldError(form.patronymic, form.noPatronymic, patronymicTouched.value),
+)
+const birthdayFieldError = computed(() =>
+  getPersonalBirthdayFieldError(form.birthday, birthdayTouched.value),
+)
+const emailFieldError = computed(() => getPersonalEmailFieldError(form.email, emailTouched.value))
+const telegramFieldError = computed(() =>
+  getPersonalTelegramFieldError(form.telegram, telegramTouched.value),
+)
 
 let resendTimer = null
 let localPreviewUrl = null
@@ -625,26 +669,39 @@ function onPhoneLockedInteract() {
   phoneLockHint.value = true
 }
 
+function onChangeEmailFromOtp() {
+  clearPendingOtpEmail()
+  otpEmail.value = ''
+  otpCode.value = ''
+  otpError.value = ''
+  goToStep(2)
+}
+
 function goToStep(n) {
   if (viewOnly.value) return
   formError.value = ''
   otpError.value = ''
   phoneLockHint.value = false
+  nameTouched.value = false
+  surnameTouched.value = false
+  patronymicTouched.value = false
+  birthdayTouched.value = false
+  emailTouched.value = false
+  telegramTouched.value = false
   let next = parsePersonalWizardStep(n)
   if (next === 4 && photoLocked.value) next = 5
   if (next === step.value) return
-  void navigateTo(personalWizardPath(next))
+  void navigateTo(personalWizardPath(next), { replace: true })
 }
 
 function onBack() {
+  if (busy.value) return
   if (viewOnly.value || step.value <= 1) {
     void navigateTo('/profile')
     return
   }
-  if (typeof window !== 'undefined' && window.history.length > 1) {
-    window.history.back()
-    return
-  }
+  // Явный шаг, не history.back(): после камеры/OTP/редиректов в истории
+  // оказывается чужой URL → Nuxt/nginx «Page Not Found» на /profile/personal/1.
   let prev = step.value - 1
   if (prev === 4 && photoLocked.value) prev = 3
   void navigateTo(personalWizardPath(prev), { replace: true })
@@ -770,6 +827,16 @@ async function loadInitial() {
       }
 
       enforceViewOnly(user)
+
+      if (!viewOnly.value) {
+        if (step.value === 3 && !resolveOtpEmail()) {
+          void navigateTo(personalWizardPath(2), { replace: true })
+        } else if (step.value === 5 && !form.photoServerPath) {
+          void navigateTo(personalWizardPath(4), { replace: true })
+        } else if (step.value === 4 && form.photoServerPath) {
+          void navigateTo(personalWizardPath(5), { replace: true })
+        }
+      }
 
       const missingFio =
         !String(form.name || '').trim() && !String(form.surname || '').trim()
@@ -909,7 +976,13 @@ function openPhotoPreview(url) {
   photoPreviewOpenUrl.value = url
 }
 
+function onReplaceFromPhotoPreview() {
+  photoPreviewOpenUrl.value = ''
+  openPhotoCamera()
+}
+
 function closePhotoCapture() {
+  if (busy.value) return
   cameraOpen.value = false
   photoSeedFile.value = null
   photoCaptureSource.value = 'camera'
@@ -945,25 +1018,34 @@ function onPhotoContinue() {
 
 async function uploadProfilePhoto(file) {
   if (!file || busy.value) return
-  if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl)
-  localPreviewUrl = URL.createObjectURL(file)
-  form.photoFile = file
-  form.photoPreviewUrl = localPreviewUrl
   formError.value = ''
   busy.value = true
+  const gen = actionGen
   try {
     const res = await uploadPassportDocuments(null, null, file, null, null, null)
+    if (!isActionCurrent(gen)) return
     if (res?.status === false) {
       formError.value = res?.data || 'Не удалось загрузить фото'
       return
     }
+    if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl)
+    localPreviewUrl = URL.createObjectURL(file)
+    form.photoFile = file
+    form.photoPreviewUrl = localPreviewUrl
     await refreshPhotoFromApi()
+    if (!isActionCurrent(gen)) return
+    if (!form.photoServerPath) {
+      formError.value = 'Не удалось подтвердить загрузку фото'
+      return
+    }
     closePhotoCapture()
     goToStep(5)
   } catch (err) {
+    if (!isActionCurrent(gen)) return
     formError.value = apiError(err, 'Не удалось загрузить фото')
   } finally {
-    busy.value = false
+    if (isActionCurrent(gen)) busy.value = false
+    else busy.value = false
   }
 }
 
@@ -986,6 +1068,10 @@ async function onPhotoPicked(event) {
 
 async function submitForReview() {
   if (!form.dataConfirmed || busy.value) return
+  if (!form.photoServerPath) {
+    formError.value = 'Загрузите фото профиля'
+    return
+  }
   formError.value = ''
   busy.value = true
   try {
@@ -999,12 +1085,23 @@ async function submitForReview() {
 }
 
 
+const skipNextActivateReload = ref(true)
+let actionGen = 0
+
+function bumpActionGen() {
+  actionGen += 1
+  return actionGen
+}
+
+function isActionCurrent(gen) {
+  return gen === actionGen
+}
+
 onMounted(() => {
   restoreResendCountdown()
   void loadInitial()
 })
 
-const skipNextActivateReload = ref(true)
 onActivated(() => {
   restoreResendCountdown()
   if (skipNextActivateReload.value) {
@@ -1012,6 +1109,10 @@ onActivated(() => {
     return
   }
   void loadInitial()
+})
+
+onDeactivated(() => {
+  bumpActionGen()
 })
 
 watch(step, (n) => {
@@ -1030,6 +1131,7 @@ watch(photoLocked, (locked) => {
 })
 
 onBeforeUnmount(() => {
+  bumpActionGen()
   clearInterval(resendTimer)
   resendTimer = null
   if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl)
@@ -1361,36 +1463,6 @@ onBeforeUnmount(() => {
   object-fit: cover;
 }
 
-
-.ppw-lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 4000;
-  display: grid;
-  place-items: center;
-  padding: var(--rr-spacing-padding-3-xl);
-  background: rgba(16, 16, 18, 0.72);
-}
-
-.ppw-lightbox__img {
-  max-width: min(100%, 480px);
-  max-height: 80vh;
-  border-radius: var(--rr-radius-l);
-  object-fit: contain;
-}
-
-.ppw-lightbox__close {
-  position: absolute;
-  top: calc(var(--rr-spacing-padding-xl) + env(safe-area-inset-top, 0px));
-  right: var(--rr-spacing-padding-xl);
-  width: var(--rr-size-3-xl);
-  height: var(--rr-size-3-xl);
-  border: none;
-  border-radius: var(--rr-radius-full);
-  background: var(--rr-backgrounds-overlay-strong);
-  color: #fff;
-  cursor: pointer;
-}
 
 .ppw-review {
   display: flex;

@@ -130,7 +130,7 @@ export function isIeReadyToSubmit(form: IeWizardForm): boolean {
 /** Ошибка поля ИНН ИП (пусто = без ошибки). */
 export function getIeInnFieldError(inn: string, touched = false): string {
   const digits = digitsOnly(inn, 12)
-  if (!digits) return ''
+  if (!digits) return touched ? 'Укажите ИНН ИП' : ''
   if (digits.length < 12) return touched ? 'ИНН ИП должен содержать 12 цифр' : ''
   if (!isValidInn12(digits)) return 'Некорректный ИНН ИП'
   return ''
@@ -139,7 +139,7 @@ export function getIeInnFieldError(inn: string, touched = false): string {
 /** Ошибка поля ОГРНИП (пусто = без ошибки). */
 export function getIeOgrnipFieldError(ogrnip: string, touched = false): string {
   const digits = digitsOnly(ogrnip, 15)
-  if (!digits) return ''
+  if (!digits) return touched ? 'Укажите ОГРНИП' : ''
   if (digits.length < 15) return touched ? 'ОГРНИП должен содержать 15 цифр' : ''
   if (!isValidOgrnip(digits)) return 'Некорректный ОГРНИП'
   return ''
@@ -153,7 +153,7 @@ export function getIeBikFieldError(
   touched = false,
 ): string {
   const digits = digitsOnly(bik, 9)
-  if (!digits) return ''
+  if (!digits) return touched ? 'Укажите БИК банка' : ''
   if (digits.length < 9) return touched ? 'БИК банка должен содержать 9 цифр' : ''
   if (!isValidBik(digits)) return 'Укажите корректный БИК банка'
   const rs = digitsOnly(paymentAccount, 20)
@@ -174,7 +174,7 @@ export function getIePaymentAccountFieldError(
   touched = false,
 ): string {
   const acc = digitsOnly(account, 20)
-  if (!acc) return ''
+  if (!acc) return touched ? 'Укажите расчётный счёт' : ''
   if (acc.length < 20) return touched ? 'Расчётный счёт должен содержать 20 цифр' : ''
   const digits = digitsOnly(bik, 9)
   if (!isValidBik(digits)) return 'Укажите корректный БИК банка'
@@ -187,7 +187,7 @@ export function getIePaymentAccountFieldError(
 /** Ошибка поля ИНН банка (пусто = без ошибки). */
 export function getIeBankInnFieldError(inn: string, touched = false): string {
   const digits = digitsOnly(inn, 10)
-  if (!digits) return ''
+  if (!digits) return touched ? 'Укажите ИНН банка' : ''
   if (digits.length < 10) return touched ? 'ИНН банка должен содержать 10 цифр' : ''
   if (!isValidInn10(digits)) return 'Некорректный ИНН банка'
   return ''
@@ -200,7 +200,7 @@ export function getIeCorrespondentAccountFieldError(
   touched = false,
 ): string {
   const acc = digitsOnly(account, 20)
-  if (!acc) return ''
+  if (!acc) return touched ? 'Укажите корреспондентский счёт' : ''
   if (acc.length < 20) return touched ? 'Корреспондентский счёт должен содержать 20 цифр' : ''
   const digits = digitsOnly(bik, 9)
   if (!isValidBik(digits)) return 'Укажите корректный БИК банка'
@@ -208,4 +208,9 @@ export function getIeCorrespondentAccountFieldError(
     return 'Такой корреспондентский счёт не может существовать с этим БИК'
   }
   return ''
+}
+
+export function getIeBankNameFieldError(value: string, touched = false): string {
+  if (!touched) return ''
+  return value.trim() ? '' : 'Укажите название банка'
 }

@@ -55,49 +55,61 @@
 
       <!-- Step 3: form -->
       <div v-else-if="step === 3" class="ppw-stack ppass-form">
-        <AuthRRField label="Серия и номер">
+        <AuthRRField label="Серия и номер" :error="passportNumberFieldError">
           <input
             class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!passportNumberFieldError }"
             type="text"
             inputmode="numeric"
             placeholder="0000 000000"
             maxlength="11"
             :value="form.passport"
+            :aria-invalid="!!passportNumberFieldError"
             @input="onPassportInput"
+            @blur="passportNumberTouched = true"
           />
         </AuthRRField>
 
         <div class="ppass-row">
-          <AuthRRField label="Дата выдачи">
+          <AuthRRField label="Дата выдачи" :error="passportDateFieldError">
             <input
               class="auth-rr-input__control auth-rr-input__control--align-left"
+              :class="{ 'auth-rr-input__control--error': !!passportDateFieldError }"
               type="text"
               inputmode="numeric"
               placeholder="ДД.ММ.ГГГГ"
               maxlength="10"
               :value="form.passportDate"
+              :aria-invalid="!!passportDateFieldError"
               @input="onPassportDateInput"
+              @blur="passportDateTouched = true"
             />
           </AuthRRField>
-          <AuthRRField label="Код подразделения">
+          <AuthRRField label="Код подразделения" :error="passportCodeFieldError">
             <input
               class="auth-rr-input__control auth-rr-input__control--align-left"
+              :class="{ 'auth-rr-input__control--error': !!passportCodeFieldError }"
               type="text"
               inputmode="numeric"
               placeholder="000-000"
               maxlength="7"
               :value="form.passportCode"
+              :aria-invalid="!!passportCodeFieldError"
               @input="onPassportCodeInput"
+              @blur="passportCodeTouched = true"
             />
           </AuthRRField>
         </div>
 
-        <AuthRRField label="Кем выдан">
+        <AuthRRField label="Кем выдан" :error="passportIssuedFieldError">
           <div class="ppass-issued">
             <select
               v-if="!form.issuedManual"
               v-model="form.passportIssued"
               class="auth-rr-input__control auth-rr-input__control--align-left ppass-select"
+              :class="{ 'auth-rr-input__control--error': !!passportIssuedFieldError }"
+              :aria-invalid="!!passportIssuedFieldError"
+              @blur="passportIssuedTouched = true"
             >
               <option disabled value="">Выберите вариант</option>
               <option v-for="name in issuedOptions" :key="name" :value="name">
@@ -108,32 +120,41 @@
               v-else
               v-model="form.passportIssued"
               class="auth-rr-input__control auth-rr-input__control--align-left"
+              :class="{ 'auth-rr-input__control--error': !!passportIssuedFieldError }"
               type="text"
               placeholder="Кем выдан"
               autocomplete="off"
+              :aria-invalid="!!passportIssuedFieldError"
+              @blur="passportIssuedTouched = true"
             />
           </div>
         </AuthRRField>
 
         <ProfileRrCheckbox v-model="form.issuedManual" label="Моего варианта нет" />
 
-        <AuthRRField label="Место рождения">
+        <AuthRRField label="Место рождения" :error="birthdayPlaceFieldError">
           <input
             v-model="form.birthdayPlace"
             class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!birthdayPlaceFieldError }"
             type="text"
             placeholder="Место рождения"
             autocomplete="off"
+            :aria-invalid="!!birthdayPlaceFieldError"
+            @blur="birthdayPlaceTouched = true"
           />
         </AuthRRField>
 
-        <AuthRRField label="Адрес регистрации">
+        <AuthRRField label="Адрес регистрации" :error="registrationFieldError">
           <input
             v-model="form.registrationAddress"
             class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!registrationFieldError }"
             type="text"
             placeholder="Адрес регистрации"
             autocomplete="street-address"
+            :aria-invalid="!!registrationFieldError"
+            @blur="registrationTouched = true"
           />
         </AuthRRField>
 
@@ -142,13 +163,20 @@
           label="Адрес регистрации совпадает с проживанием"
         />
 
-        <AuthRRField v-if="!form.sameAsResidence" label="Адрес фактического проживания">
+        <AuthRRField
+          v-if="!form.sameAsResidence"
+          label="Адрес фактического проживания"
+          :error="residenceFieldError"
+        >
           <input
             v-model="form.residenceAddress"
             class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!residenceFieldError }"
             type="text"
             placeholder="Адрес фактического проживания"
             autocomplete="street-address"
+            :aria-invalid="!!residenceFieldError"
+            @blur="residenceTouched = true"
           />
         </AuthRRField>
       </div>
@@ -166,7 +194,7 @@
               fill
               :src="doc.url"
               :alt="doc.label"
-              @click="openPreview(doc.url)"
+              @click="openPreview(doc)"
             />
           </div>
         </section>
@@ -250,29 +278,27 @@
       v-if="cameraOpen"
       :variant="cameraVariant"
       :saving="busy"
-      @close="cameraOpen = false"
+      @close="() => { if (!busy) cameraOpen = false }"
       @save="onCameraSave"
     />
 
-    <Teleport to="body">
-      <div
-        v-if="previewUrl"
-        class="ppass-lightbox"
-        role="dialog"
-        aria-modal="true"
-        @click.self="previewUrl = ''"
-      >
-        <button type="button" class="ppass-lightbox__close" aria-label="Закрыть" @click="previewUrl = ''">
-          ✕
-        </button>
-        <img class="ppass-lightbox__img" :src="previewUrl" alt="Просмотр фото" />
-      </div>
-    </Teleport>
+    <ProfilePhotoReviewOverlay
+      v-if="previewUrl"
+      :src="previewUrl"
+      alt="Просмотр фото"
+      aria-label="Просмотр фото"
+      :show-secondary="!viewOnly"
+      secondary-label="Заменить"
+      primary-label="Готово"
+      @close="closePreview"
+      @primary="closePreview"
+      @secondary="onReplaceFromPreview"
+    />
   </div>
 </template>
 
 <script setup>
-import { computed, onActivated, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, reactive, ref, watch } from 'vue'
 import { useProfileApi, useProfileNavigate } from '../composables/useProfileServices'
 import { AuthRRButton, AuthRRField } from 'bibli/shared/ui/rr'
 import { parseApiErrorDetail } from 'bibli/widgets/Profile/lib/parseApiError'
@@ -281,6 +307,13 @@ import {
   birthdayFromApi,
   birthdayToApi,
   createEmptyPassportForm,
+  getPassportBirthdayPlaceFieldError,
+  getPassportCodeFieldError,
+  getPassportDateFieldError,
+  getPassportIssuedFieldError,
+  getPassportNumberFieldError,
+  getPassportRegistrationFieldError,
+  getPassportResidenceFieldError,
   isMainPhotoValid,
   isPassportFormValid,
   isRegPhotoValid,
@@ -296,6 +329,7 @@ import { isActivationStepLocked } from './lib/activationSteps'
 import ProfileStepShell from './personal/ProfileStepShell.vue'
 import ProfileRrCheckbox from './personal/ProfileRrCheckbox.vue'
 import ProfileDocThumb from './personal/ProfileDocThumb.vue'
+import ProfilePhotoReviewOverlay from './personal/ProfilePhotoReviewOverlay.vue'
 import PassportCameraCapture from './passport/PassportCameraCapture.vue'
 import exampleMain from './assets/activation/passport-examples/example-main.png'
 import exampleReg from './assets/activation/passport-examples/example-3.png'
@@ -324,8 +358,43 @@ const busy = ref(false)
 const formError = ref('')
 const viewOnly = ref(false)
 const form = reactive(createEmptyPassportForm())
+const passportNumberTouched = ref(false)
+const passportDateTouched = ref(false)
+const passportCodeTouched = ref(false)
+const passportIssuedTouched = ref(false)
+const birthdayPlaceTouched = ref(false)
+const registrationTouched = ref(false)
+const residenceTouched = ref(false)
+
+const passportNumberFieldError = computed(() =>
+  getPassportNumberFieldError(form.passport, passportNumberTouched.value),
+)
+const passportDateFieldError = computed(() =>
+  getPassportDateFieldError(form.passportDate, passportDateTouched.value),
+)
+const passportCodeFieldError = computed(() =>
+  getPassportCodeFieldError(form.passportCode, passportCodeTouched.value),
+)
+const passportIssuedFieldError = computed(() =>
+  getPassportIssuedFieldError(form.passportIssued, passportIssuedTouched.value),
+)
+const birthdayPlaceFieldError = computed(() =>
+  getPassportBirthdayPlaceFieldError(form.birthdayPlace, birthdayPlaceTouched.value),
+)
+const registrationFieldError = computed(() =>
+  getPassportRegistrationFieldError(form.registrationAddress, registrationTouched.value),
+)
+const residenceFieldError = computed(() =>
+  getPassportResidenceFieldError(
+    form.residenceAddress,
+    form.sameAsResidence,
+    residenceTouched.value,
+  ),
+)
+
 const issuedOptions = ref([])
 const previewUrl = ref('')
+const previewDocKey = ref('')
 const cameraOpen = ref(false)
 const cameraVariant = ref('main')
 
@@ -344,6 +413,8 @@ const regTips = [
 
 const canContinueForm = computed(() => isPassportFormValid(form))
 const initialLoaded = ref(false)
+/** После «Назад» не автоперескакиваем через уже загруженные фото-шаги. */
+const allowPhotoStepRevisit = ref(false)
 
 const shellTitle = computed(() => {
   if (viewOnly.value) return 'Паспорт'
@@ -422,9 +493,16 @@ function apiError(err, fallback) {
   return parseApiErrorDetail(err, fallback) || fallback
 }
 
-function goToStep(n, { replace = false } = {}) {
+function goToStep(n, { replace = true } = {}) {
   if (viewOnly.value && parsePassportWizardStep(n) !== PASSPORT_WIZARD_TOTAL) return
   formError.value = ''
+  passportNumberTouched.value = false
+  passportDateTouched.value = false
+  passportCodeTouched.value = false
+  passportIssuedTouched.value = false
+  birthdayPlaceTouched.value = false
+  registrationTouched.value = false
+  residenceTouched.value = false
   const next = parsePassportWizardStep(n)
   if (next === step.value) return
   void navigateTo(passportWizardPath(next), replace ? { replace: true } : undefined)
@@ -432,7 +510,7 @@ function goToStep(n, { replace = false } = {}) {
 
 /** Уже выгруженные фото-шаги не показываем — сразу дальше. */
 function skipCompletedPhotoSteps() {
-  if (!initialLoaded.value || busy.value || viewOnly.value) return
+  if (!initialLoaded.value || busy.value || viewOnly.value || allowPhotoStepRevisit.value) return
   if (step.value === 1 && isMainPhotoValid(form)) {
     goToStep(isRegPhotoValid(form) ? 3 : 2, { replace: true })
     return
@@ -443,14 +521,12 @@ function skipCompletedPhotoSteps() {
 }
 
 function onBack() {
+  if (busy.value) return
   if (viewOnly.value || step.value <= 1) {
     void navigateTo('/profile')
     return
   }
-  if (typeof window !== 'undefined' && window.history.length > 1) {
-    window.history.back()
-    return
-  }
+  allowPhotoStepRevisit.value = true
   void navigateTo(passportWizardPath(step.value - 1), { replace: true })
 }
 
@@ -474,8 +550,23 @@ function onPassportCodeInput(event) {
   form.passportCode = maskPassportCode(event.target.value)
 }
 
-function openPreview(url) {
-  if (url) previewUrl.value = url
+function openPreview(doc) {
+  if (!doc?.url) return
+  previewDocKey.value = doc.key || ''
+  previewUrl.value = doc.url
+}
+
+function closePreview() {
+  previewUrl.value = ''
+  previewDocKey.value = ''
+}
+
+function onReplaceFromPreview() {
+  if (busy.value || viewOnly.value) return
+  const key = previewDocKey.value
+  closePreview()
+  if (key === 'reg') openRegCamera()
+  else openMainCamera()
 }
 
 function openMainCamera() {
@@ -492,16 +583,24 @@ async function onCameraSave({ file }) {
   if (!file || busy.value) return
   formError.value = ''
   busy.value = true
+  const gen = actionGen
+  const variant = cameraVariant.value
   try {
     const localUrl = URL.createObjectURL(file)
-    if (cameraVariant.value === 'main') {
+    if (variant === 'main') {
       if (mainPreviewObjectUrl) URL.revokeObjectURL(mainPreviewObjectUrl)
       mainPreviewObjectUrl = localUrl
       form.mainPhotoFile = file
       form.mainPhotoPreviewUrl = localUrl
       await uploadPassportDocuments(file, null, null, null, null, null)
+      if (!isActionCurrent(gen)) return
       const files = await getPassportFiles()
+      if (!isActionCurrent(gen)) return
       form.mainPhotoServerPath = files?.file_passport || files?.data?.file_passport || null
+      if (!form.mainPhotoServerPath) {
+        formError.value = 'Не удалось подтвердить загрузку фото паспорта'
+        return
+      }
       cameraOpen.value = false
       goToStep(2)
     } else {
@@ -510,16 +609,23 @@ async function onCameraSave({ file }) {
       form.regPhotoFile = file
       form.regPhotoPreviewUrl = localUrl
       await uploadPassportDocuments(null, file, null, null, null, null)
+      if (!isActionCurrent(gen)) return
       const files = await getPassportFiles()
+      if (!isActionCurrent(gen)) return
       form.regPhotoServerPath =
         files?.file_passport_registration || files?.data?.file_passport_registration || null
+      if (!form.regPhotoServerPath) {
+        formError.value = 'Не удалось подтвердить загрузку фото регистрации'
+        return
+      }
       cameraOpen.value = false
       goToStep(3)
     }
   } catch (err) {
+    if (!isActionCurrent(gen)) return
     formError.value = apiError(
       err,
-      cameraVariant.value === 'main'
+      variant === 'main'
         ? 'Не удалось загрузить фото паспорта'
         : 'Не удалось загрузить фото регистрации',
     )
@@ -581,6 +687,9 @@ function buildPayload() {
     birthday: birthdayToApi(form.birthday),
     birthday_place: form.birthdayPlace.trim(),
     registration_address: form.registrationAddress.trim(),
+    residence_address: form.sameAsResidence
+      ? form.registrationAddress.trim()
+      : form.residenceAddress.trim(),
   }
   if (form.inn) payload.inn = form.inn
   if (form.bankAccount) payload.bank_account = form.bankAccount
@@ -604,6 +713,10 @@ async function loadInitial() {
     form.birthday = birthdayFromApi(row.birthday)
     form.birthdayPlace = row.birthday_place || ''
     form.registrationAddress = row.registration_address || ''
+    form.residenceAddress = row.residence_address || ''
+    form.sameAsResidence =
+      !form.residenceAddress ||
+      form.residenceAddress.trim() === form.registrationAddress.trim()
     form.inn = row.inn || ''
     form.bankAccount = row.bank_account || ''
     form.bankBik = row.bank_bik || ''
@@ -661,6 +774,16 @@ onMounted(() => {
 })
 
 const skipNextActivateReload = ref(true)
+let actionGen = 0
+
+function isActionCurrent(gen) {
+  return gen === actionGen
+}
+
+function bumpActionGen() {
+  actionGen += 1
+}
+
 onActivated(() => {
   let forceReload = false
   try {
@@ -679,10 +802,16 @@ onActivated(() => {
   skipNextActivateReload.value = false
   formError.value = ''
   initialLoaded.value = false
+  allowPhotoStepRevisit.value = false
   void loadInitial()
 })
 
+onDeactivated(() => {
+  bumpActionGen()
+})
+
 onBeforeUnmount(() => {
+  bumpActionGen()
   if (mainPreviewObjectUrl) URL.revokeObjectURL(mainPreviewObjectUrl)
   if (regPreviewObjectUrl) URL.revokeObjectURL(regPreviewObjectUrl)
 })
@@ -865,34 +994,5 @@ onBeforeUnmount(() => {
   font-size: var(--rr-font-size-font-size-s);
   line-height: var(--rr-line-height-line-height-s);
   text-align: center;
-}
-
-.ppass-lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 4000;
-  display: grid;
-  place-items: center;
-  padding: var(--rr-spacing-padding-3-xl);
-  background: rgba(16, 16, 18, 0.72);
-}
-
-.ppass-lightbox__img {
-  max-width: min(100%, 480px);
-  max-height: 80vh;
-  border-radius: var(--rr-radius-l);
-  object-fit: contain;
-}
-
-.ppass-lightbox__close {
-  position: absolute;
-  top: var(--rr-spacing-padding-xl);
-  right: var(--rr-spacing-padding-xl);
-  width: var(--rr-size-3-xl);
-  height: var(--rr-size-3-xl);
-  border: none;
-  border-radius: var(--rr-radius-full);
-  background: var(--rr-backgrounds-overlay-strong);
-  cursor: pointer;
 }
 </style>

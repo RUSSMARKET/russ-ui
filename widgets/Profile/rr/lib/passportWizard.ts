@@ -102,13 +102,61 @@ export function isPassportReadyToSubmit(form: PassportWizardForm): boolean {
 }
 
 export function isMainPhotoValid(form: PassportWizardForm): boolean {
-  return Boolean(form.mainPhotoFile || form.mainPhotoServerPath || form.mainPhotoPreviewUrl)
+  return Boolean(form.mainPhotoServerPath || form.mainPhotoFile)
 }
 
 export function isRegPhotoValid(form: PassportWizardForm): boolean {
-  return Boolean(form.regPhotoFile || form.regPhotoServerPath || form.regPhotoPreviewUrl)
+  return Boolean(form.regPhotoServerPath || form.regPhotoFile)
 }
 
 export function formatPassportDateForApi(value: string): string | null {
   return birthdayToApi(value)
+}
+
+export function getPassportNumberFieldError(value: string, touched = false): string {
+  if (!touched) return ''
+  const digits = passportDigits(value)
+  if (!digits) return 'Укажите серию и номер паспорта'
+  if (digits.length < 10) return 'Серия и номер должны содержать 10 цифр'
+  return ''
+}
+
+export function getPassportDateFieldError(value: string, touched = false): string {
+  if (!touched) return ''
+  const raw = value.trim()
+  if (!raw) return 'Укажите дату выдачи'
+  if (!birthdayToApi(raw)) return 'Укажите дату в формате ДД.ММ.ГГГГ'
+  return ''
+}
+
+export function getPassportCodeFieldError(value: string, touched = false): string {
+  if (!touched) return ''
+  const digits = passportCodeDigits(value)
+  if (!digits) return 'Укажите код подразделения'
+  if (digits.length < 6) return 'Код подразделения должен содержать 6 цифр'
+  return ''
+}
+
+export function getPassportIssuedFieldError(value: string, touched = false): string {
+  if (!touched) return ''
+  return value.trim() ? '' : 'Укажите, кем выдан паспорт'
+}
+
+export function getPassportBirthdayPlaceFieldError(value: string, touched = false): string {
+  if (!touched) return ''
+  return value.trim() ? '' : 'Укажите место рождения'
+}
+
+export function getPassportRegistrationFieldError(value: string, touched = false): string {
+  if (!touched) return ''
+  return value.trim() ? '' : 'Укажите адрес регистрации'
+}
+
+export function getPassportResidenceFieldError(
+  value: string,
+  sameAsResidence: boolean,
+  touched = false,
+): string {
+  if (!touched || sameAsResidence) return ''
+  return value.trim() ? '' : 'Укажите адрес фактического проживания'
 }

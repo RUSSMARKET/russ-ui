@@ -45,15 +45,18 @@
 
       <!-- Step 2: INN number -->
       <div v-else-if="step === 2" class="piw-stack">
-        <AuthRRField label="Номер ИНН">
+        <AuthRRField label="Номер ИНН" :error="innFieldError">
           <input
             class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!innFieldError }"
             type="text"
             inputmode="numeric"
             placeholder="000000000000"
             maxlength="12"
             :value="form.inn"
+            :aria-invalid="!!innFieldError"
             @input="onInnInput"
+            @blur="innTouched = true"
           />
         </AuthRRField>
       </div>
@@ -66,15 +69,18 @@
           @click="openPreview(reviewPhotoUrl)"
         />
 
-        <AuthRRField label="Номер ИНН">
+        <AuthRRField label="Номер ИНН" :error="innFieldError">
           <input
             class="auth-rr-input__control auth-rr-input__control--align-left"
+            :class="{ 'auth-rr-input__control--error': !!innFieldError }"
             type="text"
             inputmode="numeric"
             maxlength="12"
             :value="form.inn"
             :readonly="viewOnly"
+            :aria-invalid="!!innFieldError"
             @input="onInnInput"
+            @blur="innTouched = true"
           />
         </AuthRRField>
 
@@ -153,49 +159,30 @@
       </template>
     </ProfileBottomSheet>
 
-    <Teleport to="body">
-      <div
-        v-if="previewUrl"
-        class="piw-lightbox"
-        role="dialog"
-        aria-modal="true"
-        @click.self="previewUrl = ''"
-      >
-        <button
-          type="button"
-          class="piw-lightbox__close"
-          aria-label="Закрыть"
-          @click="previewUrl = ''"
-        >
-          ✕
-        </button>
-        <img class="piw-lightbox__img" :src="previewUrl" alt="Просмотр фото" />
-        <div class="piw-lightbox__actions">
-          <button
-            v-if="!viewOnly"
-            type="button"
-            class="piw-lightbox__btn piw-lightbox__btn--ghost"
-            @click="onReplaceFromPreview"
-          >
-            Заменить
-          </button>
-          <button type="button" class="piw-lightbox__btn piw-lightbox__btn--primary" @click="previewUrl = ''">
-            Готово
-          </button>
-        </div>
-      </div>
-    </Teleport>
+    <ProfilePhotoReviewOverlay
+      v-if="previewUrl"
+      :src="previewUrl"
+      alt="Просмотр фото"
+      aria-label="Просмотр фото"
+      :show-secondary="!viewOnly"
+      secondary-label="Заменить"
+      primary-label="Готово"
+      @close="previewUrl = ''"
+      @primary="previewUrl = ''"
+      @secondary="onReplaceFromPreview"
+    />
   </div>
 </template>
 
 <script setup>
-import { computed, onActivated, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, reactive, ref, watch } from 'vue'
 import { useProfileApi, useProfileNavigate } from '../composables/useProfileServices'
 import { AuthRRButton, AuthRRField } from 'bibli/shared/ui/rr'
 import { parseApiErrorDetail } from 'bibli/widgets/Profile/lib/parseApiError'
 import {
   INN_WIZARD_TOTAL,
   createEmptyInnForm,
+  getInnFieldError,
   innDigits,
   innWizardPath,
   isInnPhotoValid,
@@ -213,8 +200,9 @@ import ProfileStepShell from './personal/ProfileStepShell.vue'
 import ProfileRrCheckbox from './personal/ProfileRrCheckbox.vue'
 import ProfileDocThumb from './personal/ProfileDocThumb.vue'
 import ProfileBottomSheet from './personal/ProfileBottomSheet.vue'
+import ProfilePhotoReviewOverlay from './personal/ProfilePhotoReviewOverlay.vue'
 import PassportCameraCapture from './passport/PassportCameraCapture.vue'
-import exampleInn from './assets/activation/inn-examples/example-inn.png'
+import exampleInn from './assets/activation/inn-examples/example-inn.webp'
 import helpCircleIcon from './assets/activation/help-circle-contained.svg'
 
 const api = useProfileApi()
@@ -240,6 +228,8 @@ const busy = ref(false)
 const formError = ref('')
 const viewOnly = ref(false)
 const form = reactive(createEmptyInnForm())
+const innTouched = ref(false)
+const innFieldError = computed(() => getInnFieldError(form.inn, innTouched.value))
 const helpOpen = ref(false)
 const cameraOpen = ref(false)
 const captureSource = ref('camera')
@@ -247,6 +237,8 @@ const captureSeedFile = ref(null)
 const previewUrl = ref('')
 const fileInputRef = ref(null)
 const initialLoaded = ref(false)
+/** После «Назад» со шага формы не автоперескакиваем снова на шаг 2. */
+const allowPhotoStepRevisit = ref(false)
 
 let photoPreviewObjectUrl = null
 
@@ -295,7 +287,7 @@ function apiError(err, fallback) {
   return parseApiErrorDetail(err, fallback) || fallback
 }
 
-function goToStep(n, { replace = false } = {}) {
+function goToStep(n, { replace = true } = {}) {
   if (viewOnly.value && parseInnWizardStep(n) !== INN_WIZARD_TOTAL) return
   formError.value = ''
   const next = parseInnWizardStep(n)
@@ -304,21 +296,19 @@ function goToStep(n, { replace = false } = {}) {
 }
 
 function skipCompletedPhotoStep() {
-  if (!initialLoaded.value || busy.value || viewOnly.value) return
+  if (!initialLoaded.value || busy.value || viewOnly.value || allowPhotoStepRevisit.value) return
   if (step.value === 1 && isInnPhotoValid(form)) {
     goToStep(2, { replace: true })
   }
 }
 
 function onBack() {
+  if (busy.value) return
   if (viewOnly.value || step.value <= 1) {
     void navigateTo('/profile')
     return
   }
-  if (typeof window !== 'undefined' && window.history.length > 1) {
-    window.history.back()
-    return
-  }
+  allowPhotoStepRevisit.value = true
   void navigateTo(innWizardPath(step.value - 1), { replace: true })
 }
 
@@ -344,6 +334,7 @@ function openFilePicker() {
 }
 
 function closeCapture() {
+  if (busy.value) return
   cameraOpen.value = false
   captureSeedFile.value = null
   captureSource.value = 'camera'
@@ -390,11 +381,18 @@ async function onCameraSave({ file }) {
   if (!file || busy.value) return
   formError.value = ''
   busy.value = true
+  const gen = actionGen
   try {
     await uploadInnFile(file)
+    if (!isActionCurrent(gen)) return
+    if (!form.photoServerPath) {
+      formError.value = 'Не удалось подтвердить загрузку фото ИНН'
+      return
+    }
     closeCapture()
     goToStep(2)
   } catch (err) {
+    if (!isActionCurrent(gen)) return
     formError.value = apiError(err, 'Не удалось загрузить фото ИНН')
   } finally {
     busy.value = false
@@ -519,6 +517,7 @@ function resetLocalState() {
   helpOpen.value = false
   cameraOpen.value = false
   previewUrl.value = ''
+  allowPhotoStepRevisit.value = false
   form.dataConfirmed = false
   if (photoPreviewObjectUrl) {
     URL.revokeObjectURL(photoPreviewObjectUrl)
@@ -542,6 +541,16 @@ onMounted(() => {
 })
 
 const skipNextActivateReload = ref(true)
+let actionGen = 0
+
+function isActionCurrent(gen) {
+  return gen === actionGen
+}
+
+function bumpActionGen() {
+  actionGen += 1
+}
+
 onActivated(() => {
   let forceReload = false
   try {
@@ -562,7 +571,12 @@ onActivated(() => {
   void loadInitial()
 })
 
+onDeactivated(() => {
+  bumpActionGen()
+})
+
 onBeforeUnmount(() => {
+  bumpActionGen()
   if (photoPreviewObjectUrl) URL.revokeObjectURL(photoPreviewObjectUrl)
 })
 </script>
@@ -729,65 +743,5 @@ onBeforeUnmount(() => {
   line-height: var(--rr-line-height-line-height-xs);
   letter-spacing: var(--rr-tracking-tracking-s);
   color: var(--rr-labels-neutral-secondary);
-}
-
-.piw-lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 4000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--rr-spacing-padding-xl);
-  padding: var(--rr-spacing-padding-3-xl) var(--rr-spacing-padding-xl)
-    calc(var(--rr-spacing-padding-3-xl) + env(safe-area-inset-bottom, 0px));
-  background: rgba(16, 16, 18, 0.88);
-}
-
-.piw-lightbox__img {
-  max-width: min(100%, 480px);
-  max-height: 70vh;
-  border-radius: var(--rr-radius-l);
-  object-fit: contain;
-}
-
-.piw-lightbox__close {
-  position: absolute;
-  top: calc(var(--rr-spacing-padding-xl) + env(safe-area-inset-top, 0px));
-  right: var(--rr-spacing-padding-xl);
-  width: var(--rr-size-3-xl);
-  height: var(--rr-size-3-xl);
-  border: none;
-  border-radius: var(--rr-radius-full);
-  background: var(--rr-backgrounds-overlay-strong);
-  cursor: pointer;
-}
-
-.piw-lightbox__actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--rr-spacing-padding-l);
-  width: min(100%, 400px);
-}
-
-.piw-lightbox__btn {
-  min-height: var(--rr-size-4-xl);
-  border: none;
-  border-radius: var(--rr-radius-xl);
-  font: inherit;
-  font-size: var(--rr-font-size-font-size-m);
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.piw-lightbox__btn--ghost {
-  background: var(--rr-backgrounds-brand-secondary-hover);
-  color: var(--rr-labels-brand-primary);
-}
-
-.piw-lightbox__btn--primary {
-  background: var(--rr-labels-brand-primary);
-  color: var(--rr-labels-neutral-inverted-primary);
 }
 </style>

@@ -1,3 +1,5 @@
+import { isValidInn12 } from 'bibli/shared/utils/russianTaxIds'
+
 export const INN_WIZARD_TOTAL = 3
 export const INN_WIZARD_BASE_PATH = '/profile/inn'
 
@@ -59,13 +61,22 @@ export function maskInn(raw: string): string {
 }
 
 export function isInnValid(form: InnWizardForm): boolean {
-  return innDigits(form.inn).length === 12
+  return isValidInn12(form.inn)
 }
 
 export function isInnPhotoValid(form: InnWizardForm): boolean {
-  return Boolean(form.photoFile || form.photoServerPath || form.photoPreviewUrl)
+  return Boolean(form.photoServerPath || form.photoFile)
 }
 
 export function isInnReadyToSubmit(form: InnWizardForm): boolean {
   return isInnPhotoValid(form) && isInnValid(form) && form.dataConfirmed
+}
+
+export function getInnFieldError(value: string, touched = false): string {
+  if (!touched) return ''
+  const digits = innDigits(value)
+  if (!digits) return 'Укажите ИНН'
+  if (digits.length < 12) return 'ИНН должен содержать 12 цифр'
+  if (!isValidInn12(digits)) return 'Некорректный ИНН'
+  return ''
 }

@@ -31,6 +31,7 @@
           type="button"
           class="ppass-cam__close"
           aria-label="Закрыть"
+          :disabled="saving"
           @click="emitClose"
         >
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -92,19 +93,32 @@
         </div>
       </template>
 
-      <!-- Preview -->
+      <!-- Preview / confirm — та же композиция, что live-камера -->
       <template v-else>
-        <img
-          class="ppass-cam__preview"
-          :class="{ 'ppass-cam__preview--profile': variant === 'profile' }"
-          :src="previewUrl"
-          :alt="previewAlt"
-        />
+        <div class="ppass-cam__preview-stage" aria-hidden="true">
+          <img
+            class="ppass-cam__preview"
+            :class="{ 'ppass-cam__preview--profile': variant === 'profile' }"
+            :src="previewUrl"
+            :alt="previewAlt"
+          />
+          <div class="ppass-cam__dim ppass-cam__dim--review" />
+          <div
+            class="ppass-cam__guide"
+            :class="`ppass-cam__guide--${variant}`"
+          >
+            <div class="ppass-cam__frame">
+              <span v-if="variant !== 'profile'" class="ppass-cam__split" />
+              <span v-if="variant === 'main'" class="ppass-cam__photo-slot" />
+            </div>
+          </div>
+        </div>
 
         <button
           type="button"
           class="ppass-cam__close"
           aria-label="Закрыть"
+          :disabled="saving"
           @click="emitClose"
         >
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -112,20 +126,23 @@
           </svg>
         </button>
 
-        <p class="ppass-cam__hint">{{ previewHint }}</p>
-
-        <div class="ppass-cam__actions">
-          <button type="button" class="ppass-cam__btn ppass-cam__btn--ghost" @click="onSecondaryAction">
-            {{ secondaryLabel }}
-          </button>
-          <button
-            type="button"
-            class="ppass-cam__btn ppass-cam__btn--primary"
-            :disabled="saving"
-            @click="confirmSave"
-          >
-            {{ saving ? 'Сохранение…' : confirmLabel }}
-          </button>
+        <div class="ppass-cam__review-footer">
+          <p class="ppass-cam__hint">{{ previewHint }}</p>
+          <div class="ppass-cam__review-bar">
+            <div class="ppass-cam__actions">
+              <AuthRRButton
+                variant="brand-secondary"
+                :label="secondaryLabel"
+                :disabled="saving"
+                @click="onSecondaryAction"
+              />
+              <AuthRRButton
+                :label="confirmLabel"
+                :loading="saving"
+                @click="confirmSave"
+              />
+            </div>
+          </div>
         </div>
       </template>
     </div>
@@ -134,6 +151,8 @@
 
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { AuthRRButton } from 'bibli/shared/ui/rr'
+import 'bibli/shared/ui/rr/auth-rr-button.css'
 import iconFlashOff from '../assets/activation/passport-tips/cam-flash-off.svg?url'
 import iconSwitch from '../assets/activation/passport-tips/cam-switch.svg?url'
 
@@ -209,12 +228,8 @@ const previewHint = computed(() => {
   if (props.variant === 'snils') return 'Проверьте фото'
   return 'Проверьте, хорошо ли все видно'
 })
-const secondaryLabel = computed(() => (isFileSource.value ? 'Перезагрузить' : 'Переснять'))
-const confirmLabel = computed(() => {
-  if (isFileSource.value) return 'Сохранить'
-  if (props.variant === 'profile') return 'Отправить'
-  return 'Сохранить'
-})
+const secondaryLabel = computed(() => (isFileSource.value ? 'Заменить' : 'Переснять'))
+const confirmLabel = computed(() => 'Сохранить')
 
 async function applySeedFile(file) {
   if (!file) return
@@ -242,21 +257,17 @@ function isInsecureOrigin() {
   return host !== 'localhost' && host !== '127.0.0.1' && host !== '[::1]'
 }
 
-/** iPhone/iPad: <video> часто зеркалит поток — для паспорта текст должен читаться слева направо. */
-function isIOSDevice() {
-  if (typeof navigator === 'undefined') return false
-  const ua = navigator.userAgent || ''
-  if (/iPad|iPhone|iPod/i.test(ua)) return true
-  return navigator.platform === 'MacIntel' && Number(navigator.maxTouchPoints || 0) > 1
-}
-
+/**
+ * Зеркало только live-превью фронтальной камеры (selfie UX).
+ * Документы (environment) и сохранённый кадр — никогда не зеркалим:
+ * на iOS раньше return true для всех камер → все фото в профиле были «отзеркалены».
+ */
 function resolveMirror(track) {
   const settings = track?.getSettings?.() || {}
   const facing = String(settings.facingMode || facingMode.value || '').toLowerCase()
-  // Front на iOS почти всегда зеркальный в preview; rear тоже бывает — снимаем зеркало всегда на iOS.
-  if (isIOSDevice()) return true
-  // На остальных — только фронтальная, если браузер зеркалит selfie.
-  return facing === 'user'
+  if (facing === 'environment') return false
+  if (props.variant !== 'profile' && facingMode.value === 'environment') return false
+  return facing === 'user' || (props.variant === 'profile' && facing !== 'environment')
 }
 
 async function listCameras() {
@@ -426,11 +437,8 @@ function capture() {
     canvas.width = w
     canvas.height = h
     const ctx = canvas.getContext('2d')
-    // CSS scaleX(-1) только на превью; canvas берёт сырой кадр — зеркалим так же, чтобы снимок совпал с экраном.
-    if (mirrorVideo.value) {
-      ctx.translate(w, 0)
-      ctx.scale(-1, 1)
-    }
+    // Сырой кадр с сенсора — без зеркала. CSS scaleX(-1) только на live-превью фронталки.
+    // Раньше canvas тоже флипали → на iPhone все фото в профиле сохранялись зеркально.
     ctx.drawImage(video, 0, 0, w, h)
     canvas.toBlob(
       (blob) => {
@@ -481,7 +489,7 @@ function onSecondaryAction() {
 }
 
 function confirmSave() {
-  if (!previewBlob.value) return
+  if (props.saving || !previewBlob.value) return
   if (previewBlob.value instanceof File) {
     emit('save', { file: previewBlob.value, previewUrl: previewUrl.value })
     return
@@ -507,6 +515,7 @@ function retryCamera() {
 }
 
 function emitClose() {
+  if (props.saving) return
   emit('close')
 }
 
@@ -688,6 +697,11 @@ onBeforeUnmount(() => {
   cursor: pointer;
 }
 
+.ppass-cam__close:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .ppass-cam__blocked {
   position: absolute;
   inset: 0;
@@ -807,12 +821,20 @@ onBeforeUnmount(() => {
   background: #fff;
 }
 
+.ppass-cam__preview-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #1c1c1e;
+}
+
 .ppass-cam__preview {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center;
   background: #1c1c1e;
 }
 
@@ -820,67 +842,79 @@ onBeforeUnmount(() => {
   object-fit: cover;
 }
 
-.ppass-cam__hint {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(88px + env(safe-area-inset-bottom, 0px));
-  z-index: 2;
-  margin: 0;
-  width: max-content;
-  max-width: calc(100% - 48px);
-  padding: 10px 16px;
-  border-radius: 12px;
-  background: rgba(60, 60, 67, 0.72);
-  font-size: 15px;
-  line-height: 20px;
-  text-align: center;
-  color: #fff;
+.ppass-cam__dim--review {
+  background: rgba(28, 28, 30, 0.42);
 }
 
-.ppass-cam__actions {
+.ppass-cam__review-footer {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 2;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--rr-spacing-padding-m);
-  width: 100%;
-  margin: 0;
-  padding:
-    var(--rr-spacing-padding-l)
-    var(--rr-spacing-padding-xl)
-    calc(var(--rr-spacing-padding-l) + env(safe-area-inset-bottom, 0px));
-  border-radius: var(--rr-radius-m) var(--rr-radius-m) 0 0;
-  background: var(--rr-backgrounds-primary);
-  box-sizing: border-box;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  pointer-events: none;
 }
 
-.ppass-cam__btn {
+.ppass-cam__hint {
+  margin: 0;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  padding: 10px 16px;
+  border-radius: 12px;
+  box-sizing: border-box;
+  background: #78788080;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  font-family: var(--rr-font-family-font-family, Manrope, system-ui, sans-serif);
+  font-weight: 400;
+  font-style: normal;
+  font-size: var(--rr-font-size-font-size-m, 16px);
+  line-height: var(--rr-line-height-line-height-m, 24px);
+  letter-spacing: var(--rr-tracking-tracking-m, 0px);
+  text-align: center;
+  color: #fff;
+}
+
+.ppass-cam__review-bar {
+  width: 100%;
+  padding:
+    16px
+    16px
+    calc(16px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  border-radius: 16px 16px 0 0;
+  background: var(--rr-backgrounds-primary, #fff);
+  pointer-events: auto;
+}
+
+.ppass-cam__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+
+.ppass-cam__actions :deep(.auth-rr-button) {
+  width: 100%;
+}
+
+.ppass-cam__blocked-actions .ppass-cam__btn {
   min-height: 48px;
   width: 100%;
   border: none;
-  border-radius: var(--rr-radius-l);
+  border-radius: var(--rr-radius-l, 12px);
   font: inherit;
-  font-size: var(--rr-font-size-font-size-m);
+  font-size: var(--rr-font-size-font-size-m, 16px);
   font-weight: 600;
   cursor: pointer;
 }
 
-.ppass-cam__btn--ghost {
-  background: var(--rr-backgrounds-brand-secondary-default);
-  color: var(--rr-labels-brand-primary);
-}
-
 .ppass-cam__btn--primary {
-  background: var(--rr-labels-brand-primary);
-  color: var(--rr-labels-neutral-inverted-primary);
-}
-
-.ppass-cam__btn:disabled {
-  opacity: 0.6;
-  cursor: default;
+  background: var(--rr-labels-brand-primary, #1c4ae5);
+  color: #fff;
 }
 </style>
